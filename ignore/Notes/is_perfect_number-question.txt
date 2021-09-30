@@ -1,0 +1,153 @@
+
+test --> (predicate/s, argument/s, test-answer/s)
+
+Ways to use Test:
+	1) n predicates, n arguments, n answers				// enumerative
+	2) 1 predicate,  n arguments, 1 answer				// domain - 1 predicate & answer
+	   1 predicate,  n arguments, n answers
+	3) n predicates, 1 argument,  n answers  			// domain - various predicates &
+																	 answers
+																	 
+	- where 1 argument can be list or domain
+	
+BNF-ish format:
+	1)	"Test" <function> ":" … followed by tests
+	2)  "Test" <function> <Arg/Sequence/Iterable> <predicate>
+	    "Test" <function> <Arg/Sequence/Iterable> <predicate> <argument>
+	    "Test" <function> <Arg/Sequence/Iterable> <predicate> <Arg/Sequence/Iterable>
+	3)  "Test" <function> <Arg/Sequence/Iterable> ":" … followed by tests
+	
+Also: pytest overrides python's assert…somehow…using the AST manipulation so that
+	  it doesn't terminate the program and just logs the error. I hope to do something
+	  like this too, so it doesn't stop at every failed test.
+	  
+Also: unpacking the arguments might be more of a challenge in the more complex cases. 
+
+// =================================================
+
+using some.module.is_perfect_number
+
+// ------------------------------------------------
+// method 1 - enumerative
+
+Test1{
+
+	Test is_perfect_number:
+		| <0> = False
+		| <1> = False
+		| <4> = False
+		| <6> = True
+		| <28> = True
+	
+	// to test cases that should fail - useful for edge/special cases
+	Test is_perfect_number:
+		| <'a'> ! InvalidInput
+		| <-1>	! InvalidRange
+}
+
+// generates -------------------------------------
+
+assert is_perfect_number(0) == False
+assert is_perfect_number(1) == False
+assert is_perfect_number(4) == False
+assert is_perfect_number(6) == True
+assert is_perfect_number(28) == True
+
+assert raises(is_perfect_number('a'), InvalidInput)
+assert raises(is_perfect_number(-1), InvalidRange)
+
+// =================================================
+// method 2 - a list of right answers
+Test1a{
+
+	perfect_nums := <6, 28, 496, 8128>
+	nonperfect_nums := <1, 4, 8, 9, 10, 11, 12>
+
+	// ⊤ ⇔ always-true    & useful for testing booleans
+	// ⊥ ⇔ always-false
+
+	Test is_perfect_number perfect_nums ⊤ 
+	Test is_perfect_number nonperfect_nums ⊥ 
+
+	~~or~~
+	
+	// for non-unicode people
+	Test is_perfect_number perfect_nums always-true 
+	Test is_perfect_number nonperfect_nums always-false 
+	
+	~~or~~
+
+	// this way specifies predicate and answer
+	Test is_perfect_number <6, 28, 496, 8128> = True 
+	Test is_perfect_number <1, 4, 8, 9, 10, 11, 12> = False 
+	
+	~~or~~
+
+	// this way specifies predicate and list of answers
+	Test is_perfect_number <6, 28, 496, 8128> = [True, True, True, True]
+	Test is_perfect_number <1, 4, 8, 9, 10, 11, 12> = [False, …, False]
+	
+	~~or~~
+	
+	right_solutions := [True, True, True, True]
+	wrong_solutions := [False, …, False]
+	
+	Test is_perfect_number perfect_nums = right_solutions
+	Test is_perfect_number nonperfect_nums = wrong_solutions
+
+// generates via an :enumerate True ---------------
+
+assert is_perfect_number(0) == False
+assert is_perfect_number(1) == False
+assert is_perfect_number(4) == False
+assert is_perfect_number(6) == True
+assert is_perfect_number(28) == True
+
+~~or~~   via an :enumerate False
+
+for n in right_answers:
+	assert is_perfect_number(n) == True
+
+for n in wrong_answers:
+	assert is_perfect_number(n) == False
+	
+Note: I think this would be a test smell in practice, because it isn't obvious 
+	  what is being tested. This is part of why I think this dsl would be useful.
+	  
+~~or~~
+
+for arg, solution in zip(arguments, solutions):
+	assert is_perfect_number(*arg) == solution
+
+// =================================================
+// method 3 - over some domain
+
+// Overall this isn't too effective and would only be modestly useful in general.
+// It doesn't really work for this example. But it would iterate over
+// a domain and test the answer over various predicates.
+
+Test1b{
+
+	Domain nums := Naturals :ub 500
+	Set right_answers := [6, 28, 496, 8128] 		
+
+	Test is_perfect_number nums:
+		| ∈ right_answers
+		| ∉ right_answers
+		| |= BooleanType					// models Concept BooleanType
+		
+	~~or~~
+	
+	Test is_perfect_number Naturals(500):
+		| ∈ right_answers
+		| ∉ right_answers
+		| |= BooleanType					// models Concept BooleanType
+}
+
+// generates ------------------------------------
+
+for n in Naturals(0, 500):
+	assert is_perfect_number(n) in right_answers
+	assert is_perfect_number(n) not in right_answers
+	assert BooleanType(is_perfect_number(n))
+

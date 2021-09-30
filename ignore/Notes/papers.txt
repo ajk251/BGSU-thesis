@@ -1,0 +1,22 @@
+
+Paper:
+Journal:
+Authors:
+
+Notes:
+
+Conclusion: 
+
+------------------------
+
+[Skimmed]----------------------------------------
+
+Paper: Specify and measure, cover and reveal: A unified framework for automated test generation
+Journal: Science of Computer Programming
+Authors: Bardin, Kosmatov, Marcozzi, Delahaye
+
+Notes: Seems to evaluate the test coverage - do the tests cover all possible paths of execution. 
+
+Conclusion:  Not useful directly.
+
+------------------------
