@@ -6,7 +6,33 @@ from numbers import Number
 from typing import Union
 from operator import eq, ne
 
-# how to handle passing of values, multiple args, and tuples.
+
+
+# The problem comes from Software Testing: A craftsmans approach. It is straight-forward - ensure the classification
+#  of triangle_kind identifies the triangle correctly. As long as the inputs are positive integers, the function
+#  will always return an answer.
+
+# I solve it by using the TestGroup or Winnow test - every result falls into one category. Then use a predicate over
+# that category.
+
+# Implementation problems: 
+#   • how to handle the cartesian-product of arguments. What does the product of optional args look like?
+#   • do these problems get implemented as functions for the user or enumerated as assert statements?
+#   • how to know if the domain is by random, enumeration, or product?
+#   • winnow | should change to <label> <value> <predicate> <arg> 
+#           - ie | 'equalateral' Triangle.equalateral ⊤ is_equalateral
+#           - this solves the problem of when the category is an error or something
+#   • can create a cousin of Winnow → Satisfies, for a result that falls into at least 1 category or more
+
+
+# what to call these? ↓
+# assert fn(arg) == test_answer         ← this kind?  Test-by-Predicate
+#        ↑   ↑   ↑      ↑
+#
+# assert x < 4                          ← this kind?  Test-by-Value
+#        ↑ ↑ ↑      
+# 
+#******************************************************************************
 
 numeric = Union[int, float, Number]
 
@@ -46,7 +72,9 @@ def satisfies(predicate, value):
 def doesnt_satisfy(predicate, value):
     return predicate(*value) == False
 
+# -----------------------------------------------
 
+# the actual function should be similiar to this
 def winnow(fn, domain, test_cases):
 
     # is either enumerative or cartesian
@@ -74,8 +102,7 @@ def winnow(fn, domain, test_cases):
         # this enumerates all the cases
         for arg in groups[case]:
             # isinstance of TestPredicate
-            print('assert ', fn.__name__, arg, ' is ', case)
-            
+            print('assert ', fn.__name__, arg, ' is ', case)    
             
 # -----------------------------------------------
 
@@ -98,6 +125,7 @@ def triangle_kind(a: numeric, b: numeric, c: numeric) -> Triangle:
     # shouldn't get here...
     return Triangle.not_triangle
 
+# predicates for a triangle
 not_zero       = lambda a,b,c: a != 0 and b != 0 and c != 0
 is_equalateral = lambda a,b,c: a == b and a == c and b == c and not_zero(a,b,c)
 is_isosceles   = lambda a,b,c: a == b or a == c or b == c and not_zero(a,b,c)
@@ -110,9 +138,18 @@ bounds = (1, 2, 100, 199, 200, 201)
 
 # =============================================================================
 
-# print(is_all([1,1,1,1], eq, 1))
+# What it should look in the language
 
-# test_triangle(test_triangle, (bounds, bounds, bounds), {})
+# bounds := <1, 2, 100, 199, 200, 201>
+#
+# Winnow triangle_kind bounds ⨯ bounds ⨯ bounds:
+#    | equalateral ⊤ is_equalateral
+#    | isosoceles  ⊤ is_isosoceles
+#    | scalene     ⊤ is_scalene
+#    | not_trangle ⊤ isnt_triangle
+
+# ----------------------------------
+
 winnow(triangle_kind, 
       (bounds, bounds, bounds),
       test_cases={Triangle.equalateral:   TestPredicate(satisfies, is_equalateral),
