@@ -37,17 +37,18 @@ Satisfies <function> <domain>:
 	  into 1 or more categories.
 	• the predicate must be true for all values in the category
 	• useful for random testing
-	
-BinTest <function> <domain> <predicate-case>:
+
+BinTest <function> <domain> <key-function>:				// returns enum, for instance	
+BinTest <function> <domain> <predicate-case>:			// purley Boolean
 	| <group> <predicate>
 	| True  <predicate>
 	| False <predicate>
 	
 	• uses the first predicate to sort values, like True/False
 	• would work for the next_date function
-		- BinTest next_date (year ⨯ months ⨯ days) is_valid_date
+		- BinTest next_date (year ⨯ months ⨯ days) is_valid_date		// no child tests
 		~~or~~
-		- BinTest next_date (year ⨯ months ⨯ days) is_valid_date
+		- BinTest next_date (year ⨯ months ⨯ days) is_valid_date		// not exaustive
 			| True is_successor
 	
 ―――――――――――――――――――――――――――――――――――――――

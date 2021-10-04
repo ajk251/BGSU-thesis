@@ -39,7 +39,7 @@ Satisfies <function> <domain>:
 	• useful for random testing
 
 BinTest <function> <domain> <key-function>:				// returns enum, for instance	
-BinTest <function> <domain> <predicate-case>:
+BinTest <function> <domain> <predicate-case>:			// purley Boolean
 	| <group> <predicate>
 	| True  <predicate>
 	| False <predicate>
