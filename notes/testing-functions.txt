@@ -62,3 +62,16 @@ like:
  → cause the result of the func(*args) to be saved in var1
  	• but then how to use in in the next test...
  	• maybe force the naming of args
+ 	
+
+Winnow date dates:
+   |> d next_date
+   | True  is_valid_date d
+   | False is_valid date d
+   |> d1 next_date					--> could create a sequence
+   | True  is_valid date d1
+   | False is_valid date d1
+   
+   
+   
+   

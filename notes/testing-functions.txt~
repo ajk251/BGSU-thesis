@@ -50,6 +50,8 @@ BinTest <function> <domain> <predicate-case>:			// purley Boolean
 		~~or~~
 		- BinTest next_date (year ⨯ months ⨯ days) is_valid_date		// not exaustive
 			| True is_successor
+			
+
 	
 ―――――――――――――――――――――――――――――――――――――――
 

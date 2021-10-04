@@ -110,7 +110,7 @@ def doesnt_satisfy(predicate, value):
 
 def winnow(fn, domain, test_cases):
 
-    # is either enumerative or cartesian
+    # is either enumerative or as a test function
     # how to handle errors?????
     #       catch it, test if is present, otherwise put into other, raise error when done
 
@@ -136,8 +136,8 @@ def winnow(fn, domain, test_cases):
         # this enumerates all the cases
         for arg in groups[case]:
             # isinstance of TestPredicate
-            print('assert ', fn.__name__, arg, ' is ', case) 
-
+            print('assert ', fn.__name__, arg, ' is ', case)
+            
 
 # -----------------------------------------------
 
@@ -164,8 +164,6 @@ def winnow(fn, domain, test_cases):
 
 # -----------------------------------------------
 
-
-
 days   = (1, 2, 15, 30, 31)
 months = (1, 2, 6, 11, 12)
 years  = (1812, 1813, 1912, 1913, 2011, 2012)
@@ -178,12 +176,17 @@ test_days = [next_date(y,m,d) for y,m,d in product(years, months, days)]
 #
 # Winnow next_date (years ⨯ months ⨯ days):
 #   | True  ⊤ is_valid_date
-#   | False ⊤ is_valid_date
+#   | False ⊥ is_valid_date
 #
 # winnow(next_date, 
 #       (years, months, days),
 #       test_cases={True: TestPredicate(satisfies, is_valid_date),
 #                   False: TestPredicate(satisfies, is_valid_date)})
+
+# a TestFrom ?
+#   TestFrom date <domain>:
+#       |> d next_date
+#       | is_valid_date d
 
 winnow(is_valid_date,
        test_days,
