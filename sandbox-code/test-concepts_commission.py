@@ -18,7 +18,7 @@ from operator import eq, ne
 # -----------------------------------------------------------------------------
 # right from the problem
 
-def commision(nlocks: int, nstocks: int, nbarrels: int):
+def commission(nlocks: int, nstocks: int, nbarrels: int):
 
     inner = lambda xs,ys: sum(x*y for x,y in zip(xs,ys))
 
@@ -56,5 +56,5 @@ def test(function, cases):
 
 # =============================================================================
 
-print(commision(1,1,1))
-print(commision(70,80,90))
+print(commission(1,1,1))
+print(commission(70,80,90))
