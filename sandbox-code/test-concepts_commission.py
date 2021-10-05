@@ -124,50 +124,34 @@ def test(function, cases):
 
     print()
 
-
-# this doesn't work here...
-# def winnow(fn, domain, test_cases):
-
-#     # is either enumerative or cartesian
-#     # how to handle errors?????
-#     #       catch it, test if is present, otherwise put into other, raise error when done
-
-#     # iterate or product ?
-
-#     groups = defaultdict(list)
-
-#     # have to wrap this in try/except!
-#     for args in domain:
-#         result = fn(*args)
-#         groups[result].append(args)
-
-#     # if len(groups) ≠ len(group_tests) → there is a problem!
-#     # or groups ≠ a proper subset of group_tests
-
-#     for case in test_cases:
-
-#         # this simply tests all of them at once
-#         p  = test_cases[case].predicate
-#         tfn = test_cases[case].test_fn
-#         print('outcome: ', is_all_over(groups[case], p, tfn))
-        
-#         # this enumerates all the cases
-#         for arg in groups[case]:
-#             # isinstance of TestPredicate
-#             print('assert ', fn.__name__, arg, ' is ', case) 
-
+TestSatisfies = namedtuple('TestSatisfies', 'label, predicate')
 
 def satisfies(fn, domain, test_cases):
 
-    groups = defaultdict(list)
+    groups = {case.label: [] for case in test_cases}
 
     for args in domain:
-        result = fn(*args)
-        groups[result].append(args)
 
-    for case in test_cases:
-        pass
+        try:
+            result = fn(*args)
+        except Exception as e:
+            result = e
+        
+        for case in test_cases:
+            
+            # this is ugly, but it can't test the predicate without raising an error for fail cases
+            try:
+                if case.predicate(result):
+                    groups[case.label].append((result, args))
+            except Exception as e:
+                continue
 
+            # need way to count how many 'result' belongs too
+
+    # for case, result in groups.items():
+    #     print(case, result)
+    # print('Error: ', groups['error-too-few'])
+    # print('Error: ', groups['error-too-many'])
 
 
 # =============================================================================
@@ -178,11 +162,11 @@ def satisfies(fn, domain, test_cases):
 #   | <1,1,1>    == 10.0
 #   | <70,80,90> == 1420.0
 
-test(commission, [TestCase('=', (1,1,1), 10),                               # type & value --> it fails too!
-                  TestCase('==', (1,1,2), 12.5),                            # value, ie 3=3.0
+test(commission, [TestCase('=',  (1,1,1), 10),                               # type & value --> it fails too!
+                  TestCase('==', (1,1,2), 12.5),                             # value, ie 3=3.0
                   TestCase('==', (70,80,90), 1420.0),
-                  TestCase('!', (100, 100, 100), AssertionError),
-                  TestCase('!', (1,1,0), AssertionError)])
+                  TestCase('!',  (100, 100, 100), AssertionError),
+                  TestCase('!',  (1,1,0), AssertionError)])
 
 # ------------------------------------------
 
@@ -190,15 +174,32 @@ locks   = [0, 1, 5, 10, 50, 70, 71] + [randint(0, 100) for _ in range(25)]
 stocks  = [0, 1, 5, 10, 50, 80, 81] + [randint(0, 100) for _ in range(25)]
 barrels = [0, 1, 5, 10, 50, 90, 91] + [randint(0, 100) for _ in range(25)]
 
-
-is_float = lambda v: isinstance(v, float)
-is_gt0   = lambda v: v > 0
-
-satisfies(commission, product(locks, stocks, barrels), [TestPredicate('True', True, is_float),
-                                                        TestValue('False', True, is_gt0),  
-                                                        TestCase('==', (70,80,90), 1420.0),
-                                                        TestCase('!', (100, 100, 100), AssertionError),
-                                                        TestCase('!', (1,1,0), AssertionError)])
+strong_equality     = lambda v,t: isinstance(v, type(t)) and eq(v, t)
+is_float            = lambda v: isinstance(v, float)
+is_gt0              = lambda v: v > 0
+is_too_many_error   = lambda e: isinstance(e, AssertionError) and e.args[0].startswith('Exceeded')
+is_too_few_error    = lambda e: isinstance(e, AssertionError) and e.args[0].startswith('Must')
 
 
+# Satisfies commission (locks ⨯ stocks ⨯ barrels):
+#   | is-float    is_float
+#   | is-gt-0     is_gt0
+#   | is-too-few  is_too_few_error
+#   | is-too-many is_too_many_error
 
+satisfies(commission, product(locks, stocks, barrels), [TestSatisfies('is-float', is_float),
+                                                        TestSatisfies('is-gt0', is_gt0),
+                                                        TestSatisfies('error-too-few', is_too_few_error),
+                                                        TestSatisfies('error-too-many', is_too_many_error)])
+
+
+try:
+    c = commission(0, 10, 100)
+except Exception as e:
+    print(is_too_many_error(e), e.args[0], e.args[0].startswith('Exceeded'))
+
+try:
+    c = commission(0, 10, 10)
+except Exception as e:
+    print('is too many: ', is_too_many_error(e))
+    print('is too few:  ', is_too_few_error(e))
