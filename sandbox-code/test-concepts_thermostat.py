@@ -90,17 +90,20 @@ class Themostat:
     def set_heater_on(self, on: bool):
         self._heater_on = on
 
-    # this came out of nowhere
+    # This isn't really needed
     def set_setting(self, period: P, day: D, temp: int):
         self._settings[(period, day)] = temp
 
+    # helper methods to make it more testable
     @property
     def heater_on(self):
         return self._heater_on
 
+    @property
+    def desired_temp(self):
+        return self._settings[(self._period, self._day)]
 
 # ==============================================================
-
 
 thermo = Themostat()
 
@@ -126,3 +129,70 @@ thermo.set_time_since_last_run(12)
 thermo.turn_heat_on(Period.morning, Day.weekday)
 
 print(thermo.heater_on)
+
+# ==============================================================
+
+thermo.set_current_temp(63)
+thermo.set_threshold_diff(5)
+thermo.set_override(True)
+thermo.set_over_temperature(65)
+thermo.set_min_lag(10)
+thermo.set_time_since_last_run(12)
+
+print(thermo.heater_on)
+
+thermo.set_current_temp(66)
+thermo.set_threshold_diff(5)
+thermo.set_override(True)
+thermo.set_over_temperature(65)
+thermo.set_min_lag(10)
+thermo.set_time_since_last_run(12)
+
+print(thermo.heater_on)
+
+
+thermo.set_current_temp(66)
+thermo.set_threshold_diff(5)
+thermo.set_override(True)
+thermo.set_over_temperature(72)
+thermo.set_min_lag(10)
+thermo.set_time_since_last_run(12)
+
+print(thermo.heater_on)
+
+thermo.set_current_temp(66)
+thermo.set_threshold_diff(5)
+thermo.set_override(False)
+thermo.set_over_temperature(70)
+thermo.set_min_lag(10)
+thermo.set_time_since_last_run(12)
+
+print(thermo.heater_on)
+
+
+thermo.set_current_temp(63)
+thermo.set_threshold_diff(5)
+thermo.set_override(True)
+thermo.set_over_temperature(70)
+thermo.set_min_lag(10)
+thermo.set_time_since_last_run(12)
+
+print(thermo.heater_on)
+
+thermo.set_current_temp(63)
+thermo.set_threshold_diff(5)
+thermo.set_override(True)
+thermo.set_over_temperature(70)
+thermo.set_min_lag(10)
+thermo.set_time_since_last_run(8)
+
+print(thermo.heater_on)
+
+
+# page 213
+clause_a = lambda T: T._current_temp < (T.desired_temp - T._threshold)
+clause_b = lambda T: T._override
+clause_c = lambda T: T._current_temp < (T._overtemp - T._threshold)
+clause_d = lambda T: T._time_since_last > T._min_lag
+
+

@@ -57,32 +57,34 @@ def commission(nlocks: int, nstocks: int, nbarrels: int) -> float:
 
 # -----------------------------------------------
 
-# this isn't quite how it done. This only generates the test arguments, it doesn't do the testing like
-#   in the paper.
-
 # this produces a diversity of results, … what about a max_distance? precondition? postcondition?
 
-def ART(case, fn, domain, n_cases=100, min_distance=5.0, distance=euclidean, max_num_candidates=1_000):
+def ART(case, fn, domain, n_cases=100, min_distance=5.0, n_candidates: int=10, distance=euclidean, max_num_candidates=10_000):
+
+    cases = [case]
 
     # the stopping criterian, number of cases or too much effort
     stop = lambda i: False if (len(cases) <= n_cases) or (max_num_candidates <= ntests_generated) else True
-
-    cases = [case]
         
     ntests_generated: int = 0
 
+    # checks distance twice...
+
     while not stop(ntests_generated):
 
-        cʹ = next(domain)
-        ntests_generated += 1           
+        candidates = (next(domain) for _ in range(n_candidates))
+        cʹ = max(candidates, key=lambda c: distance(case, c))
+
+        ntests_generated += n_candidates           
 
         if distance(case, cʹ) >= min_distance:
             cases.append(cʹ)
-            case = cʹ                                       # this is what the paper does, improves diversity?
+            case = cʹ
 
             # test the function
             try:
-                print('[PASSED]\t', case, '\t', fn(*case))
+                result = fn(*case)
+                print('[PASSED]\t', case, '\t', result)
             except AssertionError as e:
                 print('[FAILED]\t', case, '\t', e)
 
