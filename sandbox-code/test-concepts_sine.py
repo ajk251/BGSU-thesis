@@ -20,10 +20,7 @@ def bhaskara(x, precision=50):
 
     π = Decimal('3.1415926535897932384626433832795028841971693993751058209749445')
     x = Decimal(x)
-    # return (16 * x (π - x)) / (5 * con.power(π, Decimal(2)) - 4 * x * (π - x))
-    a =  (16 * x * (π - x))  
-    b = (5 * con.power(π, Decimal(2)) - 4 * x * (π - x))
-    return a/b
+    return (16 * x * (π - x)) / (5 * con.power(π, Decimal(2)) - 4 * x * (π - x))
 
 # -----------------------------------------------
 
@@ -78,7 +75,6 @@ def sine(x, precision=100, iterations=1000, in_degrees=False):
 
 # -----------------------------------------------
 
-
 # from: http://blogs.ubc.ca/infiniteseriesmodule/units/unit-3-power-series/taylor-series/maclaurin-expansion-of-sinx/
 
 def _sin2(x: Decimal, con, iterations: int):
@@ -86,15 +82,15 @@ def _sin2(x: Decimal, con, iterations: int):
     o = Decimal('-1')
     x = Decimal(x)
 
-    for k in range(1, iterations, 3):
-        x += o * con.power(x, k) * Decimal(factorial(k))
+    for k in range(3, iterations, 2):
+        x += o * (con.power(x, k) / Decimal(factorial(k)))
         o *= -1
+        # print(f'x={x}  0={o}')
 
-    # print('error: ', ε)
     return x
 
 
-def sine2(x, precision=100, iterations=1000, in_degrees=False):
+def sine2(x, precision=100, iterations=50, in_degrees=False):
 
     # in radians…
 
@@ -169,6 +165,7 @@ print(isclose(sin(1.0), sin(pi - 1.0)))
 
 print('―'*25)
 
+print(d_to_r(45))
 print('bhaskara: ', bhaskara(d_to_r(45)))
 print('sine 2:   ', sine2(d_to_r(45)))
 print('sine:     ', sine(d_to_r(45)))
