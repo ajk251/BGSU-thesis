@@ -51,7 +51,7 @@ Param = namedtuple('Param', 'F, q')
 # a2 b2 c1
 # a3 b1 c2
 # a3 b2 c3
-# a1 b2 c3
+# a1 b2 c3 
 # a2 b1 c2
 # a3 b1 c1
 
