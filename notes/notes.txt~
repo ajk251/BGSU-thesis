@@ -6,7 +6,7 @@
 * defaults := {* -uses ART
 			   -report csv
 			   :art initial [(25, 15, 15) (50, 65, 10) …]
-			   :art distance manhattan *}
+			   :art distance=manhattan *}
 			 
 Test fn domain -with defaults:
 	| ...
@@ -16,6 +16,13 @@ Test fn domain -with defaults:
 Test fn domain {* -uses ART -report sql :art initial … :art distance manhattan *}:
 	| ...
 	| ...
+	
+~~~or~~~
+
+Test fn domain:
+	| …
+	| …
+	|: :use ART -art distance=manhattan :report sql
 	
 ―――――――――――――――――――――――――――――――――
 
@@ -34,9 +41,12 @@ arguments:
 ―――――――――――――――――――――――――――――――――
 
 
-|		test case
-|>		save result
-|@		run fn, test fn
+|			test case
+|> |let		save result
+|@			run fn, test fn
+|# |when	must satisfy preconditon/postconditino
+|! |unless
+
 
 ―――――――――――――――――――――――――――――――――
 
@@ -84,6 +94,12 @@ Note:
   ―――――――――――――――――――――――――――――――――
   
 log analysis?
+	• Read <file>
+		| <predicate>
+		| <predicate>
+
+
+
 test attributes:
 	• weight - small, medium, large, huge → how much it has to test
 	• tag - quick note, for searchability

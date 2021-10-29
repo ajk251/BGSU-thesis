@@ -6,6 +6,9 @@ import antlr4
 from gen.FalconVisitor import FalconVisitor
 from gen.FalconParser import FalconParser
 
+# TODO:
+#   - falcon must return the dict
+#   - find funcs in modules & verify
 
 
 class Falcon(FalconVisitor):
@@ -25,7 +28,7 @@ class Falcon(FalconVisitor):
     # helper functions --------------------------
 
     def ns_get(self, name, only_local=False):
-        '''Search the local namespace, if it is not there, search the global'''
+        """Search the local namespace, if it is not there, search the global"""
 
         # What if the value is None!?
 

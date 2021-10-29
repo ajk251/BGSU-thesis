@@ -3,6 +3,10 @@
 //      for unicode:
 //      https://github.com/antlr/grammars-v4/blob/master/python/python3/Python3Lexer.g4
 
+// TODO:
+//      - validate python names
+//
+
 grammar Falcon;
 
 program: block+
@@ -13,7 +17,7 @@ block: namespace+
       | stmt+
       ;
 
-namespace: name OP_LBRAC stmt* OP_RBRAC                      #ns
+namespace: name OP_LBRAC stmt* OP_RBRAC                             #ns
          ;
 
 stmt: test
@@ -26,17 +30,19 @@ stmt: test
 test: OP_TEST ID ID ':' test_stub+                                  #test_basic
     ;
 
-test_stub: OP_BAR (name | PREDICATE) (name | CODE)                           #stub_pv
+test_stub: OP_BAR (name | PREDICATE) (name | CODE)                  #stub_pv
          ;
 
 // set parameters -----------------------------------------
-compiler: DIRECTIVE ID                                             #set_directive
+compiler: DIRECTIVE ID                                              #set_directive
 //        | DIRECTIVE LIST
 //        | DIRECTIVE NAME OP_EQ tuple...
         ;
 
 //fn_arg: FNARG (NAME | NUMBER)
 //      ;
+
+// identifiers --------------------------------------------
 
 name: ID                                // must be a safe python name
     | LABEL                             // valid falcon identifer
@@ -85,14 +91,14 @@ PREDICATE: ID
          | OP_EQ
          | UMATH
          | [><≤≥] | '<=' | '>=' | '=='
-         | '±'
+         | '±'                                  // these aren't in MATH
 //         | '_'
          ;
 
 OP_EQ:  '=';
 
 // CODE is meant to represent the variable names used in most languages
-// NAME is meant to have a more liberal/loose name-ing scheme, Racket-like
+// LABEL is meant to have a more liberal/loose name-ing scheme, Racket-like
 //CODE: (CHAR | '_')(CHAR | DIGIT | [_.])*;
 LABEL: (CHAR | '_')(CHAR | DIGIT | [-_+&?])*;
 
@@ -115,4 +121,4 @@ WS: [ \t\r\n]                               -> skip;
 
 fragment DIGIT: ([0-9]);
 fragment CHAR: [a-zA-Z];
-fragment UMATH: '\u2200'..'\u22FF';             // this should be more limited
+fragment UMATH: '\u2200'..'\u22FF';             // this should break this up…
