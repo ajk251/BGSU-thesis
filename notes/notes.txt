@@ -17,6 +17,14 @@ Test fn domain {* -uses ART -report sql :art initial … :art distance manhattan
 	| ...
 	| ...
 	
+~~~or~~~
+
+Test fn domain:
+	| …
+	| …
+	|: :use ART -art distance=manhattan :report sql
+	|: -art initial=(25, 15, 15)
+	
 ―――――――――――――――――――――――――――――――――
 
 types:
@@ -36,9 +44,10 @@ arguments:
 
 |			test case
 |> |let		save result
-|@			run fn, test fn
+|:			run fn, test fn
 |# |when	must satisfy preconditon/postconditino
 |! |unless
+|@ 			special directives
 
 
 ―――――――――――――――――――――――――――――――――
@@ -90,7 +99,6 @@ log analysis?
 	• Read <file>
 		| <predicate>
 		| <predicate>
-
 
 
 test attributes:

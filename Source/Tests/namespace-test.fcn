@@ -1,0 +1,37 @@
+
+/*
+This is to test the namespacing
+*/
+
+
+ns-t1.a {
+
+   // set some directives
+   :enumerate True
+   :verbose 4
+   `x = 4`
+
+   Test fn D:
+     | ≠ 4
+     | > 2
+     | == 5.0
+     | = -1
+     | == a
+}
+
+
+ns-1a {
+
+   :test yes
+
+   Test fn domain:
+     | ≠  4
+     | >  5
+     | == 5.0
+     | = "asdf"
+     | = `[1,2,3]`
+     | ± 7
+     | is a
+
+    }
+

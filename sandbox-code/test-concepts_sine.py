@@ -24,6 +24,11 @@ def bhaskara(x, precision=50):
 
 # -----------------------------------------------
 
+
+
+
+# -----------------------------------------------
+
 # From book: Annotated Algorithms in Python, CH 4, 4.3+
 
 def _sin(x: Decimal, con, iterations: int):
@@ -128,6 +133,7 @@ def sine2(x, precision=100, iterations=50, in_degrees=False):
 π = Decimal('3.1415926535897932384626433832795028841971693993751058209749445')
 τ = Decimal(2.0) * π
 d_to_r = lambda d: d * (pi/180.)
+diff = lambda a,b: a - b
 
 print('sine(1):    ', sine(1))
 print('sine(0):    ', sine(0))
@@ -152,30 +158,35 @@ print('75° : ', sin(d_to_r(75)), sine(75, in_degrees=True))
 print('105°: ', sin(d_to_r(105)), sine(105, in_degrees=True))
 print('75/105: 0.965925826289068')
 
-x = Decimal('1.0')
-print(sine(x), -sine(τ - x))
-print(sine(x, precision=25) == -sine(τ - x, precision=25))
-print(sine(x, precision=25) == sine(π - x, precision=25))
+# x = Decimal('1.0')
+# print(sine(x), -sine(τ - x))
+# print(sine(x, precision=25) == -sine(τ - x, precision=25))
+# print(sine(x, precision=25) == sine(π - x, precision=25))
 
-print('―'*25)
+# print('―'*25)
 
-print(sin(1.0) == sin(pi - 1.0))
-print(isclose(sin(1.0), sin(pi - 1.0)))
+# print(sin(1.0) == sin(pi - 1.0))
+# print(isclose(sin(1.0), sin(pi - 1.0)))
 
 
-print('―'*25)
+# print('―'*25)
 
-print(d_to_r(45))
-print('bhaskara: ', bhaskara(d_to_r(45)))
-print('sine 2:   ', sine2(d_to_r(45)))
-print('sine:     ', sine(d_to_r(45)))
-print('sin:      ', sin(d_to_r(45)))
+# print(d_to_r(45))
+# print('bhaskara: ', bhaskara(d_to_r(45)))
+# print('sine 2:   ', sine2(d_to_r(45)))
+# print('sine:     ', sine(d_to_r(45)))
+# print('sin:      ', sin(d_to_r(45)))
 
-print('―'*25)
-x = Decimal('1.0')
-print(sine(x), -sine(τ - x))
-print(sine(x, precision=25) == -sine(τ - x, precision=25))
-print(sine(x, precision=25) == sine(π - x, precision=25))
+# print('―'*25)
+# x = Decimal('1.0')
+# print(sine(x), -sine(τ - x))
+# print(sine(x, precision=25) == -sine(τ - x, precision=25))
+# print(sine(x, precision=25) == sine(π - x, precision=25))
 
-print(sine(x, precision=25) == -sine(τ - x, precision=25))
-print(sine(x, precision=25) == sine(π - x, precision=25))
+# print(sine(x, precision=25) == -sine(τ - x, precision=25))
+# print(sine(x, precision=25) == sine(π - x, precision=25))
+
+print('-'*25)
+
+print('180°: ', Decimal(sin(d_to_r(45))) - sine(45, in_degrees=True))
+print(Decimal(sine(1.0, precision=25)) - sine(π - Decimal(1.0), precision=25))
