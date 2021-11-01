@@ -44,6 +44,15 @@ class FalconListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by FalconParser#assertion.
+    def enterAssertion(self, ctx:FalconParser.AssertionContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#assertion.
+    def exitAssertion(self, ctx:FalconParser.AssertionContext):
+        pass
+
+
     # Enter a parse tree produced by FalconParser#test_basic.
     def enterTest_basic(self, ctx:FalconParser.Test_basicContext):
         pass
@@ -71,12 +80,30 @@ class FalconListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by FalconParser#fn_arg.
-    def enterFn_arg(self, ctx:FalconParser.Fn_argContext):
+    # Enter a parse tree produced by FalconParser#name.
+    def enterName(self, ctx:FalconParser.NameContext):
         pass
 
-    # Exit a parse tree produced by FalconParser#fn_arg.
-    def exitFn_arg(self, ctx:FalconParser.Fn_argContext):
+    # Exit a parse tree produced by FalconParser#name.
+    def exitName(self, ctx:FalconParser.NameContext):
+        pass
+
+
+    # Enter a parse tree produced by FalconParser#predicate.
+    def enterPredicate(self, ctx:FalconParser.PredicateContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#predicate.
+    def exitPredicate(self, ctx:FalconParser.PredicateContext):
+        pass
+
+
+    # Enter a parse tree produced by FalconParser#value.
+    def enterValue(self, ctx:FalconParser.ValueContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#value.
+    def exitValue(self, ctx:FalconParser.ValueContext):
         pass
 
 

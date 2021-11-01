@@ -10,9 +10,7 @@ from random import randint, uniform, normalvariate
 import more_itertools as mi
 
 
-# tranche
 # discrete
-
 # Numeric → mi.numeric_range
 #   → for things that are number like, eg DateTime - have an add method
 

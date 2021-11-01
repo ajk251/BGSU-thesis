@@ -17,7 +17,7 @@ block: namespace+
       | stmt+
       ;
 
-namespace: name OP_LBRAC stmt* OP_RBRAC                             #ns
+namespace: name LBRAC stmt* RBRAC                                   #ns
          ;
 
 stmt: test
@@ -27,14 +27,17 @@ stmt: test
 
 // Test kinds ---------------------------------------------
 
-test: OP_TEST ID ID ':' test_stub+                                  #test_basic
+assertion: ASSERT name ':' test_stub+
+         ;
+
+test: TEST name name ':' test_stub+                                 #test_basic
     ;
 
-test_stub: OP_BAR (name | PREDICATE) (name | CODE)                  #stub_pv
+test_stub: BAR predicate value    #stub_pv
          ;
 
 // set parameters -----------------------------------------
-compiler: DIRECTIVE ID                                              #set_directive
+compiler: DIRECTIVE (ID | NUMBER | STRING)                          #set_directive
 //        | DIRECTIVE LIST
 //        | DIRECTIVE NAME OP_EQ tuple...
         ;
@@ -48,17 +51,35 @@ name: ID                                // must be a safe python name
     | LABEL                             // valid falcon identifer
     ;
 
+predicate: name
+         | CODESMNT
+         | OP_NOT
+         | OP_EQ
+         | UMATH
+         | OPERATORS
+//         | '_'
+         ;
+
+value: name
+     | NUMBER
+     | STRING
+     | CODESMNT
+     ;
+
 // various operators --------------------------------------
 
 // symbols used -------------
-OP_TEST:   'Test';
-OP_LPAREN: '(';
-OP_RPAREN: ')';
-OP_LBRAC:  '{';
-OP_RBRAC:  '}';
+TEST:   'Test';
+ASSERT: 'Assert';
 
-OP_ASSIGN: ':=' | '≔';
-OP_BAR: '|';
+
+LPAREN: '(';
+RPAREN: ')';
+LBRAC:  '{';
+RBRAC:  '}';
+
+ASSIGN: ':=' | '≔';
+BAR: '|';
 
 // others?
 //OP_REALS: 'ℝ';
@@ -80,30 +101,32 @@ FNARG:     '-' (CHAR | [-_])*;
 //FID: (CHAR | '_')(CHAR | DIGIT | [-_+&?])*;
 ID: (CHAR | '_')(CHAR | DIGIT | [_.])*;
 
-CODE: CODESMNT
-    | STRING
-    | NUMBER
-    ;
+//CODE: CODESMNT
+//    | STRING
+//    | NUMBER
+//    ;
 
-PREDICATE: ID
-         | CODESMNT
-         | OP_NOT
-         | OP_EQ
-         | UMATH
-         | [><≤≥] | '<=' | '>=' | '=='
-         | '±'                                  // these aren't in MATH
-//         | '_'
-         ;
+OPERATORS: [><≤≥] | '<=' | '>=' | '==' | '±';
+
+//PREDICATE: ID
+//         | CODESMNT
+//         | OP_NOT
+//         | OP_EQ
+//         | UMATH
+//         | [><≤≥] | '<=' | '>=' | '=='
+//         | '±'                                  // these aren't in MATH
+////         | '_'
+//         ;
 
 OP_EQ:  '=';
 
-// CODE is meant to represent the variable names used in most languages
+// CODE/ID is meant to represent the variable names used in most languages
 // LABEL is meant to have a more liberal/loose name-ing scheme, Racket-like
 //CODE: (CHAR | '_')(CHAR | DIGIT | [_.])*;
-LABEL: (CHAR | '_')(CHAR | DIGIT | [-_+&?])*;
+LABEL: (CHAR | '_')(CHAR | DIGIT | [-_+&~?])*;
 
 // could do more...
-NUMBER: ('+'|'-')? DIGIT+                        // integer
+NUMBER: ('+'|'-')? DIGIT+                       // integer
       | ('+'|'-')? DIGIT+ '.' [0-9]*            // float
       | ('+'|'-')? DIGIT* '.' [0-9]+            // float
       ;
@@ -113,6 +136,7 @@ STRING: '"' .*? '"'
       ;
 
 CODESMNT: '`' .*? '`';
+UMATH: '\u2200'..'\u22FF';             // this should break this up…
 
 // misc ---------------------
 COMMENT: '//' .*? '\n'                      -> skip;
@@ -121,4 +145,4 @@ WS: [ \t\r\n]                               -> skip;
 
 fragment DIGIT: ([0-9]);
 fragment CHAR: [a-zA-Z];
-fragment UMATH: '\u2200'..'\u22FF';             // this should break this up…
+

@@ -45,7 +45,9 @@ class Falcon(FalconVisitor):
 
     def visitNs(self, ctx: FalconParser.NsContext):
 
-        name = str(ctx.NAME())
+        # name = str(self.visit(ctx.name()))
+        name = str(ctx.name().getText())
+        # print('NS: ', name)
 
         previous = self.current
         self.current = name
@@ -60,6 +62,17 @@ class Falcon(FalconVisitor):
 
     # -------------------------------------------
 
+    def visitName(self, ctx: FalconParser.NameContext):
+        return ctx.getText()
+
+    def visitPredicate(self, ctx: FalconParser.PredicateContext):
+        return ctx.getText()
+
+    def visitValue(self, ctx: FalconParser.ValueContext):
+        return ctx.getText()
+
+    # -------------------------------------------
+
     def visitSet_directive(self, ctx: FalconParser.Set_directiveContext):
 
         pass
@@ -71,15 +84,17 @@ class Falcon(FalconVisitor):
 
         test = {}
 
-        test['function'] = str(ctx.NAME(0))
-        test['domain'] = str(ctx.NAME(1))
+        # test['function'] = str(ctx.name(0))
+        test['function'] = self.visit(ctx.name(0))
+        test['domain'] = str(self.visit(ctx.name(1)))
 
         stubs = []
 
         for stub in ctx.children:
 
             # should be every thing but the other 'stuff'
-            if not isinstance(stub, antlr4.tree.Tree.TerminalNodeImpl):
+            # if not isinstance(stub, antlr4.tree.Tree.TerminalNodeImpl):
+            if isinstance(stub, FalconParser.Stub_pvContext):
                 stubs.append(self.visit(stub))
 
         test['stubs'] = stubs
@@ -95,8 +110,8 @@ class Falcon(FalconVisitor):
         stub = {}
 
         stub['kind'] = 'predicate-value'
-        stub['predicate'] = str(ctx.PREDICATE())
-        stub['value'] = str(ctx.NUMBER()) if ctx.NUMBER() else str(ctx.NAME())
+        stub['predicate'] = self.visit(ctx.predicate())
+        stub['value'] = self.visit(ctx.value())
 
         return stub
 

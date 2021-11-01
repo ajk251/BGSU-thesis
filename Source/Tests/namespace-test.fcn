@@ -3,8 +3,11 @@
 This is to test the namespacing
 */
 
+:verbose True
+:file "this/that/other.txt"
+:verbosity 4
 
-ns-t1.a {
+ns-t1a {
 
    // set some directives
    :enumerate True
@@ -13,6 +16,8 @@ ns-t1.a {
 
    Test fn D:
      | ≠ 4
+     | is? 'a'
+     | even? one
      | > 2
      | == 5.0
      | = -1
@@ -31,7 +36,23 @@ ns-1a {
      | = "asdf"
      | = `[1,2,3]`
      | ± 7
-     | is a
+     //| is a
 
     }
+
+
+ns1-b {
+
+    :verbose yes
+    :level x
+    :file "../../file.fcn"
+
+    Test fn Some-Domain:
+      | ==  4
+      //| is? int
+      | ==  `[1,2,3]`
+      | ≠   z
+      | ≠   "a"
+
+}
 

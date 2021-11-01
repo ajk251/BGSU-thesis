@@ -29,6 +29,11 @@ class FalconVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by FalconParser#assertion.
+    def visitAssertion(self, ctx:FalconParser.AssertionContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by FalconParser#test_basic.
     def visitTest_basic(self, ctx:FalconParser.Test_basicContext):
         return self.visitChildren(ctx)
@@ -44,8 +49,18 @@ class FalconVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by FalconParser#fn_arg.
-    def visitFn_arg(self, ctx:FalconParser.Fn_argContext):
+    # Visit a parse tree produced by FalconParser#name.
+    def visitName(self, ctx:FalconParser.NameContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#predicate.
+    def visitPredicate(self, ctx:FalconParser.PredicateContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#value.
+    def visitValue(self, ctx:FalconParser.ValueContext):
         return self.visitChildren(ctx)
 
 
