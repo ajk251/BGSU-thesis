@@ -7,8 +7,9 @@ from gen.FalconVisitor import FalconVisitor
 from gen.FalconParser import FalconParser
 
 # TODO:
-#   - falcon must return the dict
 #   - find funcs in modules & verify
+#   - a -decorate option, for unittest
+#   add number to test! for ordering!
 
 
 class Falcon(FalconVisitor):
@@ -18,12 +19,21 @@ class Falcon(FalconVisitor):
         super().__init__()
 
         # build the namespaces
-        self.current = 'global'
         self.ns = defaultdict(dict)
-        self.ns[self.current] = {'directives': []}
+        self.ns['ordering'] = []
+        self.ns['initial'] = {'directives': {}, 'imports': []}
 
-        # the thing to return
-        self.json = {}
+        self.current_ns = 'global'
+        self.ns[self.current_ns] = {'tests': {}, 'ordering': []}
+
+        self.n = -1          #tests do not have a name…they will have a number
+
+    def intermediate_tests(self):
+        return self.ns
+
+    def get_id(self):
+        self.n += 1
+        return self.n
 
     # helper functions --------------------------
 
@@ -32,7 +42,7 @@ class Falcon(FalconVisitor):
 
         # What if the value is None!?
 
-        value = self.ns[self.current].get(name, None)
+        value = self.ns[self.current_ns].get(name, None)
 
         if not only_local and value is None:
             value = self.ns['global'][name]
@@ -41,24 +51,92 @@ class Falcon(FalconVisitor):
 
         return value
 
+    def ns_set(self, names, value):
+        '''Set keys to a value from the current scope'''
+
+        pass
+
     # -------------------------------------------
 
     def visitNs(self, ctx: FalconParser.NsContext):
 
         # name = str(self.visit(ctx.name()))
         name = str(ctx.name().getText())
-        # print('NS: ', name)
 
-        previous = self.current
-        self.current = name
+        self.ns['ordering'].append(('namespace', name))
+
+        previous = self.current_ns
+        self.current_ns = name
+
+        self.ns[self.current_ns]['tests'] = {}
+        self.ns[self.current_ns]['ordering'] = []
 
         for stmt in ctx.children:
             self.visit(stmt)
 
-        print(self.ns)
-        print('done')
+        self.current_ns = previous
 
-        self.current = previous
+    # Assign-------------------------------------
+
+    def visitAssign_value(self, ctx: FalconParser.Assign_valueContext):
+
+        name = self.visit(ctx.name())
+        value = self.visit(ctx.value())
+
+        if self.current_ns == 'initial':
+            self.ns['ordering'].append(('var', name, value))
+        else:
+            self.ns[self.current_ns]['ordering'].append(('var', name, value))
+
+    def visitAssign_type_value(self, ctx: FalconParser.Assign_type_valueContext):
+
+        name = self.visit(ctx.name(0))
+        value = self.visit(ctx.value())
+
+        # have to work around CODESTMT
+        if isinstance(ctx.children[2], FalconParser.NameContext):
+            kind = self.visit(ctx.children[2])
+        else:
+            kind = ctx.children[2].getText().strip('`')
+
+        if self.current_ns == 'initial':
+            self.ns['ordering'].append(('type-var', name, kind, value))
+        else:
+            self.ns[self.current_ns]['ordering'].append(('type-var', name, kind, value))
+
+    def visitArgs(self, ctx: FalconParser.ArgsContext):
+
+        args = []
+        okay_args = (FalconParser.Make_valueContext,
+                     FalconParser.Make_value_typeContext,
+                     FalconParser.Make_name_valueContext,
+                     FalconParser.Make_name_type_valueContext)
+
+        for child in ctx.children:
+            if isinstance(child, okay_args):
+                args.append(self.visit(child))
+
+        return {'kind': 'arguments', 'args': args}
+
+    # make value/named values arg-list
+    def visitMake_value(self, ctx: FalconParser.Make_valueContext):
+        return 'value', self.visit(ctx.value())
+
+    def visitMake_name_value(self, ctx: FalconParser.Make_name_valueContext):
+        return 'named-value', self.visit(ctx.name()), self.visit(ctx.value())
+
+    def visitMake_value_type(self, ctx: FalconParser.Make_value_typeContext):
+        return 'value-type', self.visit(ctx.value(0)).strip('`'), self.visit(ctx.value(1)).strip('`')
+
+    def visitMake_name_type_value(self, ctx: FalconParser.Make_name_type_valueContext):
+
+        # have to work around CODESTMT
+        if isinstance(ctx.children[2], FalconParser.NameContext):
+            kind = self.visit(ctx.children[2])
+        else:
+            kind = ctx.children[2].getText().strip('`')
+
+        return 'name-type-value', self.visit(ctx.children[0]), kind, self.visit(ctx.value()).strip('`')
 
     # -------------------------------------------
 
@@ -71,11 +149,29 @@ class Falcon(FalconVisitor):
     def visitValue(self, ctx: FalconParser.ValueContext):
         return ctx.getText()
 
+    def visitDictate(self, ctx: FalconParser.DictateContext):
+        return ctx.getText()
+
     # -------------------------------------------
 
     def visitSet_directive(self, ctx: FalconParser.Set_directiveContext):
 
-        pass
+        directive = str(ctx.DIRECTIVE())
+        value = str(self.visit(ctx.dictate()))
+
+        # if initial...
+        self.ns[self.current_ns].setdefault('directives', {})[directive] = value
+
+        # print(self.ns[self.current]['directives'])
+
+    def visitMake_codestmt(self, ctx: FalconParser.Make_codestmtContext):
+
+        # if self.current == 'initial':
+        #     self.ns['ordering'].append(('code', ctx.getText().strip('`')))
+        # else:
+        #     self.ns[self.current]['ordering'].append(('code', ctx.getText().strip('`')))
+
+        self.ns[self.current_ns]['ordering'].append(('code', ctx.getText().strip('`')))
 
     # Tests -------------------------------------
     # the kinds of tests that get performed
@@ -84,22 +180,58 @@ class Falcon(FalconVisitor):
 
         test = {}
 
-        # test['function'] = str(ctx.name(0))
+        test['kind'] = 'test-basic'
         test['function'] = self.visit(ctx.name(0))
         test['domain'] = str(self.visit(ctx.name(1)))
+        test['id'] = self.get_id()
+        test['directives'] = {}
+        test['stubs'] = []
 
-        stubs = []
+        okay_stubs = (FalconParser.Stub_pvContext,
+                      FalconParser.Stub_many_pvContext,
+                      FalconParser.Stub_codeContext)
 
         for stub in ctx.children:
 
-            # should be every thing but the other 'stuff'
-            # if not isinstance(stub, antlr4.tree.Tree.TerminalNodeImpl):
-            if isinstance(stub, FalconParser.Stub_pvContext):
-                stubs.append(self.visit(stub))
+            if isinstance(stub, okay_stubs):
+                test['stubs'].append(self.visit(stub))
 
-        test['stubs'] = stubs
+                if self.current_ns == 'global': print(self.visit(stub))
 
-        self.ns[self.current]['TestBasic'] = test
+            elif isinstance(stub, FalconParser.Stub_directivesContext):
+                directives = self.visit(stub)
+                test['directives'] = directives
+            else:
+                # TODO raise error! How did it get here‽
+                continue
+
+        self.ns[self.current_ns]['tests'][test['id']] = test
+        self.ns[self.current_ns]['ordering'].append(('test', test['id']))
+
+        return
+
+    def visitAssert_test(self, ctx: FalconParser.Assert_testContext):
+
+        test = {}
+        test['kind'] = 'assert-test'
+        test['function'] = self.visit(ctx.name())
+        test['id'] = self.get_id()
+        test['stubs'] = []
+        test['directives'] = {}
+
+        for stub in ctx.children:
+
+            if isinstance(stub, FalconParser.Stub_assertContext):
+                # print('args received: ', args)
+                test['stubs'].append(self.visit(stub))
+            elif isinstance(stub, FalconParser.Stub_directivesContext):
+                directives = self.visit(stub)
+                test['directives'] = directives
+            elif isinstance(stub, FalconParser.Stub_codeContext):
+                self.visit(stub)
+
+        self.ns[self.current_ns]['tests'][test['id']] = test
+        self.ns[self.current_ns]['ordering'].append(('assertion', test['id']))
 
         return
 
@@ -115,3 +247,41 @@ class Falcon(FalconVisitor):
 
         return stub
 
+    def visitStub_many_pv(self, ctx: FalconParser.Stub_many_pvContext):
+
+        stub = {}
+
+        stub['kind'] = 'predicate-value+'
+        stub['predicate'] = self.visit(ctx.predicate())
+        stub['value'] = tuple(self.visit(child) for child in ctx.children[2:])
+
+        return stub
+
+    def visitStub_code(self, ctx: FalconParser.Stub_codeContext):
+
+        stub = {}
+
+        stub['kind'] = 'code'
+        stub['value'] = str(ctx.CODESMNT()).strip('`')
+        return stub
+
+    def visitStub_directives(self, ctx: FalconParser.Stub_directivesContext):
+
+        directives = {}
+
+        for child in ctx.children:
+            if isinstance(child, FalconParser.Set_directiveContext):
+                d = child.DIRECTIVE().getText()
+                directives[d] = child.dictate().getText()
+
+        return directives
+
+    def visitStub_assert(self, ctx: FalconParser.Stub_assertContext):
+
+        stub = {}
+        stub['kind'] = 'assertion'
+        stub['argument'] = self.visit(ctx.arg_list())
+        stub['predicate'] = self.visit(ctx.predicate())
+        stub['value'] = self.visit(ctx.value())
+
+        return stub

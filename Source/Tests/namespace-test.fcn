@@ -7,11 +7,31 @@ This is to test the namespacing
 :file "this/that/other.txt"
 :verbosity 4
 
+`x = [1,2,3]`
+`y = [4,5,6]`
+
+// this exist outside any namespace/unittest
+Assert fn:
+  | (1,2,3) > 4
+  | (1, 2, three=3, four=int:4) ≠ 5
+  | (1, `List[float]`: `[2.0]`, three=3.0) float? True
+  ;
+
+Test fn3 Domain:
+  | :set setter  :get 3
+  | modof? 10
+  | is-a? float
+  | same-as? `[10,10,10]`
+  ;
+
 ns-t1a {
 
    // set some directives
+   :name ns_test_1
+   :desc "Tests fn over D"
    :enumerate True
    :verbose 4
+
    `x = 4`
 
    Test fn D:
@@ -22,37 +42,49 @@ ns-t1a {
      | == 5.0
      | = -1
      | == a
+     ;
 }
 
 
 ns-1a {
 
    :test yes
+   :verbose yes
+   :level x
+   :file "../../file.fcn"
 
    Test fn domain:
+     | :set yes :do thing
+     | `x = 3`
      | ≠  4
      | >  5
      | == 5.0
      | = "asdf"
      | = `[1,2,3]`
      | ± 7
-     //| is a
+     | between 0 10
+     | any? str int
+     ;
 
-    }
+     `x = 1`
 
+     x := 2
+     y := `List[str]` : `[1,2,3]`
+     z := str : "string!"
 
-ns1-b {
-
-    :verbose yes
-    :level x
-    :file "../../file.fcn"
+    Assert fn:
+      | :do thing :are-sure yes
+      | (1,2,3) == 2.0
+      ;
 
     Test fn Some-Domain:
       | ==  4
-      //| is? int
+      | is? int
       | ==  `[1,2,3]`
       | ≠   z
       | ≠   "a"
+      ;
 
-}
+    }
+
 

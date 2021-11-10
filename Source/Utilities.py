@@ -3,9 +3,6 @@
 from collections import namedtuple
 from inspect import getfullargspec, signature
 
-
-
-
 FnDesc = namedtuple('FnDesc', 'name, module, kind, n_args, total_args, args, var_args, kw_args, default_args, annotations')
 
 # ---------------------------------------------------------

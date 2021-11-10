@@ -29,8 +29,8 @@ class FalconVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by FalconParser#assertion.
-    def visitAssertion(self, ctx:FalconParser.AssertionContext):
+    # Visit a parse tree produced by FalconParser#assert_test.
+    def visitAssert_test(self, ctx:FalconParser.Assert_testContext):
         return self.visitChildren(ctx)
 
 
@@ -44,8 +44,48 @@ class FalconVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by FalconParser#stub_many_pv.
+    def visitStub_many_pv(self, ctx:FalconParser.Stub_many_pvContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#stub_assert.
+    def visitStub_assert(self, ctx:FalconParser.Stub_assertContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#stub_code.
+    def visitStub_code(self, ctx:FalconParser.Stub_codeContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#stub_directives.
+    def visitStub_directives(self, ctx:FalconParser.Stub_directivesContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by FalconParser#set_directive.
     def visitSet_directive(self, ctx:FalconParser.Set_directiveContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#make_codestmt.
+    def visitMake_codestmt(self, ctx:FalconParser.Make_codestmtContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#assign_value.
+    def visitAssign_value(self, ctx:FalconParser.Assign_valueContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#assign_type_value.
+    def visitAssign_type_value(self, ctx:FalconParser.Assign_type_valueContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#args.
+    def visitArgs(self, ctx:FalconParser.ArgsContext):
         return self.visitChildren(ctx)
 
 
@@ -61,6 +101,31 @@ class FalconVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by FalconParser#value.
     def visitValue(self, ctx:FalconParser.ValueContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#make_value.
+    def visitMake_value(self, ctx:FalconParser.Make_valueContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#make_name_value.
+    def visitMake_name_value(self, ctx:FalconParser.Make_name_valueContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#make_value_type.
+    def visitMake_value_type(self, ctx:FalconParser.Make_value_typeContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#make_name_type_value.
+    def visitMake_name_type_value(self, ctx:FalconParser.Make_name_type_valueContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#dictate.
+    def visitDictate(self, ctx:FalconParser.DictateContext):
         return self.visitChildren(ctx)
 
 

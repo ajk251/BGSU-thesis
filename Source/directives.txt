@@ -1,0 +1,9 @@
+
+
+[Directives]
+
+
+[namespace]
+
+:name				a language safe name
+

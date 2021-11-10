@@ -3,10 +3,6 @@
 //      for unicode:
 //      https://github.com/antlr/grammars-v4/blob/master/python/python3/Python3Lexer.g4
 
-// TODO:
-//      - validate python names
-//
-
 grammar Falcon;
 
 program: block+
@@ -21,29 +17,47 @@ namespace: name LBRAC stmt* RBRAC                                   #ns
          ;
 
 stmt: test
+    | assertion
     | compiler
-    | CODESMNT
+    | code
+    | assign
     ;
 
 // Test kinds ---------------------------------------------
 
-assertion: ASSERT name ':' test_stub+
+assertion: ASSERT name ':' test_stub+ ';'                           #assert_test
          ;
 
-test: TEST name name ':' test_stub+                                 #test_basic
+test: TEST name name ':' test_stub+ ';'                             #test_basic
     ;
 
-test_stub: BAR predicate value    #stub_pv
+test_stub: BAR predicate value                                      #stub_pv
+         | BAR predicate value+                                     #stub_many_pv
+         | BAR arg_list predicate value                             #stub_assert
+         | BAR CODESMNT                                             #stub_code
+         | BAR compiler*                                            #stub_directives
          ;
 
 // set parameters -----------------------------------------
-compiler: DIRECTIVE (ID | NUMBER | STRING)                          #set_directive
+compiler: DIRECTIVE dictate                                         #set_directive
 //        | DIRECTIVE LIST
 //        | DIRECTIVE NAME OP_EQ tuple...
         ;
 
 //fn_arg: FNARG (NAME | NUMBER)
 //      ;
+
+code: CODESMNT                                                      #make_codestmt
+    ;
+
+// setters ------------------------------------------------
+
+assign: name ASSIGN value                                           #assign_value
+      | name ASSIGN (name | CODESMNT) ':' value                     #assign_type_value
+      ;
+
+arg_list: '(' named_value (',' named_value)* ')'                 #args
+        ;
 
 // identifiers --------------------------------------------
 
@@ -66,6 +80,17 @@ value: name
      | CODESMNT
      ;
 
+named_value: value                                      #make_value
+           | name '=' value                             #make_name_value
+           | value ':' value                            #make_value_type
+           | name '=' (name | CODESMNT) ':' value       #make_name_type_value
+           ;
+
+dictate: name
+     | NUMBER
+     | STRING
+     ;
+
 // various operators --------------------------------------
 
 // symbols used -------------
@@ -80,6 +105,7 @@ RBRAC:  '}';
 
 ASSIGN: ':=' | '≔';
 BAR: '|';
+COLON: ':';
 
 // others?
 //OP_REALS: 'ℝ';
@@ -95,28 +121,12 @@ OP_XOR:  '⊻';
 OP_NOT:  '￢' | '!';
 
 // kinds of names used ------
-DIRECTIVE: ':' (CHAR | [-_])*;
+DIRECTIVE: COLON (CHAR | [-_])*;
 FNARG:     '-' (CHAR | [-_])*;
 
-//FID: (CHAR | '_')(CHAR | DIGIT | [-_+&?])*;
 ID: (CHAR | '_')(CHAR | DIGIT | [_.])*;
 
-//CODE: CODESMNT
-//    | STRING
-//    | NUMBER
-//    ;
-
 OPERATORS: [><≤≥] | '<=' | '>=' | '==' | '±';
-
-//PREDICATE: ID
-//         | CODESMNT
-//         | OP_NOT
-//         | OP_EQ
-//         | UMATH
-//         | [><≤≥] | '<=' | '>=' | '=='
-//         | '±'                                  // these aren't in MATH
-////         | '_'
-//         ;
 
 OP_EQ:  '=';
 
@@ -139,9 +149,13 @@ CODESMNT: '`' .*? '`';
 UMATH: '\u2200'..'\u22FF';             // this should break this up…
 
 // misc ---------------------
+
 COMMENT: '//' .*? '\n'                      -> skip;
 MCOMMENT: '/*' .*? '*/'                     -> skip;
 WS: [ \t\r\n]                               -> skip;
+//WS: [ \t\r]                               -> skip;
+NL: '\n';
+
 
 fragment DIGIT: ([0-9]);
 fragment CHAR: [a-zA-Z];

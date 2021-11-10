@@ -44,12 +44,12 @@ class FalconListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by FalconParser#assertion.
-    def enterAssertion(self, ctx:FalconParser.AssertionContext):
+    # Enter a parse tree produced by FalconParser#assert_test.
+    def enterAssert_test(self, ctx:FalconParser.Assert_testContext):
         pass
 
-    # Exit a parse tree produced by FalconParser#assertion.
-    def exitAssertion(self, ctx:FalconParser.AssertionContext):
+    # Exit a parse tree produced by FalconParser#assert_test.
+    def exitAssert_test(self, ctx:FalconParser.Assert_testContext):
         pass
 
 
@@ -71,12 +71,84 @@ class FalconListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by FalconParser#stub_many_pv.
+    def enterStub_many_pv(self, ctx:FalconParser.Stub_many_pvContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#stub_many_pv.
+    def exitStub_many_pv(self, ctx:FalconParser.Stub_many_pvContext):
+        pass
+
+
+    # Enter a parse tree produced by FalconParser#stub_assert.
+    def enterStub_assert(self, ctx:FalconParser.Stub_assertContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#stub_assert.
+    def exitStub_assert(self, ctx:FalconParser.Stub_assertContext):
+        pass
+
+
+    # Enter a parse tree produced by FalconParser#stub_code.
+    def enterStub_code(self, ctx:FalconParser.Stub_codeContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#stub_code.
+    def exitStub_code(self, ctx:FalconParser.Stub_codeContext):
+        pass
+
+
+    # Enter a parse tree produced by FalconParser#stub_directives.
+    def enterStub_directives(self, ctx:FalconParser.Stub_directivesContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#stub_directives.
+    def exitStub_directives(self, ctx:FalconParser.Stub_directivesContext):
+        pass
+
+
     # Enter a parse tree produced by FalconParser#set_directive.
     def enterSet_directive(self, ctx:FalconParser.Set_directiveContext):
         pass
 
     # Exit a parse tree produced by FalconParser#set_directive.
     def exitSet_directive(self, ctx:FalconParser.Set_directiveContext):
+        pass
+
+
+    # Enter a parse tree produced by FalconParser#make_codestmt.
+    def enterMake_codestmt(self, ctx:FalconParser.Make_codestmtContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#make_codestmt.
+    def exitMake_codestmt(self, ctx:FalconParser.Make_codestmtContext):
+        pass
+
+
+    # Enter a parse tree produced by FalconParser#assign_value.
+    def enterAssign_value(self, ctx:FalconParser.Assign_valueContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#assign_value.
+    def exitAssign_value(self, ctx:FalconParser.Assign_valueContext):
+        pass
+
+
+    # Enter a parse tree produced by FalconParser#assign_type_value.
+    def enterAssign_type_value(self, ctx:FalconParser.Assign_type_valueContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#assign_type_value.
+    def exitAssign_type_value(self, ctx:FalconParser.Assign_type_valueContext):
+        pass
+
+
+    # Enter a parse tree produced by FalconParser#args.
+    def enterArgs(self, ctx:FalconParser.ArgsContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#args.
+    def exitArgs(self, ctx:FalconParser.ArgsContext):
         pass
 
 
@@ -104,6 +176,51 @@ class FalconListener(ParseTreeListener):
 
     # Exit a parse tree produced by FalconParser#value.
     def exitValue(self, ctx:FalconParser.ValueContext):
+        pass
+
+
+    # Enter a parse tree produced by FalconParser#make_value.
+    def enterMake_value(self, ctx:FalconParser.Make_valueContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#make_value.
+    def exitMake_value(self, ctx:FalconParser.Make_valueContext):
+        pass
+
+
+    # Enter a parse tree produced by FalconParser#make_name_value.
+    def enterMake_name_value(self, ctx:FalconParser.Make_name_valueContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#make_name_value.
+    def exitMake_name_value(self, ctx:FalconParser.Make_name_valueContext):
+        pass
+
+
+    # Enter a parse tree produced by FalconParser#make_value_type.
+    def enterMake_value_type(self, ctx:FalconParser.Make_value_typeContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#make_value_type.
+    def exitMake_value_type(self, ctx:FalconParser.Make_value_typeContext):
+        pass
+
+
+    # Enter a parse tree produced by FalconParser#make_name_type_value.
+    def enterMake_name_type_value(self, ctx:FalconParser.Make_name_type_valueContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#make_name_type_value.
+    def exitMake_name_type_value(self, ctx:FalconParser.Make_name_type_valueContext):
+        pass
+
+
+    # Enter a parse tree produced by FalconParser#dictate.
+    def enterDictate(self, ctx:FalconParser.DictateContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#dictate.
+    def exitDictate(self, ctx:FalconParser.DictateContext):
         pass
 
 
