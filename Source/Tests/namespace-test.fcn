@@ -7,17 +7,24 @@ This is to test the namespacing
 :file "this/that/other.txt"
 :verbosity 4
 
-`x = [1,2,3]`
-`y = [4,5,6]`
+`x = [1, 2, 3]`
+`y = [4, 5, 6]`
+
+Domain x Real
+Domain y Real 4 5
+Domain z Natural 1 2 -nrandom 10
 
 // this exist outside any namespace/unittest
+
 Assert fn:
+  | :ignore-True yes  :message "This is a test of some random stuff"
   | (1,2,3) > 4
-  | (1, 2, three=3, four=int:4) ≠ 5
-  | (1, `List[float]`: `[2.0]`, three=3.0) float? True
+  | (1, 2, three=3, four=4) ≠ 5
+  | (1, `[2.0]`, three=3.0) float?
   ;
 
-Test fn3 Domain:
+
+Test fn3 x,y:
   | :set setter  :get 3
   | modof? 10
   | is-a? float

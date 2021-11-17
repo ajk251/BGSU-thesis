@@ -9,7 +9,11 @@ from gen.FalconParser import FalconParser
 # TODO:
 #   - find funcs in modules & verify
 #   - a -decorate option, for unittest
-#   add number to test! for ordering!
+
+# TODO:
+#   - function args
+#   - lists
+#   - validation, ie domain is a domain, name is a py-name
 
 
 class Falcon(FalconVisitor):
@@ -143,11 +147,23 @@ class Falcon(FalconVisitor):
     def visitName(self, ctx: FalconParser.NameContext):
         return ctx.getText()
 
+    # use these instead...
+    def visitGet_name(self, ctx: FalconParser.Get_nameContext):
+        return ctx.getText()
+
+    def visitGet_card(self, ctx: FalconParser.Get_cardContext):
+        return {'value': ctx.getText(), 'modifier': 'cardinality'}
+
+    def visitGet_not(self, ctx: FalconParser.Get_notContext):
+        return {'value': ctx.getText(), 'modifier': 'not'}
+
+    # ----------------------------
+
     def visitPredicate(self, ctx: FalconParser.PredicateContext):
         return ctx.getText()
 
     def visitValue(self, ctx: FalconParser.ValueContext):
-        return ctx.getText()
+        return ctx.getText().strip('`')
 
     def visitDictate(self, ctx: FalconParser.DictateContext):
         return ctx.getText()
@@ -173,6 +189,25 @@ class Falcon(FalconVisitor):
 
         self.ns[self.current_ns]['ordering'].append(('code', ctx.getText().strip('`')))
 
+    def visitMake_fn_directive(self, ctx: FalconParser.Make_fn_directiveContext):
+
+        directive = str(ctx.FNARG())
+        param = str(self.visit(ctx.dictate()))
+
+        return {'fn-directive': directive, 'parameter': param}
+
+    # ------------------------------------------
+    # TODO!
+
+    def visitMake_list(self, ctx: FalconParser.Make_listContext):
+
+        for child in ctx.children:
+            _ = self.visit(child)
+
+    def visitMake_list_c(self, ctx: FalconParser.Make_list_cContext):
+
+        pass
+
     # Tests -------------------------------------
     # the kinds of tests that get performed
 
@@ -181,8 +216,8 @@ class Falcon(FalconVisitor):
         test = {}
 
         test['kind'] = 'test-basic'
-        test['function'] = self.visit(ctx.name(0))
-        test['domain'] = str(self.visit(ctx.name(1)))
+        test['function'] = self.visit(ctx.name())
+        test['domain'] = self.visit(ctx.domain_names())
         test['id'] = self.get_id()
         test['directives'] = {}
         test['stubs'] = []
@@ -195,9 +230,6 @@ class Falcon(FalconVisitor):
 
             if isinstance(stub, okay_stubs):
                 test['stubs'].append(self.visit(stub))
-
-                if self.current_ns == 'global': print(self.visit(stub))
-
             elif isinstance(stub, FalconParser.Stub_directivesContext):
                 directives = self.visit(stub)
                 test['directives'] = directives
@@ -219,10 +251,11 @@ class Falcon(FalconVisitor):
         test['stubs'] = []
         test['directives'] = {}
 
+        okay_stubs = (FalconParser.Stub_assertContext, FalconParser.Stub_assert_pContext)
+
         for stub in ctx.children:
 
-            if isinstance(stub, FalconParser.Stub_assertContext):
-                # print('args received: ', args)
+            if isinstance(stub, okay_stubs):
                 test['stubs'].append(self.visit(stub))
             elif isinstance(stub, FalconParser.Stub_directivesContext):
                 directives = self.visit(stub)
@@ -236,6 +269,16 @@ class Falcon(FalconVisitor):
         return
 
     # stubs -------------------------------------
+
+    def visitStub_p(self, ctx: FalconParser.Stub_pContext):
+
+        stub = {}
+
+        stub['kind'] = 'predicate'
+        stub['predicate'] = self.visit(ctx.predicate())
+        stub['value'] = 'True'
+
+        return stub
 
     def visitStub_pv(self, ctx: FalconParser.Stub_pvContext):
 
@@ -285,3 +328,65 @@ class Falcon(FalconVisitor):
         stub['value'] = self.visit(ctx.value())
 
         return stub
+
+    def visitStub_assert_p(self, ctx: FalconParser.Stub_assert_pContext):
+
+        stub = {}
+        stub['kind'] = 'assertion-p'
+        stub['argument'] = self.visit(ctx.arg_list())
+        stub['predicate'] = self.visit(ctx.predicate())
+        stub['value'] = 'True'
+
+        return stub
+
+    # Domain ------------------------------------
+
+    def visitMake_domain(self, ctx: FalconParser.Make_domainContext):
+
+        domain = {'kind': 'domain'}
+        name = self.visit(ctx.name(0))
+        domain['var-name'] = name
+        domain['domain'] = self.visit(ctx.name(1))
+
+        # self.ns[self.current_ns].setdefault('domains', {})[name] = domain
+        self.ns[self.current_ns]['ordering'].append(('domain', domain))
+
+        return
+
+    def visitMake_domain_args(self, ctx: FalconParser.Make_domain_argsContext):
+
+        domain = {'kind': 'domain-args'}
+        name = self.visit(ctx.name(0))
+        domain['var-name'] = name
+        domain['domain'] = self.visit(ctx.name(1))
+        domain['args'] = []
+        domain['kwargs'] = {}
+
+        for child in ctx.children:
+
+            if isinstance(child, FalconParser.ValueContext):
+                domain['args'].append(self.visit(child))
+            elif isinstance(child, FalconParser.Make_fn_directiveContext):
+                directive = self.visit(child)
+                domain['kwargs'][directive['fn-directive']] = directive['parameter']
+
+        # self.ns[self.current_ns].setdefault('domains', {})[name] = domain
+        self.ns[self.current_ns]['ordering'].append(('domain', domain))
+
+        return
+
+    # -------------
+
+    def visitGet_domain_name(self, ctx: FalconParser.Get_domain_nameContext):
+        return [self.visit(ctx.name())]
+
+    def visitGet_domain_names(self, ctx: FalconParser.Get_domain_namesContext):
+
+        domains = []
+
+        for child in ctx.children:
+            if isinstance(child, FalconParser.NameContext):
+                name = self.visit(child)
+                domains.append(name)
+
+        return domains

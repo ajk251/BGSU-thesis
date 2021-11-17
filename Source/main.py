@@ -13,7 +13,8 @@ from utilities.UnitTestWriter import write_basic_unittest
 
 if __name__ == '__main__':
 
-    file = 'Tests/namespace-test.fcn'
+    # file = 'Tests/namespace-test.fcn'
+    file = 'Tests/some-tests.fcn'
 
     input_stream = FileStream(file, encoding='utf-8')
     lexer = FalconLexer(input_stream)
@@ -27,6 +28,7 @@ if __name__ == '__main__':
     falcon.visit(tree)
 
     tests = falcon.intermediate_tests()
+    write_basic_unittest(tests, file)
 
     print('-'*45)
     print('tests:')
@@ -37,8 +39,9 @@ if __name__ == '__main__':
     print('='*45)
     print()
 
-    write_basic_unittest(tests, file)
-
-
-
+    # from Domains.basic import Reals, Naturals
+    #
+    # x = Naturals(0, 100, by=5)
+    #
+    # print(tuple(x))
 

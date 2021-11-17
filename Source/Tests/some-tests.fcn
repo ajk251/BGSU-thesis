@@ -1,0 +1,41 @@
+/*
+This is to test the namespacing
+*/
+
+:verbose True
+:file "this/that/other.txt"
+:verbosity 4
+
+`x = [1, 2, 3]`
+`y = [4, 5, 6]`
+
+Domain X Reals
+Domain Y Reals 4 5
+Domain Z Naturals 1 2 -nrandom 10
+
+// this exist outside any namespace/unittest
+
+Test fn3 X:
+  | :set setter  :get 3
+  | modof? 10
+  | is-a? float
+  | same-as? `[10,10,10]`
+  | > 10
+  ;
+
+Domain X Integers -10 10 -nrandom 10
+
+Test fn4 X Y Z:
+  | :set some-value
+  | modof? 10
+  | is-a? float int fraction
+  | same-as? `[10,10,10]`
+  ;
+
+Assert fn:
+  | :ignore-True yes  :message "This is a test of some random stuff"
+  | (1,2,3) > 4
+  | (1, 2, three=3, four=4) ≠ 5
+  | (1, `[2.0]`, three=3.0) float?
+  ;
+

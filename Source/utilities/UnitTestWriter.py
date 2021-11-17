@@ -3,8 +3,8 @@ from datetime import datetime, date
 import re
 from time import strftime
 
-import predicates.predicates #as predicates
-import predicates.numerical
+import predicates
+import Domains
 
 # TODO:
 #   add overwrite directive
@@ -44,7 +44,7 @@ def write_basic_unittest(intermediate, source=None):
             kind, value = block
 
             if kind == 'code':
-                line = write_code(value)
+                line = code_block(value)
                 falcon.write(line)
             elif kind == 'namespace':
                 lines = make_namespace(intermediate[value], value)
@@ -131,12 +131,16 @@ def make_global(entry, indent=0) -> str:
         lines.append(indent * TAB + '# ' + desc)
 
     # ----------------
-    print('\nglobals: ')
+    # print('\nglobals: ')
+
+    # # write domains --
+    # line = make_domains(entry['domains'], indent)
+    # lines.append(line)
 
     for block in entry['ordering']:
 
         kind, value = block if len(block) == 2 else (block[0], block[1:])
-        print(kind, value)
+        # print(kind, value)
 
         if kind == 'code':
             line = code_block(value)
@@ -145,48 +149,11 @@ def make_global(entry, indent=0) -> str:
             line = basic_Assert(entry['tests'][value])
             lines.append(line)
         elif kind == 'test':
-            continue
-
-
-    return '\n'.join(lines)
-
-
-def make_namespace(entry, name, indent=0) -> str:
-
-    # if no tests, just 'pass'
-
-    indent = indent if indent else 0
-
-    # -----------------------
-    # directive - language safe name
-    clean_name = entry['directives'][':name'] if entry['directives'].get(':name', None) else clean(name)
-    desc = entry['directives'].get(':desc', None)
-
-    # -----------------------
-    # set directives
-    lines = ['\n\nclass {}(unittest.TestCase):\n'.format(clean_name)]           # add unittest class
-
-    # limit length & wrap?
-    if desc:
-        indent += 1
-        lines.append(indent * TAB + '# ' + desc)
-
-    class_vars = []                                                           # holds any class-level variables
-
-    # -----------------------
-    print('\nnamespace', clean_name, ':')
-
-    # then all the other stuff
-    for block in entry['ordering']:
-
-        kind, value = block if len(block) == 2 else (block[0], block[1:])
-
-        # if kind == 'code': continue
-        print(kind, value)
-
-        # print(entry)
-
-    print('-' * 20)
+            line = basic_Test(entry['tests'][value], indent)
+            lines.append(line)
+        elif kind == 'domain':
+            line = make_domain(value, indent)
+            lines.append(line)
 
     return '\n'.join(lines)
 
@@ -194,7 +161,9 @@ def make_namespace(entry, name, indent=0) -> str:
 # boilerplate ----------
 def add_imports(entry) -> str:
 
-    lines = ['import unittest']
+    lines = ['from predicates import *',
+             'from Domains import *\n',
+             'import unittest']
 
     # do other imports...
 
@@ -205,59 +174,122 @@ def falcon_intro(source=None):
 
     intro = "# This file was generated automatically by falcon."
     intro += '' if not source else '\n# from: ' + source
-    intro += '\n# on ' + datetime.now().strftime("%Y %b %d %a %H:%M:%S") + '\n\n'
+    intro += '\n# on ' + datetime.now().strftime("%Y %b %d %a %H:%M:%S") + nl
 
     return intro
 
 
-def write_code(entry) -> str:
+# testers --------------
+def basic_Test(entry, indent) -> str:
 
-    # writes a block of code
-    entry = entry.strip('`')
-    return entry
+    # TODO: get algorithm
 
+    #directives --------
+    message = entry['directives'].get(':message', None)
 
-def basic_Test(entry) -> str:
+    # get algos!
 
-    pass
+    # write tests ------
+
+    lines = ['\n# start test -----------------']
+
+    if message:
+        lines.append('# ' + message.strip('"') + nl)
+
+    # get the variable names
+    dvars = entry['domain']                                 # the domain names
+    ivars = [d.lower() + 'ᵢ' for d in dvars]                # the name of the values in the domain
+
+    if len(ivars) == 1:
+        template = "for {} in {}:".format(ivars[0], dvars[0])
+    else:
+        template = "for {} in {}({}):".format(', '.join(ivars), 'zip', ','.join(dvars))
+
+    lines.append(template)
+
+    f1 = 'assert {} {} {}'              # w/ symbol
+    f2 = 'assert {}({}({}), {})'            # pd( fn(arg), value)
+    f3 = 'assert {}({}, {})'            # w/ function
+    f4 = 'assert {}({})'                # ignoring True
+
+    fn_name = entry['function']
+    args = ', '.join(ivars)
+    indent += 1
+
+    for stub in entry['stubs']:
+
+        if stub['predicate'] in predicates.predicates.PREDICATES:
+            pd_name = predicates.predicates.PREDICATES[stub['predicate']][0]
+        else:
+            # raise error
+            pd_name = "OOPS"
+            # continue
+
+        if stub['kind'] == 'predicate-value':
+            line = TAB * indent + f2.format(pd_name, fn_name, args, stub['value'])
+        elif stub['kind'] == 'predicate-value+':
+            line = TAB * indent + f2.format(pd_name, fn_name, args, stub['value'])
+        else:
+            print('forgot about --> ', stub)
+
+        lines.append(line)
+
+    lines.append('')
+
+    indent -= 1
+
+    return '\n'.join(lines)
 
 
 def basic_Assert(entry, indent=0) -> str:
 
-    lines = ['\n# Assertion test -------------']
+    # TODO:
+    #   add directive for value = … \ assert predicate(value, args)...
+    #   handle messages, ie assert …, <message>
+    #   extra args!!! raise error!
+
+    # directives -------------
+    ignore_true = True if entry['directives'].get(':ignore-True', 'no').lower() in ['yes', 'true'] else False
+    message = entry['directives'].get(':message', None)
+
+    # -----------------------
+    a1 = 'assert {} {} {}'              # w/ symbol
+    a2 = 'assert {}({}, {})'            # w/ function
+    a3 = 'assert {}({})'                # ignoring True
+
+    # -----------------------
+    lines = ['# Assertion test -------------']
+
+    if message:
+        lines.append('# ' + message.strip('"'))
 
     fn_name = entry['function']
-    ws = ' '
 
     for stub in entry['stubs']:
 
         # if not stub['argument']['kind'] == 'assertion': raise "WTF"
 
         args = make_args(stub['argument'])
-        line = 'assert ' + fn_name + args + ws + stub['predicate'] + ws + stub['value']
-        lines.append(line)
+        fn = fn_name + args
+        value = stub['value']
 
-        print('predicate', stub['predicate'], predicates.predicates.PREDICATES[stub['predicate']])
+        if predicates.predicates.PREDICATES[stub['predicate']][1]:
+            pd_name = predicates.predicates.PREDICATES[stub['predicate']][1]
+            line = a1.format(fn, pd_name, value)
+        else:
+            pd_name = predicates.predicates.PREDICATES[stub['predicate']][0]
+
+            if ignore_true and value == 'True':
+                line = a3.format(pd_name, fn)
+            else:
+                line = a2.format(pd_name, fn, value)
+
+        lines.append(line)
 
     return '\n'.join(lines)
 
 
-# testers --------------
-def assert_predicate_value(entry):
-    line = 'assert {} {} {}'
-    return line
-
-
-def make_enumerates(entry) -> str:
-
-    pass
-
-
-def make_by_loop(entry) -> str:
-
-    pass
-
-
+# component parts -------
 def make_args(entry) -> str:
 
     line = []
@@ -277,7 +309,74 @@ def make_args(entry) -> str:
     return '(' + ', '.join(line) + ')'
 
 
-# component parts -------
 def code_block(entry) -> str:
     code = entry.strip('`')
     return code
+
+
+def make_domains(entry, indent=0) -> str:
+
+    # TODO: if name fails raise error
+    #       add :annotate to add/or not "# Domains"
+
+    lines = [nl, '# Domains -------------------\n']
+
+    f1 = '{} = {}()'              # x = Reals()
+    f2 = '{} = {}({})'            # x = Reals(lb, ub, nrandom=10)
+
+    for name, info in entry.items():
+
+        if info['kind'] == 'domain':
+            var = info['var-name']
+            name = Domains.DOMAINS[info['domain']]
+            line = f1.format(var, name)
+        elif info['kind'] == 'domain-args':
+
+            var = info['var-name']
+            name = Domains.DOMAINS[info['domain']]
+
+            args = ', '.join(info['args']) if info['args'] else ''
+
+            if info['kwargs']:
+                for k,v in info['kwargs'].items():
+                    args += ', '
+                    args += k.strip('-') + '='
+                    args += v
+
+            line = f2.format(var, name, args)
+
+        lines.append(line)
+        # lines.append(nl)
+        text = '\n'.join(lines) + nl
+
+    return text
+
+
+def make_domain(entry, indent=0) -> str:
+
+    # TODO: if name fails raise error
+    #       add :annotate to add/or not "# Domains"
+
+    f1 = '{} = {}()'              # x = Reals()
+    f2 = '{} = {}({})'            # x = Reals(lb, ub, nrandom=10)
+
+    if entry['kind'] == 'domain':
+        var = entry['var-name']
+        name = Domains.DOMAINS[entry['domain']]
+        line = f1.format(var, name)
+    elif entry['kind'] == 'domain-args':
+
+        var = entry['var-name']
+        name = Domains.DOMAINS[entry['domain']]
+
+        args = ', '.join(entry['args']) if entry['args'] else ''
+
+        if entry['kwargs']:
+            for k,v in entry['kwargs'].items():
+                args += ', '
+                args += k.strip('-') + '='
+                args += v
+
+        line = f2.format(var, name, args)
+
+    return line

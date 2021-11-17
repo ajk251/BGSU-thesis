@@ -39,6 +39,21 @@ class FalconVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by FalconParser#get_domain_name.
+    def visitGet_domain_name(self, ctx:FalconParser.Get_domain_nameContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#get_domain_names.
+    def visitGet_domain_names(self, ctx:FalconParser.Get_domain_namesContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#stub_p.
+    def visitStub_p(self, ctx:FalconParser.Stub_pContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by FalconParser#stub_pv.
     def visitStub_pv(self, ctx:FalconParser.Stub_pvContext):
         return self.visitChildren(ctx)
@@ -54,6 +69,11 @@ class FalconVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by FalconParser#stub_assert_p.
+    def visitStub_assert_p(self, ctx:FalconParser.Stub_assert_pContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by FalconParser#stub_code.
     def visitStub_code(self, ctx:FalconParser.Stub_codeContext):
         return self.visitChildren(ctx)
@@ -64,8 +84,33 @@ class FalconVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by FalconParser#stub_logical.
+    def visitStub_logical(self, ctx:FalconParser.Stub_logicalContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#test_logical.
+    def visitTest_logical(self, ctx:FalconParser.Test_logicalContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#make_domain.
+    def visitMake_domain(self, ctx:FalconParser.Make_domainContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#make_domain_args.
+    def visitMake_domain_args(self, ctx:FalconParser.Make_domain_argsContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by FalconParser#set_directive.
     def visitSet_directive(self, ctx:FalconParser.Set_directiveContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#make_fn_directive.
+    def visitMake_fn_directive(self, ctx:FalconParser.Make_fn_directiveContext):
         return self.visitChildren(ctx)
 
 
@@ -89,8 +134,28 @@ class FalconVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by FalconParser#name.
-    def visitName(self, ctx:FalconParser.NameContext):
+    # Visit a parse tree produced by FalconParser#make_list_c.
+    def visitMake_list_c(self, ctx:FalconParser.Make_list_cContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#make_list.
+    def visitMake_list(self, ctx:FalconParser.Make_listContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#get_name.
+    def visitGet_name(self, ctx:FalconParser.Get_nameContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#get_card.
+    def visitGet_card(self, ctx:FalconParser.Get_cardContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#get_not.
+    def visitGet_not(self, ctx:FalconParser.Get_notContext):
         return self.visitChildren(ctx)
 
 
