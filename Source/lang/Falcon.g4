@@ -35,13 +35,14 @@ test: TEST name domain_names ':' test_stub+ ';'                     #test_basic
     ;
 
 domain_names: name                                                  #get_domain_name
-            | name ((',')? name+)                                   #get_domain_names
+            | name (COMMA? name)+                                   #get_domain_names
             ;
 
 // changed!!!
 test_stub: BAR predicate                                            #stub_p
          | BAR predicate value                                      #stub_pv
          | BAR predicate value+                                     #stub_many_pv
+//         | BAR expression value+                                    #stub_expression
          | BAR arg_list predicate value                             #stub_assert
          | BAR arg_list predicate                                   #stub_assert_p
          | BAR CODESMNT                                             #stub_code
@@ -49,9 +50,9 @@ test_stub: BAR predicate                                            #stub_p
          | BAR test_logical                                         #stub_logical
          ;
 
-test_logical: predicate value* (OP_LOGICAL predicate value*)*
-            | test_logical OP_LOGICAL test_logical
-            | '(' test_logical+ ')'
+test_logical: OP_NOT? predicate value* (OP_LOGICAL OP_NOT? predicate value*)* #stub_logic
+            | OP_NOT? '(' test_logical+ ')'                                 #stub_paren
+            | test_logical OP_LOGICAL test_logical                          #stub_logic_multi
             ;
 
 // Domain stuff -------------------------------------------
@@ -87,10 +88,8 @@ value_list: '[' value (',' value)* ']'                              #make_list_c
 
 // identifiers --------------------------------------------
 
-name: ID                                #get_name// must be a safe python name
-    | LABEL                             #get_name// valid falcon identifer
-    | OP_CARDINALITY name               #get_card
-    | OP_LOGICAL name                   #get_not
+name: ID                                                            // must be a safe python name
+    | LABEL                                                         // valid falcon identifer
     ;
 
 predicate: name
@@ -100,6 +99,10 @@ predicate: name
          | UMATH
          | OPERATORS
          ;
+
+expression: OP_CARDINALITY name                                     #get_card
+          | OP_NOT name                                             #get_not
+          ;
 
 // add list?
 value: name
@@ -129,6 +132,7 @@ LPAREN: '(';
 RPAREN: ')';
 LBRAC:  '{';
 RBRAC:  '}';
+COMMA: ',';
 
 ASSIGN: ':=' | '≔';
 BAR: '|';

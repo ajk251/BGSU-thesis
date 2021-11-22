@@ -14,7 +14,8 @@ from utilities.UnitTestWriter import write_basic_unittest
 if __name__ == '__main__':
 
     # file = 'Tests/namespace-test.fcn'
-    file = 'Tests/some-tests.fcn'
+    # file = 'Tests/some-tests.fcn'
+    file = 'Tests/logical-tests.fcn'
 
     input_stream = FileStream(file, encoding='utf-8')
     lexer = FalconLexer(input_stream)

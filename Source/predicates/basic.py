@@ -1,6 +1,6 @@
 
 import operator as op
-from abc import ABC
+
 
 
 from predicates.predicates import predicate
@@ -49,26 +49,4 @@ def le(a, b) -> bool:
 def ge(a, b) -> bool:
     return op.ge(a, b)
 
-
-# system ----------------------------------------
-
-
-@predicate(alias='same?')
-def is_same(a, b) -> bool:
-    '''Tests whether two objects are the same based on memory location'''
-    return id(a) == id(b)
-
-
-@predicate(alias='unique?')
-def is_unique(a, b) -> bool:
-    '''Tests whether two objects are unique based on memory location'''
-    return id(a) != id(b)
-
-# object ----------------------------------------
-# https://docs.python.org/3/library/collections.abc.html#module-collections.abc
-
-
-@predicate(alias='sequence?')
-def is_sequence(s) -> bool:
-    return isinstance(s, ABC.Sequence) #or issubclass(s, abc.Sequence)
 

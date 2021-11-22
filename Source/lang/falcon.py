@@ -28,7 +28,7 @@ class Falcon(FalconVisitor):
         self.ns['initial'] = {'directives': {}, 'imports': []}
 
         self.current_ns = 'global'
-        self.ns[self.current_ns] = {'tests': {}, 'ordering': []}
+        self.ns[self.current_ns] = {'tests': {}, 'ordering': [], 'directives': {}}
 
         self.n = -1          #tests do not have a name…they will have a number
 
@@ -147,9 +147,9 @@ class Falcon(FalconVisitor):
     def visitName(self, ctx: FalconParser.NameContext):
         return ctx.getText()
 
-    # use these instead...
-    def visitGet_name(self, ctx: FalconParser.Get_nameContext):
-        return ctx.getText()
+    # # use these instead...
+    # def visitGet_name(self, ctx: FalconParser.Get_nameContext):
+    #     return ctx.getText()
 
     def visitGet_card(self, ctx: FalconParser.Get_cardContext):
         return {'value': ctx.getText(), 'modifier': 'cardinality'}
@@ -224,7 +224,8 @@ class Falcon(FalconVisitor):
 
         okay_stubs = (FalconParser.Stub_pvContext,
                       FalconParser.Stub_many_pvContext,
-                      FalconParser.Stub_codeContext)
+                      FalconParser.Stub_codeContext,
+                      FalconParser.Stub_logicalContext)
 
         for stub in ctx.children:
 
@@ -292,9 +293,7 @@ class Falcon(FalconVisitor):
 
     def visitStub_many_pv(self, ctx: FalconParser.Stub_many_pvContext):
 
-        stub = {}
-
-        stub['kind'] = 'predicate-value+'
+        stub = {'kind': 'predicate-value+'}
         stub['predicate'] = self.visit(ctx.predicate())
         stub['value'] = tuple(self.visit(child) for child in ctx.children[2:])
 
@@ -336,6 +335,76 @@ class Falcon(FalconVisitor):
         stub['argument'] = self.visit(ctx.arg_list())
         stub['predicate'] = self.visit(ctx.predicate())
         stub['value'] = 'True'
+
+        return stub
+
+    def visitStub_logical(self, ctx: FalconParser.Stub_logicalContext):
+
+        logicals = []
+        okay_logicals = (FalconParser.Stub_logicContext,
+                         FalconParser.Stub_logic_multiContext)
+
+        for child in ctx.children:
+            if isinstance(child, okay_logicals):
+                # logicals.append(self.visit(child))
+                logicals = self.visit(child)
+
+        return {'kind': 'logical', 'values': logicals}
+
+    # these deal with the logical stubs --
+    def visitStub_logic(self, ctx: FalconParser.Stub_logicContext):
+
+        stub = dict(kind='logic', values=[])
+
+        for child in ctx.children:
+
+            if isinstance(child, FalconParser.PredicateContext):
+                stub['values'].append(self.visit(child))
+            elif isinstance(child, FalconParser.ValueContext):
+                # making a tuple of values
+                if len(stub['values']) > 1 and isinstance(stub['values'][-1], tuple):
+                    stub['values'][-1] += (self.visit(child),)
+                else:
+                    stub['values'].append((self.visit(child),))
+                # stub['values'].append(self.visit(child))
+            elif isinstance(child, antlr4.tree.Tree.TerminalNodeImpl):
+                value = child.getText()
+                stub['values'].append(value)
+
+        return stub
+
+    def visitStub_logic_multi(self, ctx: FalconParser.Stub_logic_multiContext):
+
+        stub = dict(kind='logic-multi', values=[])
+
+        for child in ctx.children:
+
+            if isinstance(child, (FalconParser.Stub_logicContext, FalconParser.Stub_parenContext)):
+                s = self.visit(child)
+                stub['values'].extend(s['values'])
+            elif isinstance(child, antlr4.tree.Tree.TerminalNodeImpl):
+                value = child.getText()
+                stub['values'].append(value)
+
+        return stub
+
+    def visitStub_paren(self, ctx: FalconParser.Stub_parenContext):
+
+        stub = dict(kind='logic-paren', values=[])
+        # add {'values': {'predicate': value}}
+
+        for child in ctx.children:
+
+            if isinstance(child, FalconParser.PredicateContext):
+                stub['values'].append(self.visit(child))
+            elif isinstance(child, FalconParser.Stub_logicContext):
+                s = self.visit(child)
+                stub['values'].extend(s['values'])
+            elif isinstance(child, FalconParser.ValueContext):
+                continue
+            elif isinstance(child, antlr4.tree.Tree.TerminalNodeImpl):
+                value = child.getText()
+                stub['values'].append(value)
 
         return stub
 

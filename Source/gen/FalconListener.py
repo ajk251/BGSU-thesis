@@ -152,12 +152,30 @@ class FalconListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by FalconParser#test_logical.
-    def enterTest_logical(self, ctx:FalconParser.Test_logicalContext):
+    # Enter a parse tree produced by FalconParser#stub_logic.
+    def enterStub_logic(self, ctx:FalconParser.Stub_logicContext):
         pass
 
-    # Exit a parse tree produced by FalconParser#test_logical.
-    def exitTest_logical(self, ctx:FalconParser.Test_logicalContext):
+    # Exit a parse tree produced by FalconParser#stub_logic.
+    def exitStub_logic(self, ctx:FalconParser.Stub_logicContext):
+        pass
+
+
+    # Enter a parse tree produced by FalconParser#stub_paren.
+    def enterStub_paren(self, ctx:FalconParser.Stub_parenContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#stub_paren.
+    def exitStub_paren(self, ctx:FalconParser.Stub_parenContext):
+        pass
+
+
+    # Enter a parse tree produced by FalconParser#stub_logic_multi.
+    def enterStub_logic_multi(self, ctx:FalconParser.Stub_logic_multiContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#stub_logic_multi.
+    def exitStub_logic_multi(self, ctx:FalconParser.Stub_logic_multiContext):
         pass
 
 
@@ -251,12 +269,21 @@ class FalconListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by FalconParser#get_name.
-    def enterGet_name(self, ctx:FalconParser.Get_nameContext):
+    # Enter a parse tree produced by FalconParser#name.
+    def enterName(self, ctx:FalconParser.NameContext):
         pass
 
-    # Exit a parse tree produced by FalconParser#get_name.
-    def exitGet_name(self, ctx:FalconParser.Get_nameContext):
+    # Exit a parse tree produced by FalconParser#name.
+    def exitName(self, ctx:FalconParser.NameContext):
+        pass
+
+
+    # Enter a parse tree produced by FalconParser#predicate.
+    def enterPredicate(self, ctx:FalconParser.PredicateContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#predicate.
+    def exitPredicate(self, ctx:FalconParser.PredicateContext):
         pass
 
 
@@ -275,15 +302,6 @@ class FalconListener(ParseTreeListener):
 
     # Exit a parse tree produced by FalconParser#get_not.
     def exitGet_not(self, ctx:FalconParser.Get_notContext):
-        pass
-
-
-    # Enter a parse tree produced by FalconParser#predicate.
-    def enterPredicate(self, ctx:FalconParser.PredicateContext):
-        pass
-
-    # Exit a parse tree produced by FalconParser#predicate.
-    def exitPredicate(self, ctx:FalconParser.PredicateContext):
         pass
 
 

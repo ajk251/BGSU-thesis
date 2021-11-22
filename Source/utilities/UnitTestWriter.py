@@ -4,6 +4,7 @@ import re
 from time import strftime
 
 import predicates
+from predicates.predicates import PREDICATES
 import Domains
 
 # TODO:
@@ -18,6 +19,10 @@ tabsize = 4
 TAB = ' ' * tabsize
 nl = '\n'
 
+# ⊻ ⊼
+booleans = {'∧': 'and', '&&': 'and', 'and': 'and',
+            '∨': 'or', '||': 'or', 'or': 'or',
+            '!': 'not', '¬': 'not', 'not': 'not'}
 
 # writes the file -----------------------------------------
 
@@ -203,32 +208,49 @@ def basic_Test(entry, indent) -> str:
     if len(ivars) == 1:
         template = "for {} in {}:".format(ivars[0], dvars[0])
     else:
-        template = "for {} in {}({}):".format(', '.join(ivars), 'zip', ','.join(dvars))
+        template = "for {} in {}({}):".format(', '.join(ivars), 'zip', ', '.join(dvars))
 
     lines.append(template)
 
     f1 = 'assert {} {} {}'              # w/ symbol
-    f2 = 'assert {}({}({}), {})'            # pd( fn(arg), value)
+    f2 = 'assert {}({}, {})'            # pd( fn(arg), value)
     f3 = 'assert {}({}, {})'            # w/ function
     f4 = 'assert {}({})'                # ignoring True
 
     fn_name = entry['function']
     args = ', '.join(ivars)
+    fn_sig = '{}({})'.format(fn_name, args)
     indent += 1
 
     for stub in entry['stubs']:
 
-        if stub['predicate'] in predicates.predicates.PREDICATES:
-            pd_name = predicates.predicates.PREDICATES[stub['predicate']][0]
+        # get the name of the predicate if it knows it's a predicate (or should be, ie OOPS)
+        if stub['kind'].startswith('predicate') and stub['predicate'] in PREDICATES:
+            # get the symbolic name if there is one, otherwise the function name
+            if PREDICATES[stub['predicate']][1]:
+                pd_name = PREDICATES[stub['predicate']][1]
+                use_symbolic = True
+            else:
+                pd_name = PREDICATES[stub['predicate']][0]
+                use_symbolic = False
+        elif stub['kind'].startswith('predicate'):
+            pd_name = stub['predicate']
+            use_symbolic = False
         else:
             # raise error
-            pd_name = "OOPS"
-            # continue
+            pd_name = "OOPS!"
 
         if stub['kind'] == 'predicate-value':
-            line = TAB * indent + f2.format(pd_name, fn_name, args, stub['value'])
+            if use_symbolic and stub['value'] == 'True':
+                line = TAB * indent + f4.format(pd_name, fn_sig)
+            elif use_symbolic:
+                line = TAB * indent + f1.format(fn_sig, pd_name, stub['value'])
+            else:
+                line = TAB * indent + f2.format(pd_name, fn_sig, stub['value'])
         elif stub['kind'] == 'predicate-value+':
-            line = TAB * indent + f2.format(pd_name, fn_name, args, stub['value'])
+            line = TAB * indent + f2.format(pd_name, fn_sig, ', '.join(stub['value']))
+        elif stub['kind'] == 'logical':
+            line = TAB * indent + 'assert ' + make_boolean(stub['values'], fn_sig, indent)
         else:
             print('forgot about --> ', stub)
 
@@ -273,11 +295,11 @@ def basic_Assert(entry, indent=0) -> str:
         fn = fn_name + args
         value = stub['value']
 
-        if predicates.predicates.PREDICATES[stub['predicate']][1]:
-            pd_name = predicates.predicates.PREDICATES[stub['predicate']][1]
+        if PREDICATES[stub['predicate']][1]:
+            pd_name = PREDICATES[stub['predicate']][1]
             line = a1.format(fn, pd_name, value)
         else:
-            pd_name = predicates.predicates.PREDICATES[stub['predicate']][0]
+            pd_name = PREDICATES[stub['predicate']][0]
 
             if ignore_true and value == 'True':
                 line = a3.format(pd_name, fn)
@@ -380,3 +402,80 @@ def make_domain(entry, indent=0) -> str:
         line = f2.format(var, name, args)
 
     return line
+
+
+def make_boolean(entry, fn_sig='', indent=0) -> str:
+
+    # print('line: ', entry[0]['values'])
+    print('line:', entry)
+
+    line = []
+    args = None
+
+    # split up the lines based on the and/or
+    ps = [[]]
+    ops = []
+
+    for element in entry['values']:
+
+        if element not in booleans or ('not' == booleans[element]):
+            ps[-1].append(element)
+        else:
+            ps.append([])
+            ops.append(element)
+
+    print(ps)
+    print(ops)
+
+    ops = tuple(map(lambda o: booleans[o], ops))
+
+    f1 = '{}{} {} {}'             # 3 < fn
+    f2 = '{}{}({})'              # pd(fn(…))
+    f3 = '{}{}({}, {})'          # pd(fn(…), args)
+
+    # will have min length of 1, [pred]
+    # or [pred args]
+    # or [not pred args]
+
+    o = 0
+
+    for pred in ps:
+
+        n = ''
+        is_symbolic = False
+        predicate = ''
+        args = None
+        i = 0       # a trick, which arg to look at...
+
+        if pred[i] in ('!', '¬', 'not'):
+            n = 'not '
+            i += 1
+
+        if pred[i] in PREDICATES:
+            # it's a symbol, ie >
+            if PREDICATES[pred[i]][1]:
+                predicate = PREDICATES[pred[i]][1]
+                is_symbolic = True
+            else:
+                predicate = PREDICATES[pred[i]][0]
+            i += 1          # look at the next one
+
+        if i == len(pred)-1:
+            args = pred[i]
+
+        # sort out the cases
+        if is_symbolic:
+            line.append(f1.format(n, fn_sig, predicate, ', '.join(args)))
+        elif args is not None:
+            line.append(f3.format(n, predicate, fn_sig, ', '.join(args)))
+        else:
+            line.append(f2.format(n, predicate, fn_sig))
+
+        # ops is always one shorter than ps
+        if (o < len(ps)-1):
+            line.append(ops[o])
+            o += 1
+
+    print(line)
+
+    return ' '.join(line)

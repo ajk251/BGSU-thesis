@@ -89,8 +89,18 @@ class FalconVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by FalconParser#test_logical.
-    def visitTest_logical(self, ctx:FalconParser.Test_logicalContext):
+    # Visit a parse tree produced by FalconParser#stub_logic.
+    def visitStub_logic(self, ctx:FalconParser.Stub_logicContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#stub_paren.
+    def visitStub_paren(self, ctx:FalconParser.Stub_parenContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#stub_logic_multi.
+    def visitStub_logic_multi(self, ctx:FalconParser.Stub_logic_multiContext):
         return self.visitChildren(ctx)
 
 
@@ -144,8 +154,13 @@ class FalconVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by FalconParser#get_name.
-    def visitGet_name(self, ctx:FalconParser.Get_nameContext):
+    # Visit a parse tree produced by FalconParser#name.
+    def visitName(self, ctx:FalconParser.NameContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#predicate.
+    def visitPredicate(self, ctx:FalconParser.PredicateContext):
         return self.visitChildren(ctx)
 
 
@@ -156,11 +171,6 @@ class FalconVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by FalconParser#get_not.
     def visitGet_not(self, ctx:FalconParser.Get_notContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by FalconParser#predicate.
-    def visitPredicate(self, ctx:FalconParser.PredicateContext):
         return self.visitChildren(ctx)
 
 
