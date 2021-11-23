@@ -74,26 +74,25 @@ def is_close(a, b, tol=0.00001):
     '''Tests whether a float is close in real and absolute terms'''
     return math.isclose(a, b, rel_tol=tol, abs_tol=tol)
 
+# bounds testing --------------------------------
+# these names need some thought…
 
 
+@predicate(alias=['between?', 'in[]?'])
+def between(n, lower, upper) -> bool:
+    return lower <= n <= upper
 
 
+@predicate(alias=['in[)?'])
+def in_interval(n, lower, upper) -> bool:
+    return lower <= n < upper
 
 
-# ===============================================
+@predicate(alias=['in()?'])
+def is_within(n, lower, upper) -> bool:
+    return lower < n < upper
 
-# for name, fn in predicates.items():
-#     print(f'{name}: \t{fn.__name__}')
-#
-# # print(predicates)
-#
-# print('\n', '*'*25)
-# print('sequence? ', predicates['sequence?']([1,2,3]))
-# print('sequence? ', predicates['sequence?'](4))
-#
-#
-# print('nan?: ', predicates['nan?'](4))
-# print('nan?: ', predicates['nan?'](4.3))
-# # print('nan?: ', predicates['nan?']('a'))
-#
-# print('close?: ', predicates['close?'](0.000000001, 0.0))
+
+@predicate(alias=['outside?', 'out)('])
+def is_outside(n, lower, upper):
+    return lower >= n and n <= upper

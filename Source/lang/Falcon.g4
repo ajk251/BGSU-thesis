@@ -187,7 +187,5 @@ WS: [ \t\r\n]                               -> skip;
 //WS: [ \t\r]                               -> skip;
 NL: '\n';
 
-
 fragment DIGIT: ([0-9]);
 fragment CHAR: [a-zA-Z];
-

@@ -340,16 +340,17 @@ class Falcon(FalconVisitor):
 
     def visitStub_logical(self, ctx: FalconParser.Stub_logicalContext):
 
-        logicals = []
+        values = None
         okay_logicals = (FalconParser.Stub_logicContext,
-                         FalconParser.Stub_logic_multiContext)
+                         FalconParser.Stub_logic_multiContext,
+                         FalconParser.Stub_parenContext)
 
         for child in ctx.children:
             if isinstance(child, okay_logicals):
-                # logicals.append(self.visit(child))
-                logicals = self.visit(child)
+                # values.append(self.visit(child))
+                values = self.visit(child)
 
-        return {'kind': 'logical', 'values': logicals}
+        return {'kind': 'logical', 'values': values}
 
     # these deal with the logical stubs --
     def visitStub_logic(self, ctx: FalconParser.Stub_logicContext):
@@ -376,6 +377,7 @@ class Falcon(FalconVisitor):
     def visitStub_logic_multi(self, ctx: FalconParser.Stub_logic_multiContext):
 
         stub = dict(kind='logic-multi', values=[])
+        # values = []
 
         for child in ctx.children:
 
@@ -400,11 +402,14 @@ class Falcon(FalconVisitor):
             elif isinstance(child, FalconParser.Stub_logicContext):
                 s = self.visit(child)
                 stub['values'].extend(s['values'])
-            elif isinstance(child, FalconParser.ValueContext):
-                continue
+            # elif isinstance(child, FalconParser.ValueContext):
+            #     # print('some value…', child.getText())
+            #     continue
             elif isinstance(child, antlr4.tree.Tree.TerminalNodeImpl):
                 value = child.getText()
                 stub['values'].append(value)
+
+        # print('paren stub: ', stub['values'])
 
         return stub
 
