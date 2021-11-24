@@ -12,9 +12,8 @@ import math
 
 # numerical -------------------------------------
 
-
-@predicate(alias='modof?')
-def is_modof(b, n) -> bool:
+@predicate(alias=['modof?', '%=', 'mod-of?'])
+def is_modulus_of(b, n) -> bool:
     '''Tests b % n == 0'''
     return b % n == 0
 

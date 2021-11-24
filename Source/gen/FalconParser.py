@@ -12,7 +12,7 @@ else:
 def serializedATN():
     with StringIO() as buf:
         buf.write("\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3%")
-        buf.write("\u014c\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7")
+        buf.write("\u0154\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7")
         buf.write("\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t\13\4\f\t\f\4\r\t\r\4\16")
         buf.write("\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22\4\23\t\23")
         buf.write("\4\24\t\24\4\25\t\25\4\26\t\26\4\27\t\27\3\2\6\2\60\n")
@@ -33,26 +33,27 @@ def serializedATN():
         buf.write("\u00c7\13\n\3\13\3\13\3\13\3\13\3\13\3\13\3\13\3\13\3")
         buf.write("\13\7\13\u00d2\n\13\f\13\16\13\u00d5\13\13\5\13\u00d7")
         buf.write("\n\13\3\13\3\13\7\13\u00db\n\13\f\13\16\13\u00de\13\13")
-        buf.write("\5\13\u00e0\n\13\5\13\u00e2\n\13\3\f\3\f\3\f\3\r\3\r\3")
-        buf.write("\r\3\16\3\16\3\17\3\17\3\17\3\17\3\17\3\17\3\17\3\17\5")
-        buf.write("\17\u00f4\n\17\3\17\3\17\3\17\5\17\u00f9\n\17\3\20\3\20")
-        buf.write("\3\20\3\20\7\20\u00ff\n\20\f\20\16\20\u0102\13\20\3\20")
-        buf.write("\3\20\3\21\3\21\3\21\3\21\7\21\u010a\n\21\f\21\16\21\u010d")
-        buf.write("\13\21\3\21\3\21\3\21\3\21\3\21\7\21\u0114\n\21\f\21\16")
-        buf.write("\21\u0117\13\21\3\21\3\21\5\21\u011b\n\21\3\22\3\22\3")
-        buf.write("\23\3\23\3\23\3\23\3\23\3\23\5\23\u0125\n\23\3\24\3\24")
-        buf.write("\3\24\3\24\5\24\u012b\n\24\3\25\3\25\3\25\3\25\5\25\u0131")
+        buf.write("\5\13\u00e0\n\13\5\13\u00e2\n\13\3\f\3\f\3\f\7\f\u00e7")
+        buf.write("\n\f\f\f\16\f\u00ea\13\f\5\f\u00ec\n\f\3\r\3\r\3\r\3\16")
+        buf.write("\3\16\3\17\3\17\3\17\3\17\3\17\3\17\3\17\3\17\5\17\u00fb")
+        buf.write("\n\17\3\17\3\17\3\17\5\17\u0100\n\17\3\20\3\20\3\20\3")
+        buf.write("\20\7\20\u0106\n\20\f\20\16\20\u0109\13\20\3\20\3\20\3")
+        buf.write("\21\3\21\3\21\3\21\7\21\u0111\n\21\f\21\16\21\u0114\13")
+        buf.write("\21\3\21\3\21\3\21\3\21\3\21\7\21\u011b\n\21\f\21\16\21")
+        buf.write("\u011e\13\21\3\21\3\21\5\21\u0122\n\21\3\22\3\22\3\23")
+        buf.write("\3\23\3\23\3\23\3\23\3\23\5\23\u012c\n\23\3\24\3\24\3")
+        buf.write("\24\3\24\5\24\u0132\n\24\3\25\3\25\3\25\3\25\5\25\u0138")
         buf.write("\n\25\3\26\3\26\3\26\3\26\3\26\3\26\3\26\3\26\3\26\3\26")
-        buf.write("\3\26\3\26\3\26\5\26\u0140\n\26\3\26\3\26\3\26\5\26\u0145")
-        buf.write("\n\26\3\27\3\27\3\27\5\27\u014a\n\27\3\27\2\3\22\30\2")
-        buf.write("\4\6\b\n\f\16\20\22\24\26\30\32\34\36 \"$&(*,\2\3\4\2")
-        buf.write("\32\32\35\35\2\u0171\2\64\3\2\2\2\4@\3\2\2\2\6B\3\2\2")
-        buf.write("\2\bR\3\2\2\2\nT\3\2\2\2\f^\3\2\2\2\16s\3\2\2\2\20\u0096")
-        buf.write("\3\2\2\2\22\u00be\3\2\2\2\24\u00e1\3\2\2\2\26\u00e3\3")
-        buf.write("\2\2\2\30\u00e6\3\2\2\2\32\u00e9\3\2\2\2\34\u00f8\3\2")
-        buf.write("\2\2\36\u00fa\3\2\2\2 \u011a\3\2\2\2\"\u011c\3\2\2\2$")
-        buf.write("\u0124\3\2\2\2&\u012a\3\2\2\2(\u0130\3\2\2\2*\u0144\3")
-        buf.write("\2\2\2,\u0149\3\2\2\2.\60\5\4\3\2/.\3\2\2\2\60\61\3\2")
+        buf.write("\3\26\3\26\3\26\5\26\u0147\n\26\3\26\3\26\3\26\5\26\u014c")
+        buf.write("\n\26\3\27\3\27\3\27\3\27\5\27\u0152\n\27\3\27\2\3\22")
+        buf.write("\30\2\4\6\b\n\f\16\20\22\24\26\30\32\34\36 \"$&(*,\2\3")
+        buf.write("\4\2\32\32\35\35\2\u017c\2\64\3\2\2\2\4@\3\2\2\2\6B\3")
+        buf.write("\2\2\2\bR\3\2\2\2\nT\3\2\2\2\f^\3\2\2\2\16s\3\2\2\2\20")
+        buf.write("\u0096\3\2\2\2\22\u00be\3\2\2\2\24\u00e1\3\2\2\2\26\u00e3")
+        buf.write("\3\2\2\2\30\u00ed\3\2\2\2\32\u00f0\3\2\2\2\34\u00ff\3")
+        buf.write("\2\2\2\36\u0101\3\2\2\2 \u0121\3\2\2\2\"\u0123\3\2\2\2")
+        buf.write("$\u012b\3\2\2\2&\u0131\3\2\2\2(\u0137\3\2\2\2*\u014b\3")
+        buf.write("\2\2\2,\u0151\3\2\2\2.\60\5\4\3\2/.\3\2\2\2\60\61\3\2")
         buf.write("\2\2\61/\3\2\2\2\61\62\3\2\2\2\62\65\3\2\2\2\63\65\7\2")
         buf.write("\2\3\64/\3\2\2\2\64\63\3\2\2\2\65\3\3\2\2\2\668\5\6\4")
         buf.write("\2\67\66\3\2\2\289\3\2\2\29\67\3\2\2\29:\3\2\2\2:A\3\2")
@@ -102,7 +103,7 @@ def serializedATN():
         buf.write("\u00b8\3\2\2\2\u00ba\u00bb\3\2\2\2\u00bb\u00bc\3\2\2\2")
         buf.write("\u00bc\u00bd\7\n\2\2\u00bd\u00bf\3\2\2\2\u00be\u0098\3")
         buf.write("\2\2\2\u00be\u00b4\3\2\2\2\u00bf\u00c5\3\2\2\2\u00c0\u00c1")
-        buf.write("\f\4\2\2\u00c1\u00c2\7\21\2\2\u00c2\u00c4\5\22\n\5\u00c3")
+        buf.write("\f\3\2\2\u00c1\u00c2\7\21\2\2\u00c2\u00c4\5\22\n\4\u00c3")
         buf.write("\u00c0\3\2\2\2\u00c4\u00c7\3\2\2\2\u00c5\u00c3\3\2\2\2")
         buf.write("\u00c5\u00c6\3\2\2\2\u00c6\23\3\2\2\2\u00c7\u00c5\3\2")
         buf.write("\2\2\u00c8\u00c9\7\4\2\2\u00c9\u00ca\5\"\22\2\u00ca\u00cb")
@@ -117,55 +118,59 @@ def serializedATN():
         buf.write("\u00dd\u00e0\3\2\2\2\u00de\u00dc\3\2\2\2\u00df\u00d8\3")
         buf.write("\2\2\2\u00df\u00e0\3\2\2\2\u00e0\u00e2\3\2\2\2\u00e1\u00c8")
         buf.write("\3\2\2\2\u00e1\u00cc\3\2\2\2\u00e2\25\3\2\2\2\u00e3\u00e4")
-        buf.write("\7\30\2\2\u00e4\u00e5\5,\27\2\u00e5\27\3\2\2\2\u00e6\u00e7")
-        buf.write("\7\31\2\2\u00e7\u00e8\5,\27\2\u00e8\31\3\2\2\2\u00e9\u00ea")
-        buf.write("\7 \2\2\u00ea\33\3\2\2\2\u00eb\u00ec\5\"\22\2\u00ec\u00ed")
-        buf.write("\7\16\2\2\u00ed\u00ee\5(\25\2\u00ee\u00f9\3\2\2\2\u00ef")
-        buf.write("\u00f0\5\"\22\2\u00f0\u00f3\7\16\2\2\u00f1\u00f4\5\"\22")
-        buf.write("\2\u00f2\u00f4\7 \2\2\u00f3\u00f1\3\2\2\2\u00f3\u00f2")
-        buf.write("\3\2\2\2\u00f4\u00f5\3\2\2\2\u00f5\u00f6\7\20\2\2\u00f6")
-        buf.write("\u00f7\5(\25\2\u00f7\u00f9\3\2\2\2\u00f8\u00eb\3\2\2\2")
-        buf.write("\u00f8\u00ef\3\2\2\2\u00f9\35\3\2\2\2\u00fa\u00fb\7\t")
-        buf.write("\2\2\u00fb\u0100\5*\26\2\u00fc\u00fd\7\r\2\2\u00fd\u00ff")
-        buf.write("\5*\26\2\u00fe\u00fc\3\2\2\2\u00ff\u0102\3\2\2\2\u0100")
-        buf.write("\u00fe\3\2\2\2\u0100\u0101\3\2\2\2\u0101\u0103\3\2\2\2")
-        buf.write("\u0102\u0100\3\2\2\2\u0103\u0104\7\n\2\2\u0104\37\3\2")
-        buf.write("\2\2\u0105\u0106\7\5\2\2\u0106\u010b\5(\25\2\u0107\u0108")
-        buf.write("\7\r\2\2\u0108\u010a\5(\25\2\u0109\u0107\3\2\2\2\u010a")
-        buf.write("\u010d\3\2\2\2\u010b\u0109\3\2\2\2\u010b\u010c\3\2\2\2")
-        buf.write("\u010c\u010e\3\2\2\2\u010d\u010b\3\2\2\2\u010e\u010f\7")
-        buf.write("\6\2\2\u010f\u011b\3\2\2\2\u0110\u0111\7\5\2\2\u0111\u0115")
-        buf.write("\5(\25\2\u0112\u0114\5(\25\2\u0113\u0112\3\2\2\2\u0114")
-        buf.write("\u0117\3\2\2\2\u0115\u0113\3\2\2\2\u0115\u0116\3\2\2\2")
-        buf.write("\u0116\u0118\3\2\2\2\u0117\u0115\3\2\2\2\u0118\u0119\7")
-        buf.write("\6\2\2\u0119\u011b\3\2\2\2\u011a\u0105\3\2\2\2\u011a\u0110")
-        buf.write("\3\2\2\2\u011b!\3\2\2\2\u011c\u011d\t\2\2\2\u011d#\3\2")
-        buf.write("\2\2\u011e\u0125\5\"\22\2\u011f\u0125\7 \2\2\u0120\u0125")
-        buf.write("\7\26\2\2\u0121\u0125\7\34\2\2\u0122\u0125\7!\2\2\u0123")
-        buf.write("\u0125\7\33\2\2\u0124\u011e\3\2\2\2\u0124\u011f\3\2\2")
-        buf.write("\2\u0124\u0120\3\2\2\2\u0124\u0121\3\2\2\2\u0124\u0122")
-        buf.write("\3\2\2\2\u0124\u0123\3\2\2\2\u0125%\3\2\2\2\u0126\u0127")
-        buf.write("\7\27\2\2\u0127\u012b\5\"\22\2\u0128\u0129\7\26\2\2\u0129")
-        buf.write("\u012b\5\"\22\2\u012a\u0126\3\2\2\2\u012a\u0128\3\2\2")
-        buf.write("\2\u012b\'\3\2\2\2\u012c\u0131\5\"\22\2\u012d\u0131\7")
-        buf.write("\36\2\2\u012e\u0131\7\37\2\2\u012f\u0131\7 \2\2\u0130")
-        buf.write("\u012c\3\2\2\2\u0130\u012d\3\2\2\2\u0130\u012e\3\2\2\2")
-        buf.write("\u0130\u012f\3\2\2\2\u0131)\3\2\2\2\u0132\u0145\5(\25")
-        buf.write("\2\u0133\u0134\5\"\22\2\u0134\u0135\7\34\2\2\u0135\u0136")
-        buf.write("\5(\25\2\u0136\u0145\3\2\2\2\u0137\u0138\5(\25\2\u0138")
-        buf.write("\u0139\7\20\2\2\u0139\u013a\5(\25\2\u013a\u0145\3\2\2")
-        buf.write("\2\u013b\u013c\5\"\22\2\u013c\u013f\7\34\2\2\u013d\u0140")
-        buf.write("\5\"\22\2\u013e\u0140\7 \2\2\u013f\u013d\3\2\2\2\u013f")
-        buf.write("\u013e\3\2\2\2\u0140\u0141\3\2\2\2\u0141\u0142\7\20\2")
-        buf.write("\2\u0142\u0143\5(\25\2\u0143\u0145\3\2\2\2\u0144\u0132")
-        buf.write("\3\2\2\2\u0144\u0133\3\2\2\2\u0144\u0137\3\2\2\2\u0144")
-        buf.write("\u013b\3\2\2\2\u0145+\3\2\2\2\u0146\u014a\5\"\22\2\u0147")
-        buf.write("\u014a\7\36\2\2\u0148\u014a\7\37\2\2\u0149\u0146\3\2\2")
-        buf.write("\2\u0149\u0147\3\2\2\2\u0149\u0148\3\2\2\2\u014a-\3\2")
-        buf.write("\2\2+\61\649>@GRZelqs\u0080\u0091\u0096\u009a\u00a0\u00a5")
-        buf.write("\u00ab\u00b0\u00b4\u00ba\u00be\u00c5\u00d3\u00d6\u00dc")
-        buf.write("\u00df\u00e1\u00f3\u00f8\u0100\u010b\u0115\u011a\u0124")
-        buf.write("\u012a\u0130\u013f\u0144\u0149")
+        buf.write("\7\30\2\2\u00e4\u00eb\5,\27\2\u00e5\u00e7\5\30\r\2\u00e6")
+        buf.write("\u00e5\3\2\2\2\u00e7\u00ea\3\2\2\2\u00e8\u00e6\3\2\2\2")
+        buf.write("\u00e8\u00e9\3\2\2\2\u00e9\u00ec\3\2\2\2\u00ea\u00e8\3")
+        buf.write("\2\2\2\u00eb\u00e8\3\2\2\2\u00eb\u00ec\3\2\2\2\u00ec\27")
+        buf.write("\3\2\2\2\u00ed\u00ee\7\31\2\2\u00ee\u00ef\5,\27\2\u00ef")
+        buf.write("\31\3\2\2\2\u00f0\u00f1\7 \2\2\u00f1\33\3\2\2\2\u00f2")
+        buf.write("\u00f3\5\"\22\2\u00f3\u00f4\7\16\2\2\u00f4\u00f5\5(\25")
+        buf.write("\2\u00f5\u0100\3\2\2\2\u00f6\u00f7\5\"\22\2\u00f7\u00fa")
+        buf.write("\7\16\2\2\u00f8\u00fb\5\"\22\2\u00f9\u00fb\7 \2\2\u00fa")
+        buf.write("\u00f8\3\2\2\2\u00fa\u00f9\3\2\2\2\u00fb\u00fc\3\2\2\2")
+        buf.write("\u00fc\u00fd\7\20\2\2\u00fd\u00fe\5(\25\2\u00fe\u0100")
+        buf.write("\3\2\2\2\u00ff\u00f2\3\2\2\2\u00ff\u00f6\3\2\2\2\u0100")
+        buf.write("\35\3\2\2\2\u0101\u0102\7\t\2\2\u0102\u0107\5*\26\2\u0103")
+        buf.write("\u0104\7\r\2\2\u0104\u0106\5*\26\2\u0105\u0103\3\2\2\2")
+        buf.write("\u0106\u0109\3\2\2\2\u0107\u0105\3\2\2\2\u0107\u0108\3")
+        buf.write("\2\2\2\u0108\u010a\3\2\2\2\u0109\u0107\3\2\2\2\u010a\u010b")
+        buf.write("\7\n\2\2\u010b\37\3\2\2\2\u010c\u010d\7\5\2\2\u010d\u0112")
+        buf.write("\5(\25\2\u010e\u010f\7\r\2\2\u010f\u0111\5(\25\2\u0110")
+        buf.write("\u010e\3\2\2\2\u0111\u0114\3\2\2\2\u0112\u0110\3\2\2\2")
+        buf.write("\u0112\u0113\3\2\2\2\u0113\u0115\3\2\2\2\u0114\u0112\3")
+        buf.write("\2\2\2\u0115\u0116\7\6\2\2\u0116\u0122\3\2\2\2\u0117\u0118")
+        buf.write("\7\5\2\2\u0118\u011c\5(\25\2\u0119\u011b\5(\25\2\u011a")
+        buf.write("\u0119\3\2\2\2\u011b\u011e\3\2\2\2\u011c\u011a\3\2\2\2")
+        buf.write("\u011c\u011d\3\2\2\2\u011d\u011f\3\2\2\2\u011e\u011c\3")
+        buf.write("\2\2\2\u011f\u0120\7\6\2\2\u0120\u0122\3\2\2\2\u0121\u010c")
+        buf.write("\3\2\2\2\u0121\u0117\3\2\2\2\u0122!\3\2\2\2\u0123\u0124")
+        buf.write("\t\2\2\2\u0124#\3\2\2\2\u0125\u012c\5\"\22\2\u0126\u012c")
+        buf.write("\7 \2\2\u0127\u012c\7\26\2\2\u0128\u012c\7\34\2\2\u0129")
+        buf.write("\u012c\7!\2\2\u012a\u012c\7\33\2\2\u012b\u0125\3\2\2\2")
+        buf.write("\u012b\u0126\3\2\2\2\u012b\u0127\3\2\2\2\u012b\u0128\3")
+        buf.write("\2\2\2\u012b\u0129\3\2\2\2\u012b\u012a\3\2\2\2\u012c%")
+        buf.write("\3\2\2\2\u012d\u012e\7\27\2\2\u012e\u0132\5\"\22\2\u012f")
+        buf.write("\u0130\7\26\2\2\u0130\u0132\5\"\22\2\u0131\u012d\3\2\2")
+        buf.write("\2\u0131\u012f\3\2\2\2\u0132\'\3\2\2\2\u0133\u0138\5\"")
+        buf.write("\22\2\u0134\u0138\7\36\2\2\u0135\u0138\7\37\2\2\u0136")
+        buf.write("\u0138\7 \2\2\u0137\u0133\3\2\2\2\u0137\u0134\3\2\2\2")
+        buf.write("\u0137\u0135\3\2\2\2\u0137\u0136\3\2\2\2\u0138)\3\2\2")
+        buf.write("\2\u0139\u014c\5(\25\2\u013a\u013b\5\"\22\2\u013b\u013c")
+        buf.write("\7\34\2\2\u013c\u013d\5(\25\2\u013d\u014c\3\2\2\2\u013e")
+        buf.write("\u013f\5(\25\2\u013f\u0140\7\20\2\2\u0140\u0141\5(\25")
+        buf.write("\2\u0141\u014c\3\2\2\2\u0142\u0143\5\"\22\2\u0143\u0146")
+        buf.write("\7\34\2\2\u0144\u0147\5\"\22\2\u0145\u0147\7 \2\2\u0146")
+        buf.write("\u0144\3\2\2\2\u0146\u0145\3\2\2\2\u0147\u0148\3\2\2\2")
+        buf.write("\u0148\u0149\7\20\2\2\u0149\u014a\5(\25\2\u014a\u014c")
+        buf.write("\3\2\2\2\u014b\u0139\3\2\2\2\u014b\u013a\3\2\2\2\u014b")
+        buf.write("\u013e\3\2\2\2\u014b\u0142\3\2\2\2\u014c+\3\2\2\2\u014d")
+        buf.write("\u0152\5\"\22\2\u014e\u0152\7\36\2\2\u014f\u0152\7\37")
+        buf.write("\2\2\u0150\u0152\5 \21\2\u0151\u014d\3\2\2\2\u0151\u014e")
+        buf.write("\3\2\2\2\u0151\u014f\3\2\2\2\u0151\u0150\3\2\2\2\u0152")
+        buf.write("-\3\2\2\2-\61\649>@GRZelqs\u0080\u0091\u0096\u009a\u00a0")
+        buf.write("\u00a5\u00ab\u00b0\u00b4\u00ba\u00be\u00c5\u00d3\u00d6")
+        buf.write("\u00dc\u00df\u00e1\u00e8\u00eb\u00fa\u00ff\u0107\u0112")
+        buf.write("\u011c\u0121\u012b\u0131\u0137\u0146\u014b\u0151")
         return buf.getvalue()
 
 
@@ -1559,13 +1564,13 @@ class FalconParser ( Parser ):
                     localctx = FalconParser.Stub_logic_multiContext(self, FalconParser.Test_logicalContext(self, _parentctx, _parentState))
                     self.pushNewRecursionContext(localctx, _startState, self.RULE_test_logical)
                     self.state = 190
-                    if not self.precpred(self._ctx, 2):
+                    if not self.precpred(self._ctx, 1):
                         from antlr4.error.Errors import FailedPredicateException
-                        raise FailedPredicateException(self, "self.precpred(self._ctx, 2)")
+                        raise FailedPredicateException(self, "self.precpred(self._ctx, 1)")
                     self.state = 191
                     self.match(FalconParser.OP_LOGICAL)
                     self.state = 192
-                    self.test_logical(3) 
+                    self.test_logical(2) 
                 self.state = 197
                 self._errHandler.sync(self)
                 _alt = self._interp.adaptivePredict(self._input,23,self._ctx)
@@ -1773,6 +1778,12 @@ class FalconParser ( Parser ):
         def dictate(self):
             return self.getTypedRuleContext(FalconParser.DictateContext,0)
 
+        def fn_arg(self, i:int=None):
+            if i is None:
+                return self.getTypedRuleContexts(FalconParser.Fn_argContext)
+            else:
+                return self.getTypedRuleContext(FalconParser.Fn_argContext,i)
+
 
         def enterRule(self, listener:ParseTreeListener):
             if hasattr( listener, "enterSet_directive" ):
@@ -1794,6 +1805,7 @@ class FalconParser ( Parser ):
 
         localctx = FalconParser.CompilerContext(self, self._ctx, self.state)
         self.enterRule(localctx, 20, self.RULE_compiler)
+        self._la = 0 # Token type
         try:
             localctx = FalconParser.Set_directiveContext(self, localctx)
             self.enterOuterAlt(localctx, 1)
@@ -1801,6 +1813,22 @@ class FalconParser ( Parser ):
             self.match(FalconParser.DIRECTIVE)
             self.state = 226
             self.dictate()
+            self.state = 233
+            self._errHandler.sync(self)
+            la_ = self._interp.adaptivePredict(self._input,30,self._ctx)
+            if la_ == 1:
+                self.state = 230
+                self._errHandler.sync(self)
+                _la = self._input.LA(1)
+                while _la==FalconParser.FNARG:
+                    self.state = 227
+                    self.fn_arg()
+                    self.state = 232
+                    self._errHandler.sync(self)
+                    _la = self._input.LA(1)
+
+
+
         except RecognitionException as re:
             localctx.exception = re
             self._errHandler.reportError(self, re)
@@ -1862,9 +1890,9 @@ class FalconParser ( Parser ):
         try:
             localctx = FalconParser.Make_fn_directiveContext(self, localctx)
             self.enterOuterAlt(localctx, 1)
-            self.state = 228
+            self.state = 235
             self.match(FalconParser.FNARG)
-            self.state = 229
+            self.state = 236
             self.dictate()
         except RecognitionException as re:
             localctx.exception = re
@@ -1924,7 +1952,7 @@ class FalconParser ( Parser ):
         try:
             localctx = FalconParser.Make_codestmtContext(self, localctx)
             self.enterOuterAlt(localctx, 1)
-            self.state = 231
+            self.state = 238
             self.match(FalconParser.CODESMNT)
         except RecognitionException as re:
             localctx.exception = re
@@ -2025,44 +2053,44 @@ class FalconParser ( Parser ):
         localctx = FalconParser.AssignContext(self, self._ctx, self.state)
         self.enterRule(localctx, 26, self.RULE_assign)
         try:
-            self.state = 246
+            self.state = 253
             self._errHandler.sync(self)
-            la_ = self._interp.adaptivePredict(self._input,30,self._ctx)
+            la_ = self._interp.adaptivePredict(self._input,32,self._ctx)
             if la_ == 1:
                 localctx = FalconParser.Assign_valueContext(self, localctx)
                 self.enterOuterAlt(localctx, 1)
-                self.state = 233
+                self.state = 240
                 self.name()
-                self.state = 234
+                self.state = 241
                 self.match(FalconParser.ASSIGN)
-                self.state = 235
+                self.state = 242
                 self.value()
                 pass
 
             elif la_ == 2:
                 localctx = FalconParser.Assign_type_valueContext(self, localctx)
                 self.enterOuterAlt(localctx, 2)
-                self.state = 237
+                self.state = 244
                 self.name()
-                self.state = 238
+                self.state = 245
                 self.match(FalconParser.ASSIGN)
-                self.state = 241
+                self.state = 248
                 self._errHandler.sync(self)
                 token = self._input.LA(1)
                 if token in [FalconParser.ID, FalconParser.LABEL]:
-                    self.state = 239
+                    self.state = 246
                     self.name()
                     pass
                 elif token in [FalconParser.CODESMNT]:
-                    self.state = 240
+                    self.state = 247
                     self.match(FalconParser.CODESMNT)
                     pass
                 else:
                     raise NoViableAltException(self)
 
-                self.state = 243
+                self.state = 250
                 self.match(FalconParser.COLON)
-                self.state = 244
+                self.state = 251
                 self.value()
                 pass
 
@@ -2139,23 +2167,23 @@ class FalconParser ( Parser ):
         try:
             localctx = FalconParser.ArgsContext(self, localctx)
             self.enterOuterAlt(localctx, 1)
-            self.state = 248
+            self.state = 255
             self.match(FalconParser.LPAREN)
-            self.state = 249
+            self.state = 256
             self.named_value()
-            self.state = 254
+            self.state = 261
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while _la==FalconParser.COMMA:
-                self.state = 250
+                self.state = 257
                 self.match(FalconParser.COMMA)
-                self.state = 251
+                self.state = 258
                 self.named_value()
-                self.state = 256
+                self.state = 263
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
 
-            self.state = 257
+            self.state = 264
             self.match(FalconParser.RPAREN)
         except RecognitionException as re:
             localctx.exception = re
@@ -2251,50 +2279,50 @@ class FalconParser ( Parser ):
         self.enterRule(localctx, 30, self.RULE_value_list)
         self._la = 0 # Token type
         try:
-            self.state = 280
+            self.state = 287
             self._errHandler.sync(self)
-            la_ = self._interp.adaptivePredict(self._input,34,self._ctx)
+            la_ = self._interp.adaptivePredict(self._input,36,self._ctx)
             if la_ == 1:
                 localctx = FalconParser.Make_list_cContext(self, localctx)
                 self.enterOuterAlt(localctx, 1)
-                self.state = 259
+                self.state = 266
                 self.match(FalconParser.T__2)
-                self.state = 260
+                self.state = 267
                 self.value()
-                self.state = 265
+                self.state = 272
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
                 while _la==FalconParser.COMMA:
-                    self.state = 261
+                    self.state = 268
                     self.match(FalconParser.COMMA)
-                    self.state = 262
+                    self.state = 269
                     self.value()
-                    self.state = 267
+                    self.state = 274
                     self._errHandler.sync(self)
                     _la = self._input.LA(1)
 
-                self.state = 268
+                self.state = 275
                 self.match(FalconParser.T__3)
                 pass
 
             elif la_ == 2:
                 localctx = FalconParser.Make_listContext(self, localctx)
                 self.enterOuterAlt(localctx, 2)
-                self.state = 270
+                self.state = 277
                 self.match(FalconParser.T__2)
-                self.state = 271
+                self.state = 278
                 self.value()
-                self.state = 275
+                self.state = 282
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
                 while (((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << FalconParser.ID) | (1 << FalconParser.LABEL) | (1 << FalconParser.NUMBER) | (1 << FalconParser.STRING) | (1 << FalconParser.CODESMNT))) != 0):
-                    self.state = 272
+                    self.state = 279
                     self.value()
-                    self.state = 277
+                    self.state = 284
                     self._errHandler.sync(self)
                     _la = self._input.LA(1)
 
-                self.state = 278
+                self.state = 285
                 self.match(FalconParser.T__3)
                 pass
 
@@ -2348,7 +2376,7 @@ class FalconParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 282
+            self.state = 289
             _la = self._input.LA(1)
             if not(_la==FalconParser.ID or _la==FalconParser.LABEL):
                 self._errHandler.recoverInline(self)
@@ -2415,37 +2443,37 @@ class FalconParser ( Parser ):
         localctx = FalconParser.PredicateContext(self, self._ctx, self.state)
         self.enterRule(localctx, 34, self.RULE_predicate)
         try:
-            self.state = 290
+            self.state = 297
             self._errHandler.sync(self)
             token = self._input.LA(1)
             if token in [FalconParser.ID, FalconParser.LABEL]:
                 self.enterOuterAlt(localctx, 1)
-                self.state = 284
+                self.state = 291
                 self.name()
                 pass
             elif token in [FalconParser.CODESMNT]:
                 self.enterOuterAlt(localctx, 2)
-                self.state = 285
+                self.state = 292
                 self.match(FalconParser.CODESMNT)
                 pass
             elif token in [FalconParser.OP_NOT]:
                 self.enterOuterAlt(localctx, 3)
-                self.state = 286
+                self.state = 293
                 self.match(FalconParser.OP_NOT)
                 pass
             elif token in [FalconParser.OP_EQ]:
                 self.enterOuterAlt(localctx, 4)
-                self.state = 287
+                self.state = 294
                 self.match(FalconParser.OP_EQ)
                 pass
             elif token in [FalconParser.UMATH]:
                 self.enterOuterAlt(localctx, 5)
-                self.state = 288
+                self.state = 295
                 self.match(FalconParser.UMATH)
                 pass
             elif token in [FalconParser.OPERATORS]:
                 self.enterOuterAlt(localctx, 6)
-                self.state = 289
+                self.state = 296
                 self.match(FalconParser.OPERATORS)
                 pass
             else:
@@ -2537,23 +2565,23 @@ class FalconParser ( Parser ):
         localctx = FalconParser.ExpressionContext(self, self._ctx, self.state)
         self.enterRule(localctx, 36, self.RULE_expression)
         try:
-            self.state = 296
+            self.state = 303
             self._errHandler.sync(self)
             token = self._input.LA(1)
             if token in [FalconParser.OP_CARDINALITY]:
                 localctx = FalconParser.Get_cardContext(self, localctx)
                 self.enterOuterAlt(localctx, 1)
-                self.state = 292
+                self.state = 299
                 self.match(FalconParser.OP_CARDINALITY)
-                self.state = 293
+                self.state = 300
                 self.name()
                 pass
             elif token in [FalconParser.OP_NOT]:
                 localctx = FalconParser.Get_notContext(self, localctx)
                 self.enterOuterAlt(localctx, 2)
-                self.state = 294
+                self.state = 301
                 self.match(FalconParser.OP_NOT)
-                self.state = 295
+                self.state = 302
                 self.name()
                 pass
             else:
@@ -2613,27 +2641,27 @@ class FalconParser ( Parser ):
         localctx = FalconParser.ValueContext(self, self._ctx, self.state)
         self.enterRule(localctx, 38, self.RULE_value)
         try:
-            self.state = 302
+            self.state = 309
             self._errHandler.sync(self)
             token = self._input.LA(1)
             if token in [FalconParser.ID, FalconParser.LABEL]:
                 self.enterOuterAlt(localctx, 1)
-                self.state = 298
+                self.state = 305
                 self.name()
                 pass
             elif token in [FalconParser.NUMBER]:
                 self.enterOuterAlt(localctx, 2)
-                self.state = 299
+                self.state = 306
                 self.match(FalconParser.NUMBER)
                 pass
             elif token in [FalconParser.STRING]:
                 self.enterOuterAlt(localctx, 3)
-                self.state = 300
+                self.state = 307
                 self.match(FalconParser.STRING)
                 pass
             elif token in [FalconParser.CODESMNT]:
                 self.enterOuterAlt(localctx, 4)
-                self.state = 301
+                self.state = 308
                 self.match(FalconParser.CODESMNT)
                 pass
             else:
@@ -2793,62 +2821,62 @@ class FalconParser ( Parser ):
         localctx = FalconParser.Named_valueContext(self, self._ctx, self.state)
         self.enterRule(localctx, 40, self.RULE_named_value)
         try:
-            self.state = 322
+            self.state = 329
             self._errHandler.sync(self)
-            la_ = self._interp.adaptivePredict(self._input,39,self._ctx)
+            la_ = self._interp.adaptivePredict(self._input,41,self._ctx)
             if la_ == 1:
                 localctx = FalconParser.Make_valueContext(self, localctx)
                 self.enterOuterAlt(localctx, 1)
-                self.state = 304
+                self.state = 311
                 self.value()
                 pass
 
             elif la_ == 2:
                 localctx = FalconParser.Make_name_valueContext(self, localctx)
                 self.enterOuterAlt(localctx, 2)
-                self.state = 305
+                self.state = 312
                 self.name()
-                self.state = 306
+                self.state = 313
                 self.match(FalconParser.OP_EQ)
-                self.state = 307
+                self.state = 314
                 self.value()
                 pass
 
             elif la_ == 3:
                 localctx = FalconParser.Make_value_typeContext(self, localctx)
                 self.enterOuterAlt(localctx, 3)
-                self.state = 309
+                self.state = 316
                 self.value()
-                self.state = 310
+                self.state = 317
                 self.match(FalconParser.COLON)
-                self.state = 311
+                self.state = 318
                 self.value()
                 pass
 
             elif la_ == 4:
                 localctx = FalconParser.Make_name_type_valueContext(self, localctx)
                 self.enterOuterAlt(localctx, 4)
-                self.state = 313
+                self.state = 320
                 self.name()
-                self.state = 314
+                self.state = 321
                 self.match(FalconParser.OP_EQ)
-                self.state = 317
+                self.state = 324
                 self._errHandler.sync(self)
                 token = self._input.LA(1)
                 if token in [FalconParser.ID, FalconParser.LABEL]:
-                    self.state = 315
+                    self.state = 322
                     self.name()
                     pass
                 elif token in [FalconParser.CODESMNT]:
-                    self.state = 316
+                    self.state = 323
                     self.match(FalconParser.CODESMNT)
                     pass
                 else:
                     raise NoViableAltException(self)
 
-                self.state = 319
+                self.state = 326
                 self.match(FalconParser.COLON)
-                self.state = 320
+                self.state = 327
                 self.value()
                 pass
 
@@ -2879,6 +2907,10 @@ class FalconParser ( Parser ):
         def STRING(self):
             return self.getToken(FalconParser.STRING, 0)
 
+        def value_list(self):
+            return self.getTypedRuleContext(FalconParser.Value_listContext,0)
+
+
         def getRuleIndex(self):
             return FalconParser.RULE_dictate
 
@@ -2904,23 +2936,28 @@ class FalconParser ( Parser ):
         localctx = FalconParser.DictateContext(self, self._ctx, self.state)
         self.enterRule(localctx, 42, self.RULE_dictate)
         try:
-            self.state = 327
+            self.state = 335
             self._errHandler.sync(self)
             token = self._input.LA(1)
             if token in [FalconParser.ID, FalconParser.LABEL]:
                 self.enterOuterAlt(localctx, 1)
-                self.state = 324
+                self.state = 331
                 self.name()
                 pass
             elif token in [FalconParser.NUMBER]:
                 self.enterOuterAlt(localctx, 2)
-                self.state = 325
+                self.state = 332
                 self.match(FalconParser.NUMBER)
                 pass
             elif token in [FalconParser.STRING]:
                 self.enterOuterAlt(localctx, 3)
-                self.state = 326
+                self.state = 333
                 self.match(FalconParser.STRING)
+                pass
+            elif token in [FalconParser.T__2]:
+                self.enterOuterAlt(localctx, 4)
+                self.state = 334
+                self.value_list()
                 pass
             else:
                 raise NoViableAltException(self)
@@ -2947,7 +2984,7 @@ class FalconParser ( Parser ):
 
     def test_logical_sempred(self, localctx:Test_logicalContext, predIndex:int):
             if predIndex == 0:
-                return self.precpred(self._ctx, 2)
+                return self.precpred(self._ctx, 1)
          
 
 

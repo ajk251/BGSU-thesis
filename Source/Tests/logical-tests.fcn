@@ -6,13 +6,15 @@ Domain Y Reals 0 100
 Domain Z Reals 0 100
 
 Test logical X,Y,Z:
+  | :method art -dist [0 0 0] -iters 10 -wtf True
+  | !(!int? ∨ !float?)
   | < 4 ∨ between 0 100
   | modof? 10
   | between? 0 100
   | is-int? ∧ is-float?
+  | !(!int? ∧ !is-float?)
   | !int? ∧ !float?
   | (int? ∧ float?)
-  | !(int? ∨ float?)
   | !is-int? ∧ (is-float? ∨ is-fraction?)
   | ! is-int? ∧ !(> 8 ∧ < 10 ∧ = 9)
   | is-int? ∨ is-float? ∨ !fraction? ∧ gt? 0

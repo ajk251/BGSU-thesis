@@ -179,7 +179,7 @@ def falcon_intro(source=None):
 
     intro = "# This file was generated automatically by falcon."
     intro += '' if not source else '\n# from: ' + source
-    intro += '\n# on ' + datetime.now().strftime("%Y %b %d %a %H:%M:%S") + nl
+    intro += '\n# on ' + datetime.now().strftime("%Y %b %d %a %H:%M:%S") + nl + nl
 
     return intro
 
@@ -369,7 +369,7 @@ def make_domains(entry, indent=0) -> str:
 
         lines.append(line)
         # lines.append(nl)
-        text = '\n'.join(lines) + nl
+        text = '\n'.join(lines) + nl + nl
 
     return text
 
@@ -406,103 +406,36 @@ def make_domain(entry, indent=0) -> str:
 
 def make_boolean(entry, fn_sig='', indent=0) -> str:
 
+    case = []
     line = []
-
-    # split up the lines based on the ∧/and/∨/or
-    ps = [[]]
-    ops = []
 
     for element in entry['values']:
 
-        if element not in booleans or ('not' == booleans[element]):
-            ps[-1].append(element)
-        else:
-            ps.append([])
-            ops.append(element)
-
-    ops = list(map(lambda o: booleans[o], ops))
-
-    # print(ps)
-    # print(ops)
+        if element in ('!', '¬', 'not'): case.append('not ')
+        elif element in booleans: case.append(' ' + booleans[element] + ' ')
+        elif element in PREDICATES: case.append(PREDICATES[element])
+        elif isinstance(element, tuple): case[-1] += element                # ++ to the previous tuple
+        else: case.append(element)
 
     f1 = '{} {} {}'             # 3 < fn
     f2 = '{}({})'              # pd(fn(…))
     f3 = '{}({}, {})'          # pd(fn(…), args)
 
-    # will have min length of 1, [pred]
-    # or [pred args]
-    # or [not pred args]
+    for element in case:
 
-    for case in ps:
+        if isinstance(element, tuple):
 
-        n_pos = None                # position of a not
-        pr_pos = None               # position of right )
-        pl_pos = None               # position of left (
-        is_symbolic = False
-        predicate = ''
-        i = 0       # a trick, which arg to look at...
-        args = None
+            predicate = element[0]
+            use_symbolic = element[1]
+            args = element[3:] if len(element) > 2 else None
 
-        # get the components for each part not? pd fn (…) (? )?
-        for i, value in enumerate(case):
-
-            if value == '(':
-                pl_pos = i
-            elif value == ')':
-                pr_pos = i
-            elif value in ('!', '¬', 'not'):
-                n_pos = i
-            elif isinstance(value, tuple):
-                args = value
-            elif value in PREDICATES:
-                # it's a symbol, ie >
-                if PREDICATES[case[i]][1]:
-                    predicate = PREDICATES[case[i]][1]
-                    is_symbolic = True
-                else:
-                    predicate = PREDICATES[case[i]][0]
+            if use_symbolic:
+                line.append(f1.format(fn_sig, predicate, ', '.join(args)))
+            elif args is None:
+                line.append(f2.format(predicate, fn_sig))
             else:
-               # TODO: how did it get here? error for predicates that are not in PREDICATES
-                continue
+                line.append(f3.format(predicate, fn_sig, ', '.join(args)))
+        else:
+            line.append(element)
 
-        text = ''
-
-        # sort out the cases _, (, ), !(, (!
-        if (pl_pos is not None and n_pos is not None) and (pl_pos < n_pos):
-            text += '( not'
-        elif (pl_pos is not None and n_pos is not None) and (pl_pos > n_pos):
-            text += 'not ('
-        elif pl_pos is not None:
-            text += '('
-        elif n_pos is not None:
-            text += 'not '
-
-        # print('p: {} p: {} n: {}'.format('(' if pl_pos else ' ', ')' if pr_pos else ' ', 'not' if n_pos else ''))
-        # print('p: {} p: {} n: {}'.format(pl_pos, pr_pos, n_pos))
-        # print('text: ', text)
-
-        if is_symbolic:
-            # f1.format(n, fn_sig, predicate, ', '.join(args))
-            text += f1.format(fn_sig, predicate, ', '.join(args))
-            # line.append(f1.format(n, fn_sig, predicate, ', '.join(args)))
-        elif args is not None:
-            # f3.format(n, predicate, fn_sig, ', '.join(args))
-            text += f3.format(predicate, fn_sig, ', '.join(args))
-            # line.append(f3.format(n, predicate, fn_sig, ', '.join(args)))
-        elif args is None:
-            # f2.format(n, predicate, fn_sig)
-            text += f2.format(predicate, fn_sig)
-            # line.append(f2.format(n, predicate, fn_sig))
-
-        if pr_pos is not None:
-            text += ')'
-
-        line.append(text)
-
-        # ops is always one shorter than ps
-        if ops:
-            line.append(ops.pop())
-
-    # print(line, '\n')
-
-    return ' '.join(line)
+    return ''.join(line)

@@ -10,9 +10,9 @@ This is to test the namespacing
 `x = [1, 2, 3]`
 `y = [4, 5, 6]`
 
-Domain x Real
-Domain y Real 4 5
-Domain z Natural 1 2 -nrandom 10
+Domain x Reals
+Domain y Reals 4 5
+Domain z Naturals 1 2 -nrandom 10
 
 // this exist outside any namespace/unittest
 
@@ -29,6 +29,24 @@ Test fn3 x,y:
   | modof? 10
   | is-a? float
   | same-as? `[10,10,10]`
+  ;
+
+Domain X Reals 0 100
+Domain Y Reals 0 100
+Domain Z Reals 0 100
+
+Test logical X,Y,Z:
+  | :method art -dist [0 0 0]
+  | < 4 ∨ between 0 100
+  | modof? 10
+  | between? 0 100
+  | is-int? ∧ is-float?
+  | !int? ∧ !float?
+  | (int? ∧ float?)
+  | !(int? ∨ float?)
+  | !is-int? ∧ (is-float? ∨ is-fraction?)
+  | ! is-int? ∧ !(> 8 ∧ < 10 ∧ = 9)
+  | is-int? ∨ is-float? ∨ !fraction? ∧ gt? 0
   ;
 
 ns-t1a {

@@ -51,8 +51,8 @@ test_stub: BAR predicate                                            #stub_p
          ;
 
 test_logical: OP_NOT? predicate value* (OP_LOGICAL OP_NOT? predicate value*)* #stub_logic
-            | OP_NOT? '(' test_logical+ ')'                                 #stub_paren
-            | test_logical OP_LOGICAL test_logical                          #stub_logic_multi
+            | OP_NOT? '(' test_logical+ ')'                         #stub_paren
+            | test_logical OP_LOGICAL test_logical                  #stub_logic_multi
             ;
 
 // Domain stuff -------------------------------------------
@@ -62,7 +62,8 @@ domain: 'Domain' name name                                          #make_domain
       ;
 
 // set parameters -----------------------------------------
-compiler: DIRECTIVE dictate                                         #set_directive
+compiler: DIRECTIVE dictate (fn_arg*)?                              #set_directive
+//        | DIRECTIVE dictate (fn_arg*)?                              #set_directive_args
 //        | DIRECTIVE LIST
 //        | DIRECTIVE NAME OP_EQ tuple...
         ;
@@ -120,6 +121,7 @@ named_value: value                                                  #make_value
 dictate: name
      | NUMBER
      | STRING
+     | value_list
      ;
 
 // various operators --------------------------------------

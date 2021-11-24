@@ -166,19 +166,29 @@ class Falcon(FalconVisitor):
         return ctx.getText().strip('`')
 
     def visitDictate(self, ctx: FalconParser.DictateContext):
+        #TODO: fix for lists!!!
         return ctx.getText()
 
     # -------------------------------------------
 
-    def visitSet_directive(self, ctx: FalconParser.Set_directiveContext):
+    def visitSet_directive(self, ctx: FalconParser.Set_directiveContext, set_global=True):
 
         directive = str(ctx.DIRECTIVE())
         value = str(self.visit(ctx.dictate()))
 
-        # if initial...
-        self.ns[self.current_ns].setdefault('directives', {})[directive] = value
+        params = []
 
-        # print(self.ns[self.current]['directives'])
+        for child in ctx.children:
+            if isinstance(child, FalconParser.Make_fn_directiveContext):
+                params.append(self.visit(child))
+
+        # if initial...
+        if set_global:
+            self.ns[self.current_ns].setdefault('directives', {})[directive] = (value, params)
+
+        if not set_global:
+            return {'directive': directive, 'value': value, 'params': params}
+
 
     def visitMake_codestmt(self, ctx: FalconParser.Make_codestmtContext):
 
@@ -192,21 +202,25 @@ class Falcon(FalconVisitor):
     def visitMake_fn_directive(self, ctx: FalconParser.Make_fn_directiveContext):
 
         directive = str(ctx.FNARG())
-        param = str(self.visit(ctx.dictate()))
+        params = str(self.visit(ctx.dictate()))
 
-        return {'fn-directive': directive, 'parameter': param}
+        return directive.strip('-'), params
 
     # ------------------------------------------
     # TODO!
 
     def visitMake_list(self, ctx: FalconParser.Make_listContext):
 
+        values = []
+
         for child in ctx.children:
-            _ = self.visit(child)
+            values.append(self.visit(child))
+
+        return values
 
     def visitMake_list_c(self, ctx: FalconParser.Make_list_cContext):
 
-        pass
+        return 'NOTHING HERE!'
 
     # Tests -------------------------------------
     # the kinds of tests that get performed
@@ -313,8 +327,10 @@ class Falcon(FalconVisitor):
 
         for child in ctx.children:
             if isinstance(child, FalconParser.Set_directiveContext):
-                d = child.DIRECTIVE().getText()
-                directives[d] = child.dictate().getText()
+                directives = self.visitSet_directive(child, False) #.visit(child, False)
+                print('directives: ', directives)
+                # d = child.DIRECTIVE().getText()
+                # directives[d] = child.dictate().getText()
 
         return directives
 
@@ -371,6 +387,8 @@ class Falcon(FalconVisitor):
             elif isinstance(child, antlr4.tree.Tree.TerminalNodeImpl):
                 value = child.getText()
                 stub['values'].append(value)
+
+        # print(stub['values'])
 
         return stub
 
