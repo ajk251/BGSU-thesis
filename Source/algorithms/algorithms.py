@@ -2,7 +2,9 @@
 
 from itertools import product
 
+
 ALGORITHMS = {}
+
 
 def algorithm(_fn=None, *, alias=None):
 
@@ -26,7 +28,7 @@ def algorithm(_fn=None, *, alias=None):
 
 # ---------------------------------------------------------
 
-@algorithm(alias=['⨯', 'product', 'cartesian'])
+@algorithm(alias=['⨯', 'X', 'product', 'cartesian'])
 def cartesian_product(*args):
     return product(*args)
 

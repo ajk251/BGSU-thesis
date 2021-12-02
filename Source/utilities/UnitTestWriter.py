@@ -5,6 +5,7 @@ from time import strftime
 
 import predicates
 from predicates.predicates import PREDICATES
+from algorithms.algorithms import ALGORITHMS
 import Domains
 
 # TODO:
@@ -19,7 +20,7 @@ tabsize = 4
 TAB = ' ' * tabsize
 nl = '\n'
 
-# ⊻ ⊼
+# ⊻ ⊼ ⊽
 booleans = {'∧': 'and', '&&': 'and', 'and': 'and',
             '∨': 'or', '||': 'or', 'or': 'or',
             '!': 'not', '¬': 'not', 'not': 'not'}
@@ -168,6 +169,7 @@ def add_imports(entry) -> str:
 
     lines = ['from predicates import *',
              'from Domains import *\n',
+             'from algorithms import *',
              'import unittest\n']
 
     for module, args in entry:
@@ -175,12 +177,11 @@ def add_imports(entry) -> str:
         line = ''
 
         if len(args) == 0:
-            print('args is None')
             line = 'import ' + module
         elif 'from' in args and 'as' in args:
-            line = 'import {} from {} as {}'.format(module, args['from'], args['as'])
+            line = 'from {} import {} as {}'.format(module, args['from'], args['as'])
         elif 'from' in args:
-            line = 'import {} from {}'.format(module, args['from'])
+            line = 'from {} import {}'.format(module, args['from'])
         elif 'as' in args:
             line = 'import {} as {}'.format(module, args['as'])
 
@@ -207,6 +208,24 @@ def basic_Test(entry, indent) -> str:
     message = entry['directives'].get(':message', None)
 
     # get algos!
+    if ':method' in entry['directives']['directive']:
+
+        print('->', )
+
+        algo = entry['directives']['value']
+
+        if algo not in ALGORITHMS:
+            raise f"Directive :method not found {algo}"
+
+        # get the real name
+        algo = ALGORITHMS[algo]
+
+        # deal with the parameters of the test
+        params = []                                         # the parameters of the algorithm
+        for name, values in entry['directives']['params']:
+            params.append('{}={}'.format(name, ''.join(values)))
+    else:
+        algo = 'zip'
 
     # write tests ------
 
@@ -219,10 +238,13 @@ def basic_Test(entry, indent) -> str:
     dvars = entry['domain']                                 # the domain names
     ivars = [d.lower() + 'ᵢ' for d in dvars]                # the name of the values in the domain
 
+    # build the for loop, naked/with custom iterator/generic & no parameters
     if len(ivars) == 1:
         template = "for {} in {}:".format(ivars[0], dvars[0])
+    elif params is not None:
+        template = 'for {} in {}({}, {}):'.format(', '.join(ivars), algo, ', '.join(dvars), ', '.join(params))
     else:
-        template = "for {} in {}({}):".format(', '.join(ivars), 'zip', ', '.join(dvars))
+        template = "for {} in {}({}):".format(', '.join(ivars), algo, ', '.join(dvars))
 
     lines.append(template)
 
@@ -453,3 +475,7 @@ def make_boolean(entry, fn_sig='', indent=0) -> str:
             line.append(element)
 
     return ''.join(line)
+
+def make_algos(entry) -> str:
+
+    pass

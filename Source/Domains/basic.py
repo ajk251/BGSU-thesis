@@ -5,7 +5,14 @@ from random import randrange, randint
 from Domains.domains import domain
 
 
-@domain(alias=['ℝ', 'Floats'])
+# Todo:
+#   • discrete
+#   • empirical
+#   • repeat
+#   • boundary
+#   • numerical
+
+@domain(alias=['ℝ', 'Reals', 'Floats'])
 def Reals(lower=None, upper=None, n_random=None, by=None):
 
     do_random = False if n_random is None else True

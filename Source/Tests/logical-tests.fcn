@@ -1,15 +1,17 @@
 
 :import fractions                           // import fractions
-:import fraction -from Fraction             // from fractions import Fraction
-:import fraction -as F                      // import fractions as frac
+:import fractions -from Fraction            // from fractions import Fraction
+:import fractions -as F                     // import fractions as frac
 :import fractions -from Fraction -as F      // from fractions import Fractions as frac
+
+:import logicals -from logical
 
 Domain X Reals 0 100
 Domain Y Reals 0 100
 Domain Z Reals 0 100
 
 Test logical X,Y,Z:
-  | :method art -dist [0 0 0] -iters 10 -wtf True
+  | :method art -initial [0 0 0] -max_tests 10
   | !(!int? ∨ !float?)
   | < 4 ∨ between 0 100
   | modof? 10

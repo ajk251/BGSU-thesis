@@ -7,6 +7,9 @@ from predicates.predicates import predicate
 
 # basic -----------------------------------------
 
+@predicate(alias=['is-None?', 'None?', 'none?'])
+def is_none(value) -> bool:
+    return value is None
 
 @predicate(alias=['is-a?'])
 def is_a(kind, value) -> bool:

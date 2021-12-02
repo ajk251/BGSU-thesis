@@ -1,23 +1,25 @@
 from predicates import *
 from Domains import *
 
+from algorithms import *
 import unittest
 
 import fractions
-import fraction from Fraction
-import fraction as F
-import fractions from Fraction as F
+from fractions import Fraction
+import fractions as F
+from fractions import Fraction as F
+from logicals import logical
 
 # This file was generated automatically by falcon.
 # from: Tests/logical-tests.fcn
-# on 2021 Dec 02 Thu 12:03:38
+# on 2021 Dec 02 Thu 18:55:38
 
 X = Reals(0, 100)
 Y = Reals(0, 100)
 Z = Reals(0, 100)
 
 # start test -----------------
-for xᵢ, yᵢ, zᵢ in zip(X, Y, Z):
+for xᵢ, yᵢ, zᵢ in ART(X, Y, Z, initial=[0, 0, 0], max_tests=10):
     assert not (not is_integer(logical(xᵢ, yᵢ, zᵢ)) or not is_float(logical(xᵢ, yᵢ, zᵢ)))
     assert logical(xᵢ, yᵢ, zᵢ) < 4 or between(logical(xᵢ, yᵢ, zᵢ), 0, 100)
     assert is_modulus_of(logical(xᵢ, yᵢ, zᵢ), 10)

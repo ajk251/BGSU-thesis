@@ -1,0 +1,12 @@
+
+
+Requirements:
+    • must be @algorithm
+    • takes n-args
+    • return n-args of the same type
+
+Takes:
+    • a generator
+
+
+Returns:
