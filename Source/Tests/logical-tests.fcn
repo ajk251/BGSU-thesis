@@ -1,5 +1,8 @@
 
-
+:import fractions                           // import fractions
+:import fraction -from Fraction             // from fractions import Fraction
+:import fraction -as F                      // import fractions as frac
+:import fractions -from Fraction -as F      // from fractions import Fractions as frac
 
 Domain X Reals 0 100
 Domain Y Reals 0 100

@@ -33,8 +33,8 @@ def write_basic_unittest(intermediate, source=None):
     indent = 0
     nl = '\n'
 
-    file = intermediate['global']['directives'].setdefault('file', './test.py')
-
+    # file = intermediate['global']['directives'].setdefault('file', './test.py')
+    file = './test.py' if 'file' not in intermediate['global']['directives'] else intermediate['global']['directives']['file']
     with open(file, 'w', encoding='utf-8') as falcon:
 
         # write the boilerplate stuff, that applies globally
@@ -168,9 +168,23 @@ def add_imports(entry) -> str:
 
     lines = ['from predicates import *',
              'from Domains import *\n',
-             'import unittest']
+             'import unittest\n']
 
-    # do other imports...
+    for module, args in entry:
+
+        line = ''
+
+        if len(args) == 0:
+            print('args is None')
+            line = 'import ' + module
+        elif 'from' in args and 'as' in args:
+            line = 'import {} from {} as {}'.format(module, args['from'], args['as'])
+        elif 'from' in args:
+            line = 'import {} from {}'.format(module, args['from'])
+        elif 'as' in args:
+            line = 'import {} as {}'.format(module, args['as'])
+
+        lines.append(line)
 
     return '\n'.join(lines)
 
@@ -417,7 +431,7 @@ def make_boolean(entry, fn_sig='', indent=0) -> str:
         elif isinstance(element, tuple): case[-1] += element                # ++ to the previous tuple
         else: case.append(element)
 
-    f1 = '{} {} {}'             # 3 < fn
+    f1 = '{} {} {}'            # fn < 10
     f2 = '{}({})'              # pd(fn(…))
     f3 = '{}({}, {})'          # pd(fn(…), args)
 
@@ -427,10 +441,10 @@ def make_boolean(entry, fn_sig='', indent=0) -> str:
 
             predicate = element[0]
             use_symbolic = element[1]
-            args = element[3:] if len(element) > 2 else None
+            args = element[2:] if len(element) > 2 else None
 
             if use_symbolic:
-                line.append(f1.format(fn_sig, predicate, ', '.join(args)))
+                line.append(f1.format(fn_sig, use_symbolic, ''.join(args)))
             elif args is None:
                 line.append(f2.format(predicate, fn_sig))
             else:

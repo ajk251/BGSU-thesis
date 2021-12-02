@@ -166,8 +166,16 @@ class Falcon(FalconVisitor):
         return ctx.getText().strip('`')
 
     def visitDictate(self, ctx: FalconParser.DictateContext):
-        #TODO: fix for lists!!!
-        return ctx.getText()
+
+        value = None
+
+        if ctx.value_list() is not None:
+            value = self.visit(ctx.value_list())
+            value = '[{}]'.format(', '.join(value))
+        else:
+            value = ctx.getText()
+
+        return value
 
     # -------------------------------------------
 
@@ -184,11 +192,14 @@ class Falcon(FalconVisitor):
 
         # if initial...
         if set_global:
-            self.ns[self.current_ns].setdefault('directives', {})[directive] = (value, params)
-
-        if not set_global:
+            # imports are a special case, ie many of them
+            if directive == ':import':
+                # self.ns['initial']['imports'].append((directive, value, params))
+                self.ns['initial']['imports'].append((value, {arg: value for arg,value in params}))
+            else:
+                self.ns[self.current_ns].setdefault('directives', {})[directive] = (value, params)
+        else:
             return {'directive': directive, 'value': value, 'params': params}
-
 
     def visitMake_codestmt(self, ctx: FalconParser.Make_codestmtContext):
 
@@ -202,7 +213,7 @@ class Falcon(FalconVisitor):
     def visitMake_fn_directive(self, ctx: FalconParser.Make_fn_directiveContext):
 
         directive = str(ctx.FNARG())
-        params = str(self.visit(ctx.dictate()))
+        params = self.visit(ctx.dictate())
 
         return directive.strip('-'), params
 
@@ -214,13 +225,20 @@ class Falcon(FalconVisitor):
         values = []
 
         for child in ctx.children:
+            if child.getText() in '[]': continue
             values.append(self.visit(child))
 
         return values
 
     def visitMake_list_c(self, ctx: FalconParser.Make_list_cContext):
 
-        return 'NOTHING HERE!'
+        values = []
+
+        for child in ctx.children:
+            if child.getText() in ',[]': continue
+            values.append(self.visit(child))
+
+        return values
 
     # Tests -------------------------------------
     # the kinds of tests that get performed
