@@ -7,9 +7,6 @@ from numbers import Integral, Number, Real
 import collections.abc as abc
 import math
 
-
-
-
 # numerical -------------------------------------
 
 @predicate(alias=['modof?', '%=', 'mod-of?'])

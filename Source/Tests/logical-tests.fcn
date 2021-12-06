@@ -1,9 +1,5 @@
 
-:import fractions                           // import fractions
 :import fractions -from Fraction            // from fractions import Fraction
-:import fractions -as F                     // import fractions as frac
-:import fractions -from Fraction -as F      // from fractions import Fractions as frac
-
 :import logicals -from logical
 
 Domain X Reals 0 100
@@ -11,7 +7,9 @@ Domain Y Reals 0 100
 Domain Z Reals 0 100
 
 Test logical X,Y,Z:
+  | :name logical_floats
   | :method art -initial [0 0 0] -max_tests 10
+  | :message 'here I am testing to see if it works'
   | !(!int? ∨ !float?)
   | < 4 ∨ between 0 100
   | modof? 10

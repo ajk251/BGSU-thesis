@@ -5,11 +5,26 @@ import operator as op
 
 from predicates.predicates import predicate
 
+
+# useful -----------------------------------------
+
+@predicate(alias=['catches', 'raises', 'raises?'])
+def raises(fn, args, kwargs, error) -> bool:
+
+    try:
+        fn(*args, **kwargs)
+    except Exception as e:
+        return e == error
+    finally:
+        return False
+
 # basic -----------------------------------------
+
 
 @predicate(alias=['is-None?', 'None?', 'none?'])
 def is_none(value) -> bool:
     return value is None
+
 
 @predicate(alias=['is-a?'])
 def is_a(kind, value) -> bool:
@@ -61,5 +76,4 @@ def le(a, b) -> bool:
 @predicate(alias=['>=', '≥', 'ge?'], symbolic='>=')
 def ge(a, b) -> bool:
     return op.ge(a, b)
-
 

@@ -2,7 +2,7 @@
 from itertools import count
 from random import randrange, randint
 
-from Domains.domains import domain
+from domains.domains import domain
 
 
 # Todo:

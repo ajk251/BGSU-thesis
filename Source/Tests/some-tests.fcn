@@ -21,6 +21,7 @@ Test fn3 X:
   | is-a? float
   | same-as? `[10,10,10]`
   | > 10
+  | raises? NumericalError
   ;
 
 Domain X Integers -10 10 -nrandom 10

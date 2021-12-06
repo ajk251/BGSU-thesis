@@ -18,6 +18,7 @@
 
 
 [Directives]
+:test-name                  the python name of the test
 
 
 [namespace] -------------------------------------

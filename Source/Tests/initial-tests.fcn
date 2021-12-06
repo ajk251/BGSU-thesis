@@ -1,0 +1,13 @@
+
+:import Tests.test_functions -from add
+
+Domain X Integers -1000 1000 -nrandom 10
+Domain Y Integers -500  500  -nrandom 10
+
+Test add X Y:
+  | :message "please work"
+  | :test-name test_add
+  | :method art
+  | int?
+  | between -1500 1500
+  ;

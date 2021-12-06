@@ -194,8 +194,7 @@ class Falcon(FalconVisitor):
         if set_global:
             # imports are a special case, ie many of them
             if directive == ':import':
-                # self.ns['initial']['imports'].append((directive, value, params))
-                self.ns['initial']['imports'].append((value, {arg: value for arg,value in params}))
+                self.ns['initial']['imports'].append((value, {arg: value for arg, value in params}))
             else:
                 self.ns[self.current_ns].setdefault('directives', {})[directive] = (value, params)
         else:
@@ -255,6 +254,7 @@ class Falcon(FalconVisitor):
         test['stubs'] = []
 
         okay_stubs = (FalconParser.Stub_pvContext,
+                      FalconParser.Stub_pContext,
                       FalconParser.Stub_many_pvContext,
                       FalconParser.Stub_codeContext,
                       FalconParser.Stub_logicalContext)
@@ -263,9 +263,11 @@ class Falcon(FalconVisitor):
 
             if isinstance(stub, okay_stubs):
                 test['stubs'].append(self.visit(stub))
+                print(test['stubs'][-1])
             elif isinstance(stub, FalconParser.Stub_directivesContext):
-                directives = self.visit(stub)
-                test['directives'] = directives
+                # directives = self.visit(stub)
+                d = self.visit(stub)
+                test['directives'][d['directive']] = {'value': d['value'], 'params': d['params']}
             else:
                 # TODO raise error! How did it get here‽
                 continue
@@ -346,7 +348,6 @@ class Falcon(FalconVisitor):
         for child in ctx.children:
             if isinstance(child, FalconParser.Set_directiveContext):
                 directives = self.visitSet_directive(child, False) #.visit(child, False)
-                print('directives: ', directives)
                 # d = child.DIRECTIVE().getText()
                 # directives[d] = child.dictate().getText()
 
@@ -478,8 +479,8 @@ class Falcon(FalconVisitor):
                 domain['args'].append(self.visit(child))
             elif isinstance(child, FalconParser.Make_fn_directiveContext):
                 directive = self.visit(child)
-                domain['kwargs'][directive['fn-directive']] = directive['parameter']
-
+                # domain['kwargs'][directive['fn-directive']] = directive['parameter']
+                domain['kwargs'][directive[0]] = directive[1]
         # self.ns[self.current_ns].setdefault('domains', {})[name] = domain
         self.ns[self.current_ns]['ordering'].append(('domain', domain))
 

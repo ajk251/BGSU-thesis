@@ -11,11 +11,28 @@ from lang.falcon import Falcon
 
 from utilities.UnitTestWriter import write_basic_unittest
 
+
+# NOTE:
+#   How to invoke pytest
+#       https://docs.pytest.org/en/latest/how-to/usage.html
+
+def main(argv):
+
+    if len(argv) > 1:
+        print(argv)
+
+    return None
+
+
 if __name__ == '__main__':
 
-    # file = 'Tests/namespace-test.fcn'
-    # file = 'Tests/some-tests.fcn'
-    file = 'Tests/logical-tests.fcn'
+    file = main(sys.argv)
+
+    if file is None:
+        # file = 'Tests/namespace-test.fcn'
+        file = 'Tests/some-tests.fcn'
+        # file = 'Tests/logical-tests.fcn'
+        # file = 'Tests/initial-tests.fcn'
 
     input_stream = FileStream(file, encoding='utf-8')
     lexer = FalconLexer(input_stream)
@@ -40,7 +57,7 @@ if __name__ == '__main__':
     print('='*45)
     print()
 
-    # from Domains.basic import Reals, Naturals
+    # from domains.basic import Reals, Naturals
     #
     # x = Naturals(0, 100, by=5)
     #

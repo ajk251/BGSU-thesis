@@ -18,6 +18,8 @@ namespace: name LBRAC stmt* RBRAC                                   #ns
 
 stmt: test
     | assertion
+    | winnow_test
+    | satisfy_test
     | domain
     | compiler
     | code
@@ -54,6 +56,19 @@ test_logical: OP_NOT? predicate value* (OP_LOGICAL OP_NOT? predicate value*)* #s
             | OP_NOT? '(' test_logical+ ')'                         #stub_paren
             | test_logical OP_LOGICAL test_logical                  #stub_logic_multi
             ;
+
+// more complex tests ------------
+
+winnow_test: WINNOW name domain_names (ARROW name)? ':' bin_stub+ ';'
+           ;
+
+satisfy_test: SATISFY name domain_names (ARROW name)? ':' bin_stub+ ';'
+            ;
+
+bin_stub: BAR name predicate (value+)?
+        | BAR CODESMNT
+        | BAR compiler*
+        ;
 
 // Domain stuff -------------------------------------------
 
@@ -129,6 +144,8 @@ dictate: name
 // symbols used -------------
 TEST:   'Test';
 ASSERT: 'Assert';
+WINNOW: 'Winnow' | 'Groupby';
+SATISFY: 'Satisfy';
 
 LPAREN: '(';
 RPAREN: ')';
@@ -162,6 +179,7 @@ ID: (CHAR | '_')(CHAR | DIGIT | [_.])*;
 
 OPERATORS: [><≤≥] | '<=' | '>=' | '==' | '±';
 OP_EQ:  '=';
+ARROW: '->' | '→';
 
 // CODE/ID is meant to represent the variable names used in most languages
 // LABEL is meant to have a more liberal/loose name-ing scheme, Racket-like

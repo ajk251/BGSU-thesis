@@ -1,12 +1,15 @@
 
-from datetime import datetime, date
 import re
-from time import strftime
+
+from datetime import datetime
+from random import choices, randint
+from string import ascii_letters, digits
+# from time import strftime
 
 import predicates
 from predicates.predicates import PREDICATES
 from algorithms.algorithms import ALGORITHMS
-import Domains
+import domains
 
 # TODO:
 #   add overwrite directive
@@ -35,7 +38,8 @@ def write_basic_unittest(intermediate, source=None):
     nl = '\n'
 
     # file = intermediate['global']['directives'].setdefault('file', './test.py')
-    file = './test.py' if 'file' not in intermediate['global']['directives'] else intermediate['global']['directives']['file']
+    file = 'Tests/tests.py' if 'file' not in intermediate['global']['directives'] else intermediate['global']['directives']['file']
+
     with open(file, 'w', encoding='utf-8') as falcon:
 
         # write the boilerplate stuff, that applies globally
@@ -168,7 +172,7 @@ def make_global(entry, indent=0) -> str:
 def add_imports(entry) -> str:
 
     lines = ['from predicates import *',
-             'from Domains import *\n',
+             'from domains import *\n',
              'from algorithms import *',
              'import unittest\n']
 
@@ -202,17 +206,38 @@ def falcon_intro(source=None):
 # testers --------------
 def basic_Test(entry, indent) -> str:
 
-    # TODO: get algorithm
+    # print('directives: ', entry)
 
     #directives --------
-    message = entry['directives'].get(':message', None)
 
-    # get algos!
-    if ':method' in entry['directives']['directive']:
+    # *** message ***
 
-        print('->', )
+    if entry['directives'].get(':message', None) is not None:
+        message = entry['directives'][':message']['value']
+    else:
+        message = None
 
-        algo = entry['directives']['value']
+    # *** get function name ***
+    # this is mostly for use with pytest
+    fn_name = entry['function']
+
+    if entry['directives'].get(':test-name', None):
+        # TODO: raise warning if it does not start with test
+        t_name = entry['directives'][':test-name']['value']
+        pyfunc = f'def {t_name}():'
+    elif entry['directives'].get(':name', None):
+        t_name = entry['directives'][':name']['value']
+        pyfunc = f'def {t_name}():' if t_name.startswith('test') else f'def test_{t_name}():'
+    else:
+        rand_name = ''.join((choices(ascii_letters+digits, k=randint(2, 5))))
+        pyfunc = 'def test_{}_{}():'.format(fn_name, rand_name)
+
+    # *** get algo ***
+    params = []
+
+    if entry['directives'].get(':method', None):
+
+        algo = entry['directives'][':method']['value']
 
         if algo not in ALGORITHMS:
             raise f"Directive :method not found {algo}"
@@ -221,18 +246,21 @@ def basic_Test(entry, indent) -> str:
         algo = ALGORITHMS[algo]
 
         # deal with the parameters of the test
-        params = []                                         # the parameters of the algorithm
-        for name, values in entry['directives']['params']:
+        # params = []                                         # the parameters of the algorithm
+        for name, values in entry['directives'][':method']['params']:
             params.append('{}={}'.format(name, ''.join(values)))
     else:
         algo = 'zip'
+        params = []
 
     # write tests ------
 
-    lines = ['\n# start test -----------------']
+    lines = ['\n# start test -----------------', pyfunc]
+    indent += 1
 
     if message:
-        lines.append('# ' + message.strip('"') + nl)
+        line = indent * TAB + '# ' + message.strip('"') + nl
+        lines.append(line)
 
     # get the variable names
     dvars = entry['domain']                                 # the domain names
@@ -240,11 +268,11 @@ def basic_Test(entry, indent) -> str:
 
     # build the for loop, naked/with custom iterator/generic & no parameters
     if len(ivars) == 1:
-        template = "for {} in {}:".format(ivars[0], dvars[0])
-    elif params is not None:
-        template = 'for {} in {}({}, {}):'.format(', '.join(ivars), algo, ', '.join(dvars), ', '.join(params))
+        template = indent * TAB + "for {} in {}:".format(ivars[0], dvars[0])
+    elif len(params) > 0:
+        template = indent * TAB + 'for {} in {}({}, {}):'.format(', '.join(ivars), algo, ', '.join(dvars), ', '.join(params))
     else:
-        template = "for {} in {}({}):".format(', '.join(ivars), algo, ', '.join(dvars))
+        template = indent * TAB + "for {} in {}({}):".format(', '.join(ivars), algo, ', '.join(dvars))
 
     lines.append(template)
 
@@ -253,7 +281,7 @@ def basic_Test(entry, indent) -> str:
     f3 = 'assert {}({}, {})'            # w/ function
     f4 = 'assert {}({})'                # ignoring True
 
-    fn_name = entry['function']
+    # fn_name = entry['function']
     args = ', '.join(ivars)
     fn_sig = '{}({})'.format(fn_name, args)
     indent += 1
@@ -263,6 +291,7 @@ def basic_Test(entry, indent) -> str:
         # get the name of the predicate if it knows it's a predicate (or should be, ie OOPS)
         if stub['kind'].startswith('predicate') and stub['predicate'] in PREDICATES:
             # get the symbolic name if there is one, otherwise the function name
+
             if PREDICATES[stub['predicate']][1]:
                 pd_name = PREDICATES[stub['predicate']][1]
                 use_symbolic = True
@@ -276,13 +305,19 @@ def basic_Test(entry, indent) -> str:
             # raise error
             pd_name = "OOPS!"
 
+        # write the predicate
         if stub['kind'] == 'predicate-value':
-            if use_symbolic and stub['value'] == 'True':
+            # raises is a special case
+            if pd_name == 'raises':
+                line = TAB * indent + f'assert {pd_name}({fn_name}, {args}, {stub["value"]})'
+            elif use_symbolic and stub['value'] == 'True':
                 line = TAB * indent + f4.format(pd_name, fn_sig)
             elif use_symbolic:
                 line = TAB * indent + f1.format(fn_sig, pd_name, stub['value'])
             else:
                 line = TAB * indent + f2.format(pd_name, fn_sig, stub['value'])
+        elif stub['kind'] == 'predicate':
+            line = indent * TAB + f4.format(pd_name, fn_sig)
         elif stub['kind'] == 'predicate-value+':
             line = TAB * indent + f2.format(pd_name, fn_sig, ', '.join(stub['value']))
         elif stub['kind'] == 'logical':
@@ -375,28 +410,31 @@ def code_block(entry) -> str:
 def make_domains(entry, indent=0) -> str:
 
     # TODO: if name fails raise error
-    #       add :annotate to add/or not "# Domains"
+    #       add :annotate to add/or not "# domains"
 
-    lines = [nl, '# Domains -------------------\n']
+    lines = [nl, '# domains -------------------\n']
 
     f1 = '{} = {}()'              # x = Reals()
-    f2 = '{} = {}({})'            # x = Reals(lb, ub, nrandom=10)
+    f2 = '{} = {}({})'            # x = Reals(lb, ub)
+    f3 = '{} = {}({}, {})'        # x = Reals(lb, ub, nrandom=10)
+
+    print(entry)
 
     for name, info in entry.items():
 
         if info['kind'] == 'domain':
             var = info['var-name']
-            name = Domains.DOMAINS[info['domain']]
+            name = domains.DOMAINS[info['domain']]
             line = f1.format(var, name)
         elif info['kind'] == 'domain-args':
 
             var = info['var-name']
-            name = Domains.DOMAINS[info['domain']]
+            name = domains.DOMAINS[info['domain']]
 
             args = ', '.join(info['args']) if info['args'] else ''
 
             if info['kwargs']:
-                for k,v in info['kwargs'].items():
+                for k, v in info['kwargs'].items():
                     args += ', '
                     args += k.strip('-') + '='
                     args += v
@@ -413,19 +451,22 @@ def make_domains(entry, indent=0) -> str:
 def make_domain(entry, indent=0) -> str:
 
     # TODO: if name fails raise error
-    #       add :annotate to add/or not "# Domains"
+    #       add :annotate to add/or not "# domains"
 
     f1 = '{} = {}()'              # x = Reals()
-    f2 = '{} = {}({})'            # x = Reals(lb, ub, nrandom=10)
+    f2 = '{} = {}({})'            # x = Reals(lb, ub)
+    f3 = '{} = {}({}, {})'        # x = Reals(lb, ub, nrandom=10)
+
+    # print(entry)
 
     if entry['kind'] == 'domain':
         var = entry['var-name']
-        name = Domains.DOMAINS[entry['domain']]
+        name = domains.DOMAINS[entry['domain']]
         line = f1.format(var, name)
     elif entry['kind'] == 'domain-args':
 
         var = entry['var-name']
-        name = Domains.DOMAINS[entry['domain']]
+        name = domains.DOMAINS[entry['domain']]
 
         args = ', '.join(entry['args']) if entry['args'] else ''
 
@@ -476,6 +517,4 @@ def make_boolean(entry, fn_sig='', indent=0) -> str:
 
     return ''.join(line)
 
-def make_algos(entry) -> str:
 
-    pass
