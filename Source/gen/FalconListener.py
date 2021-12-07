@@ -125,15 +125,6 @@ class FalconListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by FalconParser#stub_code.
-    def enterStub_code(self, ctx:FalconParser.Stub_codeContext):
-        pass
-
-    # Exit a parse tree produced by FalconParser#stub_code.
-    def exitStub_code(self, ctx:FalconParser.Stub_codeContext):
-        pass
-
-
     # Enter a parse tree produced by FalconParser#stub_directives.
     def enterStub_directives(self, ctx:FalconParser.Stub_directivesContext):
         pass
@@ -149,6 +140,33 @@ class FalconListener(ParseTreeListener):
 
     # Exit a parse tree produced by FalconParser#stub_logical.
     def exitStub_logical(self, ctx:FalconParser.Stub_logicalContext):
+        pass
+
+
+    # Enter a parse tree produced by FalconParser#stub_code.
+    def enterStub_code(self, ctx:FalconParser.Stub_codeContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#stub_code.
+    def exitStub_code(self, ctx:FalconParser.Stub_codeContext):
+        pass
+
+
+    # Enter a parse tree produced by FalconParser#stub_side_effect_many.
+    def enterStub_side_effect_many(self, ctx:FalconParser.Stub_side_effect_manyContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#stub_side_effect_many.
+    def exitStub_side_effect_many(self, ctx:FalconParser.Stub_side_effect_manyContext):
+        pass
+
+
+    # Enter a parse tree produced by FalconParser#stub_side_effect.
+    def enterStub_side_effect(self, ctx:FalconParser.Stub_side_effectContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#stub_side_effect.
+    def exitStub_side_effect(self, ctx:FalconParser.Stub_side_effectContext):
         pass
 
 
@@ -176,6 +194,60 @@ class FalconListener(ParseTreeListener):
 
     # Exit a parse tree produced by FalconParser#stub_logic_multi.
     def exitStub_logic_multi(self, ctx:FalconParser.Stub_logic_multiContext):
+        pass
+
+
+    # Enter a parse tree produced by FalconParser#test_winnow.
+    def enterTest_winnow(self, ctx:FalconParser.Test_winnowContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#test_winnow.
+    def exitTest_winnow(self, ctx:FalconParser.Test_winnowContext):
+        pass
+
+
+    # Enter a parse tree produced by FalconParser#test_satisfy.
+    def enterTest_satisfy(self, ctx:FalconParser.Test_satisfyContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#test_satisfy.
+    def exitTest_satisfy(self, ctx:FalconParser.Test_satisfyContext):
+        pass
+
+
+    # Enter a parse tree produced by FalconParser#winnow_stub.
+    def enterWinnow_stub(self, ctx:FalconParser.Winnow_stubContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#winnow_stub.
+    def exitWinnow_stub(self, ctx:FalconParser.Winnow_stubContext):
+        pass
+
+
+    # Enter a parse tree produced by FalconParser#winnow_stub_many.
+    def enterWinnow_stub_many(self, ctx:FalconParser.Winnow_stub_manyContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#winnow_stub_many.
+    def exitWinnow_stub_many(self, ctx:FalconParser.Winnow_stub_manyContext):
+        pass
+
+
+    # Enter a parse tree produced by FalconParser#winnow_code.
+    def enterWinnow_code(self, ctx:FalconParser.Winnow_codeContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#winnow_code.
+    def exitWinnow_code(self, ctx:FalconParser.Winnow_codeContext):
+        pass
+
+
+    # Enter a parse tree produced by FalconParser#winnow_directives.
+    def enterWinnow_directives(self, ctx:FalconParser.Winnow_directivesContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#winnow_directives.
+    def exitWinnow_directives(self, ctx:FalconParser.Winnow_directivesContext):
         pass
 
 

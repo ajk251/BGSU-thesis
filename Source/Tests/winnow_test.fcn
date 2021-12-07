@@ -1,0 +1,22 @@
+
+Domain X Integers 0 100
+Domain Y Integers 0 100
+
+Test fn X Y:
+  | int?
+  | > 1
+  | between? 0 100
+  |> `x = fn(xᵢ, yᵢ) / 2.0`
+  |> x float?
+  |> x between -1.0 1.0
+  ;
+
+Winnow fna X Y -> fn_to_b:
+  | A float?
+  | B between? 0 1
+  ;
+
+Groupby fnb X Y:
+  | C int?
+  | D between? -50 50
+  ;

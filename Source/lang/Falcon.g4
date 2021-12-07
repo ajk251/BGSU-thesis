@@ -32,24 +32,22 @@ assertion: ASSERT name ':' test_stub+ ';'                           #assert_test
          ;
 
 test: TEST name domain_names ':' test_stub+ ';'                     #test_basic
-//    | TEST name name ':' test_stub+ ';'                             #test_basic
-//    | TEST name name ((',')? name+) ':' test_stub+ ';'              #test_basic_domains
     ;
 
 domain_names: name                                                  #get_domain_name
             | name (COMMA? name)+                                   #get_domain_names
             ;
 
-// changed!!!
 test_stub: BAR predicate                                            #stub_p
          | BAR predicate value                                      #stub_pv
-         | BAR predicate value+                                     #stub_many_pv
-//         | BAR expression value+                                    #stub_expression
+         | BAR predicate (value)+                                     #stub_many_pv
          | BAR arg_list predicate value                             #stub_assert
          | BAR arg_list predicate                                   #stub_assert_p
-         | BAR CODESMNT                                             #stub_code
          | BAR compiler*                                            #stub_directives
          | BAR test_logical                                         #stub_logical
+         | ABAR code                                                #stub_code
+         | ABAR value predicate (value)+                            #stub_side_effect_many
+         | ABAR value predicate                                     #stub_side_effect
          ;
 
 test_logical: OP_NOT? predicate value* (OP_LOGICAL OP_NOT? predicate value*)* #stub_logic
@@ -59,15 +57,16 @@ test_logical: OP_NOT? predicate value* (OP_LOGICAL OP_NOT? predicate value*)* #s
 
 // more complex tests ------------
 
-winnow_test: WINNOW name domain_names (ARROW name)? ':' bin_stub+ ';'
+winnow_test: WINNOW name domain_names (ARROW name)? ':' bin_stub+ ';'   #test_winnow
            ;
 
-satisfy_test: SATISFY name domain_names (ARROW name)? ':' bin_stub+ ';'
+satisfy_test: SATISFY name domain_names (ARROW name)? ':' bin_stub+ ';' #test_satisfy
             ;
 
-bin_stub: BAR name predicate (value+)?
-        | BAR CODESMNT
-        | BAR compiler*
+bin_stub: BAR value predicate                                       #winnow_stub
+        | BAR value predicate value+                                #winnow_stub_many
+        | BAR CODESMNT                                              #winnow_code
+        | BAR compiler*                                             #winnow_directives
         ;
 
 // Domain stuff -------------------------------------------
@@ -77,7 +76,7 @@ domain: 'Domain' name name                                          #make_domain
       ;
 
 // set parameters -----------------------------------------
-compiler: DIRECTIVE dictate (fn_arg*)?                              #set_directive
+compiler: DIRECTIVE dictate (fn_arg+)?                              #set_directive
 //        | DIRECTIVE dictate (fn_arg*)?                              #set_directive_args
 //        | DIRECTIVE LIST
 //        | DIRECTIVE NAME OP_EQ tuple...
@@ -155,6 +154,7 @@ COMMA: ',';
 
 ASSIGN: ':=' | '≔';
 BAR: '|';
+ABAR: '|>';
 COLON: ':';
 
 // others?

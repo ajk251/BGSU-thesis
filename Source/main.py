@@ -30,9 +30,10 @@ if __name__ == '__main__':
 
     if file is None:
         # file = 'Tests/namespace-test.fcn'
-        file = 'Tests/some-tests.fcn'
+        # file = 'Tests/some-tests.fcn'
         # file = 'Tests/logical-tests.fcn'
         # file = 'Tests/initial-tests.fcn'
+        file = 'Tests/winnow_test.fcn'
 
     input_stream = FileStream(file, encoding='utf-8')
     lexer = FalconLexer(input_stream)

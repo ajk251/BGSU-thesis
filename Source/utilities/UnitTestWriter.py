@@ -1,10 +1,12 @@
 
 import re
+import textwrap
 
 from datetime import datetime
 from random import choices, randint
 from string import ascii_letters, digits
 # from time import strftime
+from textwrap import indent
 
 import predicates
 from predicates.predicates import PREDICATES
@@ -140,17 +142,9 @@ def make_global(entry, indent=0) -> str:
     if desc:
         lines.append(indent * TAB + '# ' + desc)
 
-    # ----------------
-    # print('\nglobals: ')
-
-    # # write domains --
-    # line = make_domains(entry['domains'], indent)
-    # lines.append(line)
-
     for block in entry['ordering']:
 
         kind, value = block if len(block) == 2 else (block[0], block[1:])
-        # print(kind, value)
 
         if kind == 'code':
             line = code_block(value)
@@ -158,12 +152,16 @@ def make_global(entry, indent=0) -> str:
         elif kind == 'assertion':
             line = basic_Assert(entry['tests'][value])
             lines.append(line)
-        elif kind == 'test':
-            line = basic_Test(entry['tests'][value], indent)
-            lines.append(line)
         elif kind == 'domain':
             line = make_domain(value, indent)
             lines.append(line)
+        elif kind == 'test':
+            if entry['tests'][value]['kind'] == 'test-basic':
+                line = basic_Test(entry['tests'][value], indent)
+                lines.append(line)
+            elif entry['tests'][value]['kind'] == 'winnow-test':
+                line = basic_Winnow(entry['tests'][value], indent)
+                lines.append(line)
 
     return '\n'.join(lines)
 
@@ -204,7 +202,7 @@ def falcon_intro(source=None):
 
 
 # testers --------------
-def basic_Test(entry, indent) -> str:
+def basic_Test(entry, indent=0) -> str:
 
     # print('directives: ', entry)
 
@@ -322,8 +320,18 @@ def basic_Test(entry, indent) -> str:
             line = TAB * indent + f2.format(pd_name, fn_sig, ', '.join(stub['value']))
         elif stub['kind'] == 'logical':
             line = TAB * indent + 'assert ' + make_boolean(stub['values'], fn_sig, indent)
+        elif stub['kind'] == 'code':
+            print(stub['value'])
+            line = (TAB * indent) + stub['value']
+        elif stub['kind'] == 'predicate-side-effect':
+            line = TAB * indent + f4.format(pd_name, stub['name'])
+        elif stub['kind'] == 'predicate-side-effect+':
+            args = ', '.join(stub['values'])
+            line = TAB * indent + f3.format(pd_name, stub['name'], args)
         else:
-            print('forgot about --> ', stub)
+            print('Test writer -- forgot about --> ', stub)
+
+            continue
 
         lines.append(line)
 
@@ -381,6 +389,48 @@ def basic_Assert(entry, indent=0) -> str:
 
     return '\n'.join(lines)
 
+
+def basic_Winnow(entry, indent=0) -> str:
+
+    lines = []
+
+    # def name
+    lines.extend(('def test_fn():', ''))
+
+    # if something goes wrong with the 1st…
+
+    w1 = '''
+try:
+    result = {}
+except Exception as e:
+    group = 'Unspecified function error'
+    result = e
+                
+try:
+    group = bin(result)
+except Exception as e_bin:
+    group = 'Unspecified binning error'
+    result = e_bin     
+    '''
+
+    w2 = '''
+try:
+    result = {}
+except Exception as e:
+    group = 'Unspecified function error'
+    result = e
+                
+try:
+    group = bin(result)
+except Exception as e_bin:
+    group = 'Unspecified binning error'
+    result = e_bin     
+    '''
+
+    lines.append(textwrap.indent(w1.format('fn()'), TAB * 1))
+
+
+    return '\n'.join(lines)
 
 # component parts -------
 def make_args(entry) -> str:

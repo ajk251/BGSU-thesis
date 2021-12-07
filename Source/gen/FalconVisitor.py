@@ -74,11 +74,6 @@ class FalconVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by FalconParser#stub_code.
-    def visitStub_code(self, ctx:FalconParser.Stub_codeContext):
-        return self.visitChildren(ctx)
-
-
     # Visit a parse tree produced by FalconParser#stub_directives.
     def visitStub_directives(self, ctx:FalconParser.Stub_directivesContext):
         return self.visitChildren(ctx)
@@ -86,6 +81,21 @@ class FalconVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by FalconParser#stub_logical.
     def visitStub_logical(self, ctx:FalconParser.Stub_logicalContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#stub_code.
+    def visitStub_code(self, ctx:FalconParser.Stub_codeContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#stub_side_effect_many.
+    def visitStub_side_effect_many(self, ctx:FalconParser.Stub_side_effect_manyContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#stub_side_effect.
+    def visitStub_side_effect(self, ctx:FalconParser.Stub_side_effectContext):
         return self.visitChildren(ctx)
 
 
@@ -101,6 +111,36 @@ class FalconVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by FalconParser#stub_logic_multi.
     def visitStub_logic_multi(self, ctx:FalconParser.Stub_logic_multiContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#test_winnow.
+    def visitTest_winnow(self, ctx:FalconParser.Test_winnowContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#test_satisfy.
+    def visitTest_satisfy(self, ctx:FalconParser.Test_satisfyContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#winnow_stub.
+    def visitWinnow_stub(self, ctx:FalconParser.Winnow_stubContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#winnow_stub_many.
+    def visitWinnow_stub_many(self, ctx:FalconParser.Winnow_stub_manyContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#winnow_code.
+    def visitWinnow_code(self, ctx:FalconParser.Winnow_codeContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#winnow_directives.
+    def visitWinnow_directives(self, ctx:FalconParser.Winnow_directivesContext):
         return self.visitChildren(ctx)
 
 
