@@ -399,6 +399,7 @@ def basic_Winnow(entry, indent=0) -> str:
 
     # if something goes wrong with the 1st…
 
+    # w1 has a separate bin function defined
     w1 = '''
 try:
     result = {}
@@ -407,7 +408,7 @@ except Exception as e:
     result = e
                 
 try:
-    group = bin(result)
+    group = {}(result)
 except Exception as e_bin:
     group = 'Unspecified binning error'
     result = e_bin     
@@ -416,19 +417,59 @@ except Exception as e_bin:
     w2 = '''
 try:
     result = {}
+    group = result
 except Exception as e:
     group = 'Unspecified function error'
-    result = e
-                
-try:
-    group = bin(result)
-except Exception as e_bin:
-    group = 'Unspecified binning error'
-    result = e_bin     
-    '''
+    result = e    
+'''
 
-    lines.append(textwrap.indent(w1.format('fn()'), TAB * 1))
+    # build the function name & vars
+    fn_name = entry['function']
 
+    # get the variable names
+    dvars = entry['domain']                                 # the domain names
+    ivars = [d.lower() + 'ᵢ' for d in dvars]                # the name of the values in the domain
+
+    # *** get algo ***
+    params = []
+
+    if entry['directives'].get(':method', None):
+
+        algo = entry['directives'][':method']['value']
+
+        if algo not in ALGORITHMS:
+            raise f"Directive :method not found {algo}"
+
+        # get the real name
+        algo = ALGORITHMS[algo]
+
+        # deal with the parameters of the test
+        # params = []                                         # the parameters of the algorithm
+        for name, values in entry['directives'][':method']['params']:
+            params.append('{}={}'.format(name, ''.join(values)))
+    else:
+        algo = 'zip'
+        params = []
+
+    indent += 1
+
+    # build the for loop, naked/with custom iterator/generic & no parameters
+    if len(ivars) == 1:
+        template = indent * TAB + "for {} in {}:".format(ivars[0], dvars[0])
+    elif len(params) > 0:
+        template = indent * TAB + 'for {} in {}({}, {}):'.format(', '.join(ivars), algo, ', '.join(dvars), ', '.join(params))
+    else:
+        template = indent * TAB + "for {} in {}({}):".format(', '.join(ivars), algo, ', '.join(dvars))
+
+    lines.append(template)
+
+    # build the template
+    if entry['bin'] is not None:
+        line = textwrap.indent(w1.format('fn()', entry['bin']), TAB * 2)
+        lines.append(line)
+    else:
+        line = textwrap.indent(w2.format('fn()'), TAB * 2)
+        lines.append(line)
 
     return '\n'.join(lines)
 

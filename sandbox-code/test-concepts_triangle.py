@@ -150,8 +150,7 @@ bounds = (1, 2, 100, 199, 200, 201)
 
 # ----------------------------------
 
-winnow(triangle_kind, 
-      (bounds, bounds, bounds),
+winnow(triangle_kind, (bounds, bounds, bounds),
       test_cases={Triangle.equalateral:   TestPredicate(satisfies, is_equalateral),
                   Triangle.isosceles:     TestPredicate(satisfies, is_isosceles),
                   Triangle.scalene:       TestPredicate(satisfies, is_scalene),

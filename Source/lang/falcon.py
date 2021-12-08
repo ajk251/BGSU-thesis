@@ -312,6 +312,8 @@ class Falcon(FalconVisitor):
         # there has to be a better way…  _ == Falcon.ARROW?
         if ctx.children[3].getText() == '->' or ctx.children[3].getText() == '→':
             test['bin'] = self.visit((ctx.name(1)))
+        else:
+            test['bin'] = None
 
         for child in ctx.children:
             if isinstance(child, FalconParser.Winnow_stubContext):
