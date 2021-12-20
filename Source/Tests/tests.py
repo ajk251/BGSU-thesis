@@ -7,13 +7,14 @@ import unittest
 
 # This file was generated automatically by falcon.
 # from: Tests/winnow_test.fcn
-# on 2021 Dec 08 Wed 10:00:36
+# on 2021 Dec 20 Mon 14:21:41
 
 X = Integers(0, 100)
 Y = Integers(0, 100)
 
 # start test -----------------
-def test_fn_dEWB():
+def test_fn_X6():
+
     for xᵢ, yᵢ in zip(X, Y):
         assert is_integer(fn(xᵢ, yᵢ))
         assert fn(xᵢ, yᵢ) > 1
@@ -22,12 +23,12 @@ def test_fn_dEWB():
         assert is_float(x)
         assert between(x, -1.0, 1.0)
 
-def test_fn():
+def group_test_fna():
 
     for xᵢ, yᵢ in zip(X, Y):
 
         try:
-            result = fn()
+            result = fna(xᵢ, yᵢ)
         except Exception as e:
             group = 'Unspecified function error'
             result = e
@@ -38,13 +39,27 @@ def test_fn():
             group = 'Unspecified binning error'
             result = e_bin     
     
-def test_fn():
+        if group is 'A':
+            assert is_float(result)
+        elif group is 'B':
+            assert between(result, 0, 1)
+        else:
+            print("You shouldn't be here!") # TODO…
+
+def group_test_fnb():
 
     for xᵢ, yᵢ in zip(X, Y):
 
         try:
-            result = fn()
+            result = fnb(xᵢ, yᵢ)
             group = result
         except Exception as e:
             group = 'Unspecified function error'
             result = e    
+
+        if group is C:
+            assert is_integer(result)
+        elif group is D:
+            assert between(result, -50, 50)
+        else:
+            print("You shouldn't be here!") # TODO…

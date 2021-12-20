@@ -2,6 +2,7 @@
 import re
 import textwrap
 
+from collections import defaultdict
 from datetime import datetime
 from random import choices, randint
 from string import ascii_letters, digits
@@ -253,7 +254,7 @@ def basic_Test(entry, indent=0) -> str:
 
     # write tests ------
 
-    lines = ['\n# start test -----------------', pyfunc]
+    lines = ['\n# start test -----------------', pyfunc, '']
     indent += 1
 
     if message:
@@ -274,66 +275,14 @@ def basic_Test(entry, indent=0) -> str:
 
     lines.append(template)
 
-    f1 = 'assert {} {} {}'              # w/ symbol
-    f2 = 'assert {}({}, {})'            # pd( fn(arg), value)
-    f3 = 'assert {}({}, {})'            # w/ function
-    f4 = 'assert {}({})'                # ignoring True
-
     # fn_name = entry['function']
     args = ', '.join(ivars)
     fn_sig = '{}({})'.format(fn_name, args)
     indent += 1
 
     for stub in entry['stubs']:
-
-        # get the name of the predicate if it knows it's a predicate (or should be, ie OOPS)
-        if stub['kind'].startswith('predicate') and stub['predicate'] in PREDICATES:
-            # get the symbolic name if there is one, otherwise the function name
-
-            if PREDICATES[stub['predicate']][1]:
-                pd_name = PREDICATES[stub['predicate']][1]
-                use_symbolic = True
-            else:
-                pd_name = PREDICATES[stub['predicate']][0]
-                use_symbolic = False
-        elif stub['kind'].startswith('predicate'):
-            pd_name = stub['predicate']
-            use_symbolic = False
-        else:
-            # raise error
-            pd_name = "OOPS!"
-
-        # write the predicate
-        if stub['kind'] == 'predicate-value':
-            # raises is a special case
-            if pd_name == 'raises':
-                line = TAB * indent + f'assert {pd_name}({fn_name}, {args}, {stub["value"]})'
-            elif use_symbolic and stub['value'] == 'True':
-                line = TAB * indent + f4.format(pd_name, fn_sig)
-            elif use_symbolic:
-                line = TAB * indent + f1.format(fn_sig, pd_name, stub['value'])
-            else:
-                line = TAB * indent + f2.format(pd_name, fn_sig, stub['value'])
-        elif stub['kind'] == 'predicate':
-            line = indent * TAB + f4.format(pd_name, fn_sig)
-        elif stub['kind'] == 'predicate-value+':
-            line = TAB * indent + f2.format(pd_name, fn_sig, ', '.join(stub['value']))
-        elif stub['kind'] == 'logical':
-            line = TAB * indent + 'assert ' + make_boolean(stub['values'], fn_sig, indent)
-        elif stub['kind'] == 'code':
-            print(stub['value'])
-            line = (TAB * indent) + stub['value']
-        elif stub['kind'] == 'predicate-side-effect':
-            line = TAB * indent + f4.format(pd_name, stub['name'])
-        elif stub['kind'] == 'predicate-side-effect+':
-            args = ', '.join(stub['values'])
-            line = TAB * indent + f3.format(pd_name, stub['name'], args)
-        else:
-            print('Test writer -- forgot about --> ', stub)
-
-            continue
-
-        lines.append(line)
+        stmt = make_assert_stmt(stub, fn_sig, indent)
+        lines.append( (indent * TAB) + stmt)
 
     lines.append('')
 
@@ -394,8 +343,11 @@ def basic_Winnow(entry, indent=0) -> str:
 
     lines = []
 
+    # build the function name & vars
+    fn_name = entry['function']
+
     # def name
-    lines.extend(('def test_fn():', ''))
+    lines.extend((f'def group_test_{fn_name}():', ''))
 
     # if something goes wrong with the 1st…
 
@@ -422,13 +374,11 @@ except Exception as e:
     group = 'Unspecified function error'
     result = e    
 '''
-
-    # build the function name & vars
-    fn_name = entry['function']
-
     # get the variable names
     dvars = entry['domain']                                 # the domain names
     ivars = [d.lower() + 'ᵢ' for d in dvars]                # the name of the values in the domain
+    args = ', '.join(ivars)
+    fn_sig = '{}({})'.format(fn_name, args)
 
     # *** get algo ***
     params = []
@@ -465,11 +415,41 @@ except Exception as e:
 
     # build the template
     if entry['bin'] is not None:
-        line = textwrap.indent(w1.format('fn()', entry['bin']), TAB * 2)
+        line = textwrap.indent(w1.format(fn_sig, entry['bin']), TAB * 2)
         lines.append(line)
     else:
-        line = textwrap.indent(w2.format('fn()'), TAB * 2)
+        line = textwrap.indent(w2.format(fn_sig), TAB * 2)
         lines.append(line)
+
+    # deal with the groups
+    groups = defaultdict(list)
+
+    for stub in entry['stubs']:
+        stmt = make_assert_stmt(stub, 'result', indent)
+        groups[stub['group']].append(stmt)
+
+    assert len(groups) > 1, "the number of groups must be greater than 1"
+
+    first = entry['group-predicates'][0][0]
+
+    # TODO: if there are multiple statements, this will fail.
+
+    indent += 1
+
+    for group, stmts in groups.items():
+
+        if group == first:
+            line = (indent * TAB) + f'if group is {group}:\n' + ((indent + 1) * TAB) + '\n'.join(stmts)
+        else:
+            line = (indent * TAB) + f'elif group is {group}:\n' + ((indent + 1) * TAB) + '\n'.join(stmts)
+
+        lines.append(line)
+
+    # add failure case
+    failure = (indent * TAB) + f'else:\n' + ((indent + 1) * TAB) + 'print("You shouldn\'t be here!") # TODO…'
+    lines.append(failure)
+
+    lines.append('')
 
     return '\n'.join(lines)
 
@@ -609,3 +589,93 @@ def make_boolean(entry, fn_sig='', indent=0) -> str:
     return ''.join(line)
 
 
+def make_assert_stmt(stub, fn_sig, indent=0):
+
+    f1 = 'assert {} {} {}'              # w/ symbol
+    f2 = 'assert {}({}, {})'            # pd( fn(arg), value)
+    f3 = 'assert {}({}, {})'            # w/ function
+    f4 = 'assert {}({})'                # ignoring True
+
+    # fn_name = entry['function']
+    # args = ', '.join(ivars)
+    # fn_sig = '{}({})'.format(fn_name, args)
+    indent += 1
+    line = ''
+
+    # get the name of the predicate if it knows it's a predicate (or should be, ie OOPS)
+    if stub['kind'].startswith('predicate') and stub['predicate'] in PREDICATES:
+        # get the symbolic name if there is one, otherwise the function name
+
+        if PREDICATES[stub['predicate']][1]:
+            pd_name = PREDICATES[stub['predicate']][1]
+            use_symbolic = True
+        else:
+            pd_name = PREDICATES[stub['predicate']][0]
+            use_symbolic = False
+    elif stub['kind'].startswith('predicate'):
+        pd_name = stub['predicate']
+        use_symbolic = False
+    else:
+        # raise error
+        pd_name = "OOPS!"
+    #
+    # # write the predicate
+    # if stub['kind'] == 'predicate-value':
+    #     # raises is a special case
+    #     if pd_name == 'raises':
+    #         line = TAB * indent + f'assert {pd_name}({fn_name}, {args}, {stub["value"]})'
+    #     elif use_symbolic and stub['value'] == 'True':
+    #         line = TAB * indent + f4.format(pd_name, fn_sig)
+    #     elif use_symbolic:
+    #         line = TAB * indent + f1.format(fn_sig, pd_name, stub['value'])
+    #     else:
+    #         line = TAB * indent + f2.format(pd_name, fn_sig, stub['value'])
+    # elif stub['kind'] == 'predicate':
+    #     line = indent * TAB + f4.format(pd_name, fn_sig)
+    # elif stub['kind'] == 'predicate-value+':
+    #     line = TAB * indent + f2.format(pd_name, fn_sig, ', '.join(stub['value']))
+    # elif stub['kind'] == 'predicate-values':
+    #     # this is redundant and should be predicate-value+, it is for the groupby
+    #     line = TAB * indent + f2.format(pd_name, fn_sig, ', '.join(stub['values']))
+    # elif stub['kind'] == 'logical':
+    #     line = TAB * indent + 'assert ' + make_boolean(stub['values'], fn_sig, indent)
+    # elif stub['kind'] == 'code':
+    #     line = (TAB * indent) + stub['value']
+    # elif stub['kind'] == 'predicate-side-effect':
+    #     line = TAB * indent + f4.format(pd_name, stub['name'])
+    # elif stub['kind'] == 'predicate-side-effect+':
+    #     args = ', '.join(stub['values'])
+    #     line = TAB * indent + f3.format(pd_name, stub['name'], args)
+    # else:
+    #     print('Test writer -- forgot about --> ', stub)
+
+    if stub['kind'] == 'predicate-value':
+        # raises is a special case
+        if pd_name == 'raises':
+            line = f'assert {pd_name}({fn_name}, {args}, {stub["value"]})'
+        elif use_symbolic and stub['value'] == 'True':
+            line = f4.format(pd_name, fn_sig)
+        elif use_symbolic:
+            line = f1.format(fn_sig, pd_name, stub['value'])
+        else:
+            line = f2.format(pd_name, fn_sig, stub['value'])
+    elif stub['kind'] == 'predicate':
+        line = f4.format(pd_name, fn_sig)
+    elif stub['kind'] == 'predicate-value+':
+        line = f2.format(pd_name, fn_sig, ', '.join(stub['value']))
+    elif stub['kind'] == 'predicate-values':
+        # this is redundant and should be predicate-value+, it is for the groupby
+        line = f2.format(pd_name, fn_sig, ', '.join(stub['values']))
+    elif stub['kind'] == 'logical':
+        line = 'assert ' + make_boolean(stub['values'], fn_sig, indent)
+    elif stub['kind'] == 'code':
+        line = stub['value']
+    elif stub['kind'] == 'predicate-side-effect':
+        line = f4.format(pd_name, stub['name'])
+    elif stub['kind'] == 'predicate-side-effect+':
+        args = ', '.join(stub['values'])
+        line = f3.format(pd_name, stub['name'], args)
+    else:
+        print('Test writer -- forgot about --> ', stub)
+
+    return line

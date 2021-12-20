@@ -177,7 +177,7 @@ FNARG:     '-' (CHAR | [-_])*;
 
 ID: (CHAR | '_')(CHAR | DIGIT | [_.])*;
 
-OPERATORS: [><≤≥] | '<=' | '>=' | '==' | '±';
+OPERATORS: [><≤≥] | '<=' | '>=' | '==' | '±';;d
 OP_EQ:  '=';
 ARROW: '->' | '→';
 

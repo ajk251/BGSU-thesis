@@ -12,8 +12,8 @@ Test fn X Y:
   ;
 
 Winnow fna X Y -> fn_to_b:
-  | A float?
-  | B between? 0 1
+  | 'A' float?
+  | 'B' between? 0 1
   ;
 
 Groupby fnb X Y:
