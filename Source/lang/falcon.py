@@ -319,7 +319,7 @@ class Falcon(FalconVisitor):
             if isinstance(child, FalconParser.Winnow_stubContext):
                 stub = self.visit(child)
                 test['stubs'].append(stub)
-                test['group-predicates'].append((stub['group'], stub['predicate']))
+                # test['group-predicates'].append((stub['group'], stub['predicate']))
             elif isinstance(child, FalconParser.Winnow_stub_manyContext):
                 stub = self.visit(child)
                 test['stubs'].append(stub)
@@ -332,8 +332,36 @@ class Falcon(FalconVisitor):
         self.ns[self.current_ns]['ordering'].append(('test', test['id']))
 
     def visitTest_satisfy(self, ctx: FalconParser.Test_satisfyContext):
-        # TODO: This!
-        pass
+
+        test = {'kind': 'satisfy-test'}
+        test['function'] = self.visit(ctx.name(0))
+        test['domain'] = self.visit(ctx.domain_names())
+        test['id'] = self.get_id()
+        test['directives'] = {}
+        test['stubs'] = []
+        test['group-predicates'] = []                # this is useful later on
+
+        # there has to be a better way…  _ == Falcon.ARROW?
+        if ctx.children[3].getText() == '->' or ctx.children[3].getText() == '→':
+            test['bin'] = self.visit((ctx.name(1)))
+        else:
+            test['bin'] = None
+
+        for child in ctx.children:
+            if isinstance(child, FalconParser.Winnow_stubContext):
+                stub = self.visit(child)
+                test['stubs'].append(stub)
+                # test['group-predicates'].append((stub['group'], stub['predicate']))
+            elif isinstance(child, FalconParser.Winnow_stub_manyContext):
+                stub = self.visit(child)
+                test['stubs'].append(stub)
+                test['group-predicates'].append((stub['group'], stub['predicate'], stub['values']))
+            else:
+                # print(self.visit(child), type(child))
+                continue
+
+        self.ns[self.current_ns]['tests'][test['id']] = test
+        self.ns[self.current_ns]['ordering'].append(('test', test['id']))
 
     # stubs -------------------------------------
     # winnow/satisfy----

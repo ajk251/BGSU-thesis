@@ -40,7 +40,7 @@ domain_names: name                                                  #get_domain_
 
 test_stub: BAR predicate                                            #stub_p
          | BAR predicate value                                      #stub_pv
-         | BAR predicate (value)+                                     #stub_many_pv
+         | BAR predicate (value)+                                   #stub_many_pv
          | BAR arg_list predicate value                             #stub_assert
          | BAR arg_list predicate                                   #stub_assert_p
          | BAR compiler*                                            #stub_directives

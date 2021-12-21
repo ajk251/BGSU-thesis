@@ -430,28 +430,33 @@ except Exception as e:
 
     assert len(groups) > 1, "the number of groups must be greater than 1"
 
-    first = entry['group-predicates'][0][0]
+    indent += 1
+
+    groups = tuple(groups.items())
+
+    # first one is a special case, ie 'if'
+    line = (indent * TAB) + f'if group == {groups[0][0]}:\n' + ((indent + 1) * TAB) + '\n'.join(groups[0][1])
+    lines.append(line)
 
     # TODO: if there are multiple statements, this will fail.
 
-    indent += 1
-
-    for group, stmts in groups.items():
-
-        if group == first:
-            line = (indent * TAB) + f'if group is {group}:\n' + ((indent + 1) * TAB) + '\n'.join(stmts)
-        else:
-            line = (indent * TAB) + f'elif group is {group}:\n' + ((indent + 1) * TAB) + '\n'.join(stmts)
-
+    for group, stmt in groups[1:]:
+        line = (indent * TAB) + f'elif group == {group}:\n' + ((indent + 1) * TAB) + '\n'.join(stmt)
         lines.append(line)
 
     # add failure case
-    failure = (indent * TAB) + f'else:\n' + ((indent + 1) * TAB) + 'print("You shouldn\'t be here!") # TODO…'
+    failure = (indent * TAB) + f'else:\n' + ((indent + 1) * TAB) + 'print("You shouldn\'t be here!") \t\t# TODO…'
     lines.append(failure)
 
     lines.append('')
 
     return '\n'.join(lines)
+
+
+def basic_Satify(entry, indent=0):
+
+    pass
+
 
 # component parts -------
 def make_args(entry) -> str:
