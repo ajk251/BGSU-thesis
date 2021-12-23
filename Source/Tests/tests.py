@@ -7,13 +7,13 @@ import unittest
 
 # This file was generated automatically by falcon.
 # from: Tests/winnow_test.fcn
-# on 2021 Dec 21 Tue 11:05:21
+# on 2021 Dec 23 Thu 15:35:47
 
 X = Integers(0, 100)
 Y = Integers(0, 100)
 
 # start test -----------------
-def test_fn_vYZ():
+def test_fn_1qg():
 
     for xᵢ, yᵢ in zip(X, Y):
         assert is_integer(fn(xᵢ, yᵢ))
@@ -30,14 +30,14 @@ def group_test_fna():
         try:
             result = fna(xᵢ, yᵢ)
         except Exception as e:
-            group = 'Unspecified function error'
-            result = e
+            assert False, "Function error"
+            continue
                 
         try:
             group = fn_to_b(result)
         except Exception as e_bin:
-            group = 'Unspecified binning error'
-            result = e_bin     
+            assert False, "Group-by error"   
+            continue
     
         if group == 'A':
             assert is_float(result)
@@ -53,9 +53,9 @@ def group_test_fnb():
         try:
             result = fnb(xᵢ, yᵢ)
             group = result
-        except Exception as e:
-            group = 'Unspecified function error'
-            result = e    
+        except Exception as e:   
+            assert False, "Function error"
+            continue
 
         if group == C:
             assert is_integer(result)
@@ -63,3 +63,19 @@ def group_test_fnb():
             assert between(result, -50, 50)
         else:
             print("You shouldn't be here!") 		# TODO…
+
+def group_test_fnc():
+
+    for xᵢ, yᵢ in zip(X, Y):
+
+        try:
+            result = fnc(xᵢ, yᵢ)
+            group = result
+        except Exception as e:   
+            assert False, "Function error"
+            continue
+
+        if group == 'E':
+            assert is_fraction(result)
+        if group == 'F':
+            assert between(result, Fraction(1,3), Fraction(2,3))

@@ -163,6 +163,9 @@ def make_global(entry, indent=0) -> str:
             elif entry['tests'][value]['kind'] == 'winnow-test':
                 line = basic_Winnow(entry['tests'][value], indent)
                 lines.append(line)
+            elif entry['tests'][value]['kind'] == 'satisfy-test':
+                line = basic_Satisfy(entry['tests'][value], indent)
+                lines.append(line)
 
     return '\n'.join(lines)
 
@@ -356,23 +359,23 @@ def basic_Winnow(entry, indent=0) -> str:
 try:
     result = {}
 except Exception as e:
-    group = 'Unspecified function error'
-    result = e
+    assert False, "Function error"
+    continue
                 
 try:
     group = {}(result)
 except Exception as e_bin:
-    group = 'Unspecified binning error'
-    result = e_bin     
+    assert False, "Group-by error"   
+    continue
     '''
 
     w2 = '''
 try:
     result = {}
     group = result
-except Exception as e:
-    group = 'Unspecified function error'
-    result = e    
+except Exception as e:   
+    assert False, "Function error"
+    continue
 '''
     # get the variable names
     dvars = entry['domain']                                 # the domain names
@@ -453,9 +456,112 @@ except Exception as e:
     return '\n'.join(lines)
 
 
-def basic_Satify(entry, indent=0):
+def basic_Satisfy(entry, indent=0) -> str:
 
-    pass
+    lines = []
+
+    # build the function name & vars
+    fn_name = entry['function']
+
+    # def name
+    lines.extend((f'def group_test_{fn_name}():', ''))
+
+    # if something goes wrong with the 1st…
+
+    # w1 has a separate bin function defined
+    w1 = '''
+try:
+    result = {}
+except Exception as e:
+    assert False, "Function error"
+    continue
+                
+try:
+    group = {}(result)
+except Exception as e_bin:
+    assert False, "Group-by error"   
+    continue
+    '''
+
+    w2 = '''
+try:
+    result = {}
+    group = result
+except Exception as e:   
+    assert False, "Function error"
+    continue
+'''
+    # get the variable names
+    dvars = entry['domain']                                 # the domain names
+    ivars = [d.lower() + 'ᵢ' for d in dvars]                # the name of the values in the domain
+    args = ', '.join(ivars)
+    fn_sig = '{}({})'.format(fn_name, args)
+
+    # *** get algo ***
+    params = []
+
+    if entry['directives'].get(':method', None):
+
+        algo = entry['directives'][':method']['value']
+
+        if algo not in ALGORITHMS:
+            raise f"Directive :method not found {algo}"
+
+        # get the real name
+        algo = ALGORITHMS[algo]
+
+        # deal with the parameters of the test
+        # params = []                                         # the parameters of the algorithm
+        for name, values in entry['directives'][':method']['params']:
+            params.append('{}={}'.format(name, ''.join(values)))
+    else:
+        algo = 'zip'
+        params = []
+
+    indent += 1
+
+    # build the for loop, naked/with custom iterator/generic & no parameters
+    if len(ivars) == 1:
+        template = indent * TAB + "for {} in {}:".format(ivars[0], dvars[0])
+    elif len(params) > 0:
+        template = indent * TAB + 'for {} in {}({}, {}):'.format(', '.join(ivars), algo, ', '.join(dvars), ', '.join(params))
+    else:
+        template = indent * TAB + "for {} in {}({}):".format(', '.join(ivars), algo, ', '.join(dvars))
+
+    lines.append(template)
+
+    # build the template
+    if entry['bin'] is not None:
+        line = textwrap.indent(w1.format(fn_sig, entry['bin']), TAB * 2)
+        lines.append(line)
+    else:
+        line = textwrap.indent(w2.format(fn_sig), TAB * 2)
+        lines.append(line)
+
+    # deal with the groups
+    groups = defaultdict(list)
+
+    for stub in entry['stubs']:
+        stmt = make_assert_stmt(stub, 'result', indent)
+        groups[stub['group']].append(stmt)
+
+    assert len(groups) > 1, "the number of groups must be greater than 1"
+
+    indent += 1
+
+    # TODO: if there are multiple statements, this will fail.
+
+    for group, stmt in groups.items():
+        line = (indent * TAB) + f'if group == {group}:\n' + ((indent + 1) * TAB) + '\n'.join(stmt)
+        lines.append(line)
+
+    # add failure case
+    # failure = (indent * TAB) + f'else:\n' + ((indent + 1) * TAB) + 'print("You shouldn\'t be here!") \t\t# TODO…'
+    # lines.append(failure)
+
+    lines.append('')
+
+    return '\n'.join(lines)
 
 
 # component parts -------
