@@ -1,0 +1,49 @@
+
+
+
+t1 {
+
+    Domain X Integers -1000 1000 -nrandom 10
+    Domain Y Integers -500  500  -nrandom 10
+    Domain Z Reals 0 100
+
+    Test add X Y:
+      | :message "please work"
+      | :test-name test_add
+      | :method art
+      | int?
+      | between -1500 1500
+      ;
+
+    Test logical X,Y,Z:
+      | :name logical_floats
+      | :method art -initial [0 0 0] -max_tests 10
+      | :message 'here I am testing to see if it works'
+      | !(!int? ∨ !float?)
+      | < 4 ∨ between 0 100
+      | modof? 10
+      | between? 0 100
+      | is-int? ∧ is-float?
+      | !(!int? ∧ !is-float?)
+      | !int? ∧ !float?
+      | (int? ∧ float?)
+      | !is-int? ∧ (is-float? ∨ is-fraction?)
+      | ! is-int? ∧ !(> 8 ∧ < 10 ∧ = 9)
+      | is-int? ∨ is-float? ∨ !fraction? ∧ gt? 0
+      ;
+
+    Winnow fna X Y -> fn_to_b:
+      | 'A' float?
+      | 'B' between? 0 1
+      ;
+
+    Groupby fnb X Y:
+      | C int?
+      | D between? -50 50
+      ;
+
+    Satisfy fnc X Y:
+      | 'E' fraction?
+      | 'F' between? `Fraction(1,3)` `Fraction(2,3)`
+      ;
+}

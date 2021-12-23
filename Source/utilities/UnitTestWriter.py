@@ -60,7 +60,8 @@ def write_basic_unittest(intermediate, source=None):
                 line = code_block(value)
                 falcon.write(line)
             elif kind == 'namespace':
-                lines = make_namespace(intermediate[value], value)
+                # lines = make_namespace(intermediate[value], value)
+                lines = make_unittest(intermediate[value], 0)
                 falcon.write(lines)
 
             falcon.write(nl)
@@ -101,6 +102,8 @@ def make_namespace(entry, name, indent=0) -> str:
 
     indent = indent if indent else 0
 
+    print(entry)
+
     # -----------------------
     # directive - language safe name
     clean_name = entry['directives'][':name'] if entry['directives'].get(':name', None) else clean(name)
@@ -129,6 +132,53 @@ def make_namespace(entry, name, indent=0) -> str:
         # print(entry)
 
     print('-' * 20)
+
+    return '\n'.join(lines)
+
+
+def make_unittest(entry, indent=0):
+
+    lines = []
+
+    # directives -----------------
+
+    # write other stuff ----------
+    for block in entry['ordering']:
+
+        kind, value = block if len(block) == 2 else (block[0], block[1:])
+
+        if kind == 'code':
+            line = code_block(value)
+            lines.append(line)
+        elif kind == 'domain':
+            line = make_domain(value, indent)
+            lines.append(line)
+
+    # write unittest -------------
+    lines.append('')
+
+    line = 'class Test(unittest.TestCase):\n'
+    lines.append(line)
+
+    indent += 1
+
+    for block in entry['ordering']:
+
+        kind, value = block if len(block) == 2 else (block[0], block[1:])
+
+        if kind == 'assertion':
+            line = basic_Assert(entry['tests'][value])
+            lines.append(line)
+        elif kind == 'test':
+            if entry['tests'][value]['kind'] == 'test-basic':
+                line = unit_Test(entry['tests'][value], indent)
+                lines.append(line)
+            elif entry['tests'][value]['kind'] == 'winnow-test':
+                line = unit_Winnow(entry['tests'][value], indent)
+                lines.append(line)
+            elif entry['tests'][value]['kind'] == 'satisfy-test':
+                line = unit_Satisfy(entry['tests'][value], indent)
+                lines.append(line)
 
     return '\n'.join(lines)
 
@@ -285,7 +335,7 @@ def basic_Test(entry, indent=0) -> str:
 
     for stub in entry['stubs']:
         stmt = make_assert_stmt(stub, fn_sig, indent)
-        lines.append( (indent * TAB) + stmt)
+        lines.append((indent * TAB) + stmt)
 
     lines.append('')
 
@@ -350,7 +400,7 @@ def basic_Winnow(entry, indent=0) -> str:
     fn_name = entry['function']
 
     # def name
-    lines.extend((f'def group_test_{fn_name}():', ''))
+    lines.extend((f'def test_groupby_{fn_name}():', ''))
 
     # if something goes wrong with the 1st…
 
@@ -464,7 +514,208 @@ def basic_Satisfy(entry, indent=0) -> str:
     fn_name = entry['function']
 
     # def name
-    lines.extend((f'def group_test_{fn_name}():', ''))
+    lines.extend((f'def test_satisfy_{fn_name}():', ''))
+
+    # if something goes wrong with the 1st…
+
+    # w1 has a separate bin function defined
+    w1 = '''
+try:
+    result = {}
+except Exception as e:
+    assert False, "Function error"
+    continue
+                
+try:
+    group = {}(result)
+except Exception as e_bin:
+    assert False, "Group-by error"   
+    continue
+    '''
+
+    w2 = '''
+try:
+    result = {}
+    group = result
+except Exception as e:   
+    assert False, "Function error"
+    continue
+'''
+    # get the variable names
+    dvars = entry['domain']                                 # the domain names
+    ivars = [d.lower() + 'ᵢ' for d in dvars]                # the name of the values in the domain
+    args = ', '.join(ivars)
+    fn_sig = '{}({})'.format(fn_name, args)
+
+    # *** get algo ***
+    params = []
+
+    if entry['directives'].get(':method', None):
+
+        algo = entry['directives'][':method']['value']
+
+        if algo not in ALGORITHMS:
+            raise f"Directive :method not found {algo}"
+
+        # get the real name
+        algo = ALGORITHMS[algo]
+
+        # deal with the parameters of the test
+        # params = []                                         # the parameters of the algorithm
+        for name, values in entry['directives'][':method']['params']:
+            params.append('{}={}'.format(name, ''.join(values)))
+    else:
+        algo = 'zip'
+        params = []
+
+    indent += 1
+
+    # build the for loop, naked/with custom iterator/generic & no parameters
+    if len(ivars) == 1:
+        template = indent * TAB + "for {} in {}:".format(ivars[0], dvars[0])
+    elif len(params) > 0:
+        template = indent * TAB + 'for {} in {}({}, {}):'.format(', '.join(ivars), algo, ', '.join(dvars), ', '.join(params))
+    else:
+        template = indent * TAB + "for {} in {}({}):".format(', '.join(ivars), algo, ', '.join(dvars))
+
+    lines.append(template)
+    lines.append('')
+
+    # reset the count in the loop
+    lines.append(((indent + 1) * TAB) + 'count = 0')
+
+    # build the template
+    if entry['bin'] is not None:
+        line = textwrap.indent(w1.format(fn_sig, entry['bin']), TAB * 2)
+        lines.append(line)
+    else:
+        line = textwrap.indent(w2.format(fn_sig), TAB * 2)
+        lines.append(line)
+
+    # deal with the groups
+    groups = defaultdict(list)
+
+    for stub in entry['stubs']:
+        stmt = make_assert_stmt(stub, 'result', indent)
+        groups[stub['group']].append(stmt)
+
+    assert len(groups) > 1, "the number of groups must be greater than 1"
+
+    indent += 1
+
+    # TODO: if there are multiple statements, this will fail.
+
+    for group, stmt in groups.items():
+        line = (indent * TAB) + f'if group == {group}:\n' + ((indent + 1) * TAB) + '\n'.join(stmt)
+        line += '\n' + ((indent + 1) * TAB) + 'count += 1'
+        lines.append(line)
+
+    # add failure case
+    case = '{' + ",".join(ivars) + '}'
+    failure = (indent * TAB) + 'assert count >= 1, f"Case {} did not satisfy at least 1 case"'.format(case)
+    lines.append(failure)
+
+    lines.append('')
+
+    return '\n'.join(lines)
+
+# for unit tests -------
+def unit_Test(entry, indent=1):
+
+    #directives --------
+
+    # *** message ***
+
+    if entry['directives'].get(':message', None) is not None:
+        message = entry['directives'][':message']['value']
+    else:
+        message = None
+
+    # *** get function name ***
+    # this is mostly for use with pytest
+    fn_name = entry['function']
+
+    if entry['directives'].get(':test-name', None):
+        # TODO: raise warning if it does not start with test
+        t_name = entry['directives'][':test-name']['value']
+        pyfunc = (indent * TAB ) + f'def {t_name}(self):'
+    elif entry['directives'].get(':name', None):
+        t_name = entry['directives'][':name']['value']
+        pyfunc = (indent * TAB ) + f'def {t_name}(self):' if t_name.startswith('test') else (indent * TAB ) +  f'def test_{t_name}(self):'
+    else:
+        rand_name = ''.join((choices(ascii_letters+digits, k=randint(2, 5))))
+        pyfunc = (indent * TAB ) + 'def test_{}_{}(self):'.format(fn_name, rand_name)
+
+    # *** get algo ***
+    params = []
+
+    if entry['directives'].get(':method', None):
+
+        algo = entry['directives'][':method']['value']
+
+        if algo not in ALGORITHMS:
+            raise f"Directive :method not found {algo}"
+
+        # get the real name
+        algo = ALGORITHMS[algo]
+
+        # deal with the parameters of the test
+        # params = []                                         # the parameters of the algorithm
+        for name, values in entry['directives'][':method']['params']:
+            params.append('{}={}'.format(name, ''.join(values)))
+    else:
+        algo = 'zip'
+        params = []
+
+    # write tests ------
+
+    lines = [pyfunc, '']
+    indent += 1
+
+    if message:
+        line = indent * TAB + '# ' + message.strip('"') + nl
+        lines.append(line)
+
+    # get the variable names
+    dvars = entry['domain']                                 # the domain names
+    ivars = [d.lower() + 'ᵢ' for d in dvars]                # the name of the values in the domain
+
+    # build the for loop, naked/with custom iterator/generic & no parameters
+    if len(ivars) == 1:
+        template = indent * TAB + "for {} in {}:".format(ivars[0], dvars[0])
+    elif len(params) > 0:
+        template = indent * TAB + 'for {} in {}({}, {}):'.format(', '.join(ivars), algo, ', '.join(dvars), ', '.join(params))
+    else:
+        template = indent * TAB + "for {} in {}({}):".format(', '.join(ivars), algo, ', '.join(dvars))
+
+    lines.append(template)
+
+    # fn_name = entry['function']
+    args = ', '.join(ivars)
+    fn_sig = '{}({})'.format(fn_name, args)
+    indent += 1
+
+    for stub in entry['stubs']:
+        stmt = make_assert_stmt(stub, fn_sig, indent)
+        lines.append((indent * TAB) + stmt)
+
+    lines.append('')
+
+    indent -= 1
+
+    return '\n'.join(lines)
+
+
+def unit_Winnow(entry, indent=1) -> str:
+
+    lines = []
+
+    # build the function name & vars
+    fn_name = entry['function']
+
+    # def name
+    line = (indent * TAB) + f'def test_groupby_{fn_name}(self):'
+    lines.extend((line, ''))
 
     # if something goes wrong with the 1st…
 
@@ -530,12 +781,14 @@ except Exception as e:
 
     lines.append(template)
 
+    indent += 1
+
     # build the template
     if entry['bin'] is not None:
-        line = textwrap.indent(w1.format(fn_sig, entry['bin']), TAB * 2)
+        line = textwrap.indent(w1.format(fn_sig, entry['bin']), TAB * indent)
         lines.append(line)
     else:
-        line = textwrap.indent(w2.format(fn_sig), TAB * 2)
+        line = textwrap.indent(w2.format(fn_sig), TAB * indent)
         lines.append(line)
 
     # deal with the groups
@@ -547,17 +800,140 @@ except Exception as e:
 
     assert len(groups) > 1, "the number of groups must be greater than 1"
 
+    # indent += 1
+
+    groups = tuple(groups.items())
+
+    # first one is a special case, ie 'if'
+    line = (indent * TAB) + f'if group == {groups[0][0]}:\n' + ((indent + 1) * TAB) + '\n'.join(groups[0][1])
+    lines.append(line)
+
+    # TODO: if there are multiple statements, this will fail.
+
+    for group, stmt in groups[1:]:
+        line = (indent * TAB) + f'elif group == {group}:\n' + ((indent + 1) * TAB) + '\n'.join(stmt)
+        lines.append(line)
+
+    # add failure case
+    failure = (indent * TAB) + f'else:\n' + ((indent + 1) * TAB) + 'print("You shouldn\'t be here!") \t\t# TODO…'
+    lines.append(failure)
+
+    lines.append('')
+
+    return '\n'.join(lines)
+
+
+def unit_Satisfy(entry, indent=1) -> str:
+
+    lines = []
+
+    # build the function name & vars
+    fn_name = entry['function']
+
+    # def name
+    line = (indent * TAB) + f'def test_satisfy_{fn_name}(self):'
+    lines.extend((line, ''))
+
+    # if something goes wrong with the 1st…
+
+    # w1 has a separate bin function defined
+    w1 = '''
+try:
+    result = {}
+except Exception as e:
+    assert False, "Function error"
+    continue
+                
+try:
+    group = {}(result)
+except Exception as e_bin:
+    assert False, "Group-by error"   
+    continue
+    '''
+
+    w2 = '''
+try:
+    result = {}
+    group = result
+except Exception as e:   
+    assert False, "Function error"
+    continue
+'''
+    # get the variable names
+    dvars = entry['domain']                                 # the domain names
+    ivars = [d.lower() + 'ᵢ' for d in dvars]                # the name of the values in the domain
+    args = ', '.join(ivars)
+    fn_sig = '{}({})'.format(fn_name, args)
+
+    # *** get algo ***
+    params = []
+
+    if entry['directives'].get(':method', None):
+
+        algo = entry['directives'][':method']['value']
+
+        if algo not in ALGORITHMS:
+            raise f"Directive :method not found {algo}"
+
+        # get the real name
+        algo = ALGORITHMS[algo]
+
+        # deal with the parameters of the test
+        # params = []                                         # the parameters of the algorithm
+        for name, values in entry['directives'][':method']['params']:
+            params.append('{}={}'.format(name, ''.join(values)))
+    else:
+        algo = 'zip'
+        params = []
+
     indent += 1
+
+    # build the for loop, naked/with custom iterator/generic & no parameters
+    if len(ivars) == 1:
+        template = indent * TAB + "for {} in {}:".format(ivars[0], dvars[0])
+    elif len(params) > 0:
+        template = indent * TAB + 'for {} in {}({}, {}):'.format(', '.join(ivars), algo, ', '.join(dvars), ', '.join(params))
+    else:
+        template = indent * TAB + "for {} in {}({}):".format(', '.join(ivars), algo, ', '.join(dvars))
+
+    lines.append(template)
+    lines.append('')
+
+    # reset the count in the loop
+    lines.append(((indent + 1) * TAB) + 'count = 0')
+
+    indent += 1
+
+    # build the template
+    if entry['bin'] is not None:
+        line = textwrap.indent(w1.format(fn_sig, entry['bin']), TAB * indent)
+        lines.append(line)
+    else:
+        line = textwrap.indent(w2.format(fn_sig), TAB * indent)
+        lines.append(line)
+
+    # deal with the groups
+    groups = defaultdict(list)
+
+    for stub in entry['stubs']:
+        stmt = make_assert_stmt(stub, 'result', indent)
+        groups[stub['group']].append(stmt)
+
+    assert len(groups) > 1, "the number of groups must be greater than 1"
+
+    # indent += 1
 
     # TODO: if there are multiple statements, this will fail.
 
     for group, stmt in groups.items():
         line = (indent * TAB) + f'if group == {group}:\n' + ((indent + 1) * TAB) + '\n'.join(stmt)
+        line += '\n' + ((indent + 1) * TAB) + 'count += 1'
         lines.append(line)
 
     # add failure case
-    # failure = (indent * TAB) + f'else:\n' + ((indent + 1) * TAB) + 'print("You shouldn\'t be here!") \t\t# TODO…'
-    # lines.append(failure)
+    case = '{' + ",".join(ivars) + '}'
+    failure = (indent * TAB) + 'assert count >= 1, f"Case {} did not satisfy at least 1 case"'.format(case)
+    lines.append(failure)
 
     lines.append('')
 
