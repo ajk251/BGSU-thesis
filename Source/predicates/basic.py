@@ -8,13 +8,24 @@ from predicates.predicates import predicate
 
 # useful -----------------------------------------
 
-@predicate(alias=['catches', 'raises', 'raises?'])
+@predicate(alias=['catches', 'raises', 'raises?'], is_error=True)
 def raises(fn, args, kwargs, error) -> bool:
 
     try:
         fn(*args, **kwargs)
     except Exception as e:
-        return e == error
+        return isinstance(e, Exception)
+    finally:
+        return False
+
+
+@predicate(alias=['is_assertion', 'is-assertion', 'is-assertion?'], is_error=True)
+def assertion(fn, args, kwargs, error=AssertionError):
+
+    try:
+        fn(*args, **kwargs)
+    except AssertionError as ae:
+        return isinstance(ae, AssertionError)
     finally:
         return False
 
@@ -76,4 +87,3 @@ def le(a, b) -> bool:
 @predicate(alias=['>=', '≥', 'ge?'], symbolic='>=')
 def ge(a, b) -> bool:
     return op.ge(a, b)
-

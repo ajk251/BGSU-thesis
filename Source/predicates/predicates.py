@@ -19,12 +19,12 @@ PREDICATES = dict()
 NullString = Union[None, str]
 
 
-def predicate(_fn=None, *, alias=None, symbolic: NullString = None):
+def predicate(_fn=None, *, alias=None, symbolic: NullString = None, is_error=False):
 
     def function(func):
 
         # don't really need the function itself...
-        values = (func.__name__, symbolic)
+        values = (func.__name__, symbolic, is_error)
 
         if isinstance(alias, (list, tuple)):
             for name in alias:

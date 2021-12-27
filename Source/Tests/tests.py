@@ -7,7 +7,10 @@ import unittest
 
 # This file was generated automatically by falcon.
 # from: Tests/unit-tests.fcn
-# on 2021 Dec 23 Thu 17:01:09
+# on 2021 Dec 23 Thu 17:12:55
+
+x = [1, 2, 3]
+y = [4, 5, 6]
 
 X = Integers(-1000, 1000, nrandom=10)
 Y = Integers(-500, 500, nrandom=10)

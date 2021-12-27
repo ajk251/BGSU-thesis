@@ -96,44 +96,44 @@ def make_initial(entry, source=None) -> str:
 
 
 # make chunks ----------
-def make_namespace(entry, name, indent=0) -> str:
-
-    # if no tests, just 'pass'
-
-    indent = indent if indent else 0
-
-    print(entry)
-
-    # -----------------------
-    # directive - language safe name
-    clean_name = entry['directives'][':name'] if entry['directives'].get(':name', None) else clean(name)
-    desc = entry['directives'].get(':desc', None)
-
-    # -----------------------
-    # set directives
-    lines = ['\n\nclass {}(unittest.TestCase):\n'.format(clean_name)]           # add unittest class
-
-    # limit length & wrap?
-    if desc:
-        indent += 1
-        lines.append(indent * TAB + '# ' + desc)
-
-    class_vars = []                                                           # holds any class-level variables
-
-    # -----------------------
-    # then all the other stuff
-    for entry in entry['ordering']:
-
-        kind, value = entry if len(entry) == 2 else (entry[0], entry[1:])
-
-        # if kind == 'code': continue
-        print(kind, value)
-
-        # print(entry)
-
-    print('-' * 20)
-
-    return '\n'.join(lines)
+# def make_namespace(entry, name, indent=0) -> str:
+#
+#     # if no tests, just 'pass'
+#
+#     indent = indent if indent else 0
+#
+#     print(entry)
+#
+#     # -----------------------
+#     # directive - language safe name
+#     clean_name = entry['directives'][':name'] if entry['directives'].get(':name', None) else clean(name)
+#     desc = entry['directives'].get(':desc', None)
+#
+#     # -----------------------
+#     # set directives
+#     lines = ['\n\nclass {}(unittest.TestCase):\n'.format(clean_name)]           # add unittest class
+#
+#     # limit length & wrap?
+#     if desc:
+#         indent += 1
+#         lines.append(indent * TAB + '# ' + desc)
+#
+#     class_vars = []                                                           # holds any class-level variables
+#
+#     # -----------------------
+#     # then all the other stuff
+#     for entry in entry['ordering']:
+#
+#         kind, value = entry if len(entry) == 2 else (entry[0], entry[1:])
+#
+#         # if kind == 'code': continue
+#         print(kind, value)
+#
+#         # print(entry)
+#
+#     print('-' * 20)
+#
+#     return '\n'.join(lines)
 
 
 def make_unittest(entry, indent=0):
@@ -976,7 +976,7 @@ def make_domains(entry, indent=0) -> str:
     f2 = '{} = {}({})'            # x = Reals(lb, ub)
     f3 = '{} = {}({}, {})'        # x = Reals(lb, ub, nrandom=10)
 
-    print(entry)
+    # print(entry)
 
     for name, info in entry.items():
 
