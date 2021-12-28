@@ -47,43 +47,43 @@ def same_instance(value_a, value_b) -> bool:
     return id(value_a) == id(value_b)
 
 
-@predicate(alias=['in', 'in?', '∋', '∍'], symbolic='in')
+@predicate(alias=['in', 'in?', '∋', '∍'], symbol='in')
 def is_in(value, container) -> bool:
     return op.contains(container, value)
 
 
-@predicate(alias=['!in', '¬in', '∌'], symbolic='not in')
+@predicate(alias=['!in', '¬in', '∌'], symbol='not in')
 def not_in(value, container) -> bool:
     return not op.contains(container, value)
 
 # compare ---------------------------------------
 
 
-@predicate(alias=['=', 'eq?'], symbolic='==')
+@predicate(alias=['=', 'eq?'], symbol='==')
 def eq(a, b) -> bool:
     return op.eq(a, b)
 
 
-@predicate(alias=['!=', '¬=', '≠', 'ne?'], symbolic='!=')
+@predicate(alias=['!=', '¬=', '≠', 'ne?'], symbol='!=')
 def ne(a, b) -> bool:
     return op.ne(a, b)
 
 
-@predicate(alias=['<', 'lt?'], symbolic='<')
+@predicate(alias=['<', 'lt?'], symbol='<')
 def lt(a, b) -> bool:
     return op.lt(a, b)
 
 
-@predicate(alias=['>', 'gt?'], symbolic='>')
+@predicate(alias=['>', 'gt?'], symbol='>')
 def gt(a, b) -> bool:
     return op.gt(a, b)
 
 
-@predicate(alias=['<=', '≤', 'le?'], symbolic='<=')
+@predicate(alias=['<=', '≤', 'le?'], symbol='<=')
 def le(a, b) -> bool:
     return op.le(a, b)
 
 
-@predicate(alias=['>=', '≥', 'ge?'], symbolic='>=')
+@predicate(alias=['>=', '≥', 'ge?'], symbol='>=')
 def ge(a, b) -> bool:
     return op.ge(a, b)

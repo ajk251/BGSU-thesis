@@ -92,3 +92,8 @@ def is_within(n, lower, upper) -> bool:
 @predicate(alias=['outside?', 'out)('])
 def is_outside(n, lower, upper):
     return lower >= n and n <= upper
+
+
+@predicate(alias=['plus-minus?', '±'])
+def plus_minus(n, value) -> bool:
+    return (n - value) <= n <= (n + value)

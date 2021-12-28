@@ -220,7 +220,11 @@ class Falcon(FalconVisitor):
 
         for child in ctx.children:
             if child.getText() in '[]': continue
-            values.append(self.visit(child))
+
+            value = self.visit(child)
+            value = value.strip().rstrip('\'').lstrip('\'')
+            values.append(value)
+
 
         return values
 
@@ -230,7 +234,9 @@ class Falcon(FalconVisitor):
 
         for child in ctx.children:
             if child.getText() in ',[]': continue
-            values.append(self.visit(child))
+
+            value = self.visit(child).strip().rstrip('\'').lstrip('\'')
+            values.append(value)
 
         return values
 
@@ -246,6 +252,7 @@ class Falcon(FalconVisitor):
         test['domain'] = self.visit(ctx.domain_names())
         test['id'] = self.get_id()
         test['directives'] = {}
+        # test['directives'] = []
         test['stubs'] = []
 
         okay_stubs = (FalconParser.Stub_pvContext,
@@ -262,8 +269,10 @@ class Falcon(FalconVisitor):
                 test['stubs'].append(self.visit(stub))
             elif isinstance(stub, FalconParser.Stub_directivesContext):
                 # directives = self.visit(stub)
-                d = self.visit(stub)
-                test['directives'][d['directive']] = {'value': d['value'], 'params': d['params']}
+                ds = self.visit(stub)
+                for d in ds:
+                    test['directives'][d['directive']] = {'value': d['value'], 'params': d['params']}
+                # test['directives'][d['directive']].append({'value': d['value'], 'params': d['params']})
             else:
                 # TODO raise error! How did it get here‽
                 # print('Test -> ', type(stub))
@@ -453,13 +462,18 @@ class Falcon(FalconVisitor):
 
     def visitStub_directives(self, ctx: FalconParser.Stub_directivesContext):
 
-        directives = {}
+        # directives = {}
+        directives = []
 
         for child in ctx.children:
             if isinstance(child, FalconParser.Set_directiveContext):
-                directives = self.visitSet_directive(child, False) #.visit(child, False)
+                # directives = self.visitSet_directive(child, False)
+                d = self.visitSet_directive(child, False)
+                directives.append(d)
+                # directives.append(self.visitSet_directive(child, False))
                 # d = child.DIRECTIVE().getText()
                 # directives[d] = child.dictate().getText()
+                # print(directives['directive'])
 
         return directives
 

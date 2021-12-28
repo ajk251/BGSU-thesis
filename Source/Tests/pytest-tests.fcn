@@ -1,0 +1,11 @@
+:import test_functions -from add
+
+Domain Xvalues Integers -100 100 -nrandom 100
+Domain Yvalues Integers -100 100 -nrandom 100
+
+Test add Xvalues:
+  | :labels [answer case] :suffix _i
+  | is-int?
+  | between -200 200
+  ;
+

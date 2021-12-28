@@ -34,7 +34,8 @@ if __name__ == '__main__':
         # file = 'Tests/logical-tests.fcn'
         # file = 'Tests/initial-tests.fcn'
         # file = 'Tests/winnow_test.fcn'
-        file = 'Tests/unit-tests.fcn'
+        # file = 'Tests/unit-tests.fcn'
+        file = 'Tests/pytest-tests.fcn'
 
     input_stream = FileStream(file, encoding='utf-8')
     lexer = FalconLexer(input_stream)
@@ -59,9 +60,4 @@ if __name__ == '__main__':
     print('='*45)
     print()
 
-    # from domains.basic import Reals, Naturals
-    #
-    # x = Naturals(0, 100, by=5)
-    #
-    # print(tuple(x))
 

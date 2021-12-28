@@ -11,14 +11,16 @@ t1 {
     Domain Z Reals 0 100
 
     Test add X Y:
-      | :message "please work"
+      | :message "please work and have a suffix"
       | :test-name test_add
-      | :method art
+      | :labels ['a' 'b' 'c']
+      | :method art :suffix _i
       | int?
       | between -1500 1500
       ;
 
     Test logical X,Y,Z:
+      | :suffix _i
       | :name logical_floats
       | :method art -initial [0 0 0] -max_tests 10
       | :message 'here I am testing to see if it works'

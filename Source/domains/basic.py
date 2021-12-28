@@ -13,10 +13,10 @@ from domains.domains import domain
 #   • numerical
 
 @domain(alias=['ℝ', 'Reals', 'Floats'])
-def Reals(lower=None, upper=None, n_random=None, by=None):
+def Reals(lower=None, upper=None, nrandom=None, by=None):
 
-    do_random = False if n_random is None else True
-    n_random = 100_000_000 if n_random is None else int(n_random)
+    do_random = False if nrandom is None else True
+    n_random = 100_000_000 if nrandom is None else int(nrandom)
     by = 1.0 if by is None else float(by)
 
     # make this system.min & max
@@ -40,15 +40,15 @@ def Reals(lower=None, upper=None, n_random=None, by=None):
 
 
 @domain(alias=['ℤ+', 'Naturals', 'Nats'])
-def Naturals(lower=None, upper=None, n_random=None, by=None):
+def Naturals(lower=None, upper=None, nrandom=None, by=None):
 
     # TODO: enforce >= 0‽
 
     lower = 0 if lower is None else int(lower)
     upper = 100 if upper is None else int(upper)
 
-    do_random = False if n_random is None else True
-    n_random = 100_000_000 if n_random is None else int(n_random)
+    do_random = False if nrandom is None else True
+    n_random = 100_000_000 if nrandom is None else int(nrandom)
     by = 1 if by is None else int(by)
 
     n = 0
@@ -65,13 +65,13 @@ def Naturals(lower=None, upper=None, n_random=None, by=None):
 
 
 @domain(alias=['ℤ', 'Integers', 'Ints'])
-def Integers(lower=None, upper=None, n_random=None, by=None):
+def Integers(lower=None, upper=None, nrandom=None, by=None):
 
     lower = 0 if lower is None else int(lower)
     upper = 100 if upper is None else int(upper)
 
-    do_random = False if n_random is None else True
-    n_random = 100_000_000 if n_random is None else int(n_random)
+    do_random = False if nrandom is None else True
+    n_random = 100_000_000 if nrandom is None else int(nrandom)
     by = 1 if by is None else int(by)
 
     n = 0

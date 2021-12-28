@@ -79,6 +79,23 @@ def clean(name):
     return text.title()
 
 
+def to_list(text):
+    # because I screwed up. I should have made this a json first, so I don't have to read it by characters...
+
+    txt = text.split(',')
+    txt[0] = txt[0].strip('[')
+    txt[-1] = txt[-1].strip(']')
+
+    values = []
+
+    for value in txt:
+
+        value = value.strip().rstrip('\'').lstrip('\'')
+        values.append(value)
+
+    return values
+
+
 # component writers ---------------------------------------
 #   ie build the strings to be written
 
@@ -93,47 +110,6 @@ def make_initial(entry, source=None) -> str:
     lines.append(falcon_intro(source))         # hello!
 
     return '\n'.join(lines)
-
-
-# make chunks ----------
-# def make_namespace(entry, name, indent=0) -> str:
-#
-#     # if no tests, just 'pass'
-#
-#     indent = indent if indent else 0
-#
-#     print(entry)
-#
-#     # -----------------------
-#     # directive - language safe name
-#     clean_name = entry['directives'][':name'] if entry['directives'].get(':name', None) else clean(name)
-#     desc = entry['directives'].get(':desc', None)
-#
-#     # -----------------------
-#     # set directives
-#     lines = ['\n\nclass {}(unittest.TestCase):\n'.format(clean_name)]           # add unittest class
-#
-#     # limit length & wrap?
-#     if desc:
-#         indent += 1
-#         lines.append(indent * TAB + '# ' + desc)
-#
-#     class_vars = []                                                           # holds any class-level variables
-#
-#     # -----------------------
-#     # then all the other stuff
-#     for entry in entry['ordering']:
-#
-#         kind, value = entry if len(entry) == 2 else (entry[0], entry[1:])
-#
-#         # if kind == 'code': continue
-#         print(kind, value)
-#
-#         # print(entry)
-#
-#     print('-' * 20)
-#
-#     return '\n'.join(lines)
 
 
 def make_unittest(entry, indent=0):
@@ -284,6 +260,24 @@ def basic_Test(entry, indent=0) -> str:
         rand_name = ''.join((choices(ascii_letters+digits, k=randint(2, 5))))
         pyfunc = 'def test_{}_{}():'.format(fn_name, rand_name)
 
+    # *** get suffix ***
+    if entry['directives'].get(':suffix', False):
+        suffix = entry['directives'][':suffix']['value']
+    else:
+        suffix = 'ᵢ'
+
+    # *** get labels, ie, for <labels> in …: ***
+    # that is, the labels of the domains used inside the loop
+
+    # get the variable names
+    dvars = entry['domain']                                         # the domain names
+
+    if entry['directives'].get(':labels', False):
+        lbs = to_list(entry['directives'][':labels']['value'])
+        labels = [d.lower() + suffix for d in lbs]
+    else:
+        labels = [d.lower() + suffix for d in dvars]                # the name of the values in the domain                                   # the domain names
+
     # *** get algo ***
     params = []
 
@@ -306,7 +300,6 @@ def basic_Test(entry, indent=0) -> str:
         params = []
 
     # write tests ------
-
     lines = ['\n# start test -----------------', pyfunc, '']
     indent += 1
 
@@ -314,22 +307,18 @@ def basic_Test(entry, indent=0) -> str:
         line = indent * TAB + '# ' + message.strip('"') + nl
         lines.append(line)
 
-    # get the variable names
-    dvars = entry['domain']                                 # the domain names
-    ivars = [d.lower() + 'ᵢ' for d in dvars]                # the name of the values in the domain
-
     # build the for loop, naked/with custom iterator/generic & no parameters
-    if len(ivars) == 1:
-        template = indent * TAB + "for {} in {}:".format(ivars[0], dvars[0])
+    if len(labels) == 1:
+        template = indent * TAB + "for {} in {}:".format(labels[0], dvars[0])
     elif len(params) > 0:
-        template = indent * TAB + 'for {} in {}({}, {}):'.format(', '.join(ivars), algo, ', '.join(dvars), ', '.join(params))
+        template = indent * TAB + 'for {} in {}({}, {}):'.format(', '.join(labels), algo, ', '.join(dvars), ', '.join(params))
     else:
-        template = indent * TAB + "for {} in {}({}):".format(', '.join(ivars), algo, ', '.join(dvars))
+        template = indent * TAB + "for {} in {}({}):".format(', '.join(labels), algo, ', '.join(dvars))
 
     lines.append(template)
 
     # fn_name = entry['function']
-    args = ', '.join(ivars)
+    args = ', '.join(labels)
     fn_sig = '{}({})'.format(fn_name, args)
     indent += 1
 
@@ -427,9 +416,16 @@ except Exception as e:
     assert False, "Function error"
     continue
 '''
+
+        # *** get suffix ***
+    if entry['directives'].get(':suffix', None):
+        suffix = entry['directives'][':suffix']['value']
+    else:
+        suffix = 'ᵢ'
+
     # get the variable names
     dvars = entry['domain']                                 # the domain names
-    ivars = [d.lower() + 'ᵢ' for d in dvars]                # the name of the values in the domain
+    ivars = [d.lower() + suffix for d in dvars]                # the name of the values in the domain
     args = ', '.join(ivars)
     fn_sig = '{}({})'.format(fn_name, args)
 
@@ -541,9 +537,16 @@ except Exception as e:
     assert False, "Function error"
     continue
 '''
+
+    # *** get suffix ***
+    if entry['directives'].get(':suffix', None):
+        suffix = entry['directives'][':suffix']['value']
+    else:
+        suffix = 'ᵢ'
+
     # get the variable names
     dvars = entry['domain']                                 # the domain names
-    ivars = [d.lower() + 'ᵢ' for d in dvars]                # the name of the values in the domain
+    ivars = [d.lower() + suffix for d in dvars]                # the name of the values in the domain
     args = ', '.join(ivars)
     fn_sig = '{}({})'.format(fn_name, args)
 
@@ -646,6 +649,12 @@ def unit_Test(entry, indent=1):
         rand_name = ''.join((choices(ascii_letters+digits, k=randint(2, 5))))
         pyfunc = (indent * TAB ) + 'def test_{}_{}(self):'.format(fn_name, rand_name)
 
+    # *** get suffix ***
+    if entry['directives'].get(':suffix', None):
+        suffix = entry['directives'][':suffix']['value']
+    else:
+        suffix = 'ᵢ'
+
     # *** get algo ***
     params = []
 
@@ -678,7 +687,7 @@ def unit_Test(entry, indent=1):
 
     # get the variable names
     dvars = entry['domain']                                 # the domain names
-    ivars = [d.lower() + 'ᵢ' for d in dvars]                # the name of the values in the domain
+    ivars = [d.lower() + suffix for d in dvars]                # the name of the values in the domain
 
     # build the for loop, naked/with custom iterator/generic & no parameters
     if len(ivars) == 1:
@@ -742,9 +751,16 @@ except Exception as e:
     assert False, "Function error"
     continue
 '''
+
+    # *** get suffix ***
+    if entry['directives'].get(':suffix', None):
+        suffix = entry['directives'][':suffix']['value']
+    else:
+        suffix = 'ᵢ'
+
     # get the variable names
     dvars = entry['domain']                                 # the domain names
-    ivars = [d.lower() + 'ᵢ' for d in dvars]                # the name of the values in the domain
+    ivars = [d.lower() + suffix for d in dvars]                # the name of the values in the domain
     args = ', '.join(ivars)
     fn_sig = '{}({})'.format(fn_name, args)
 
@@ -859,9 +875,16 @@ except Exception as e:
     assert False, "Function error"
     continue
 '''
+
+    # *** get suffix ***
+    if entry['directives'].get(':suffix', None):
+        suffix = entry['directives'][':suffix']['value']
+    else:
+        suffix = 'ᵢ'
+
     # get the variable names
     dvars = entry['domain']                                 # the domain names
-    ivars = [d.lower() + 'ᵢ' for d in dvars]                # the name of the values in the domain
+    ivars = [d.lower() + suffix for d in dvars]                # the name of the values in the domain
     args = ', '.join(ivars)
     fn_sig = '{}({})'.format(fn_name, args)
 
@@ -1046,6 +1069,8 @@ def make_boolean(entry, fn_sig='', indent=0) -> str:
 
     for element in entry['values']:
 
+        if element == '(': continue
+
         if element in ('!', '¬', 'not'): case.append('not ')
         elif element in booleans: case.append(' ' + booleans[element] + ' ')
         elif element in PREDICATES: case.append(PREDICATES[element])
@@ -1057,6 +1082,8 @@ def make_boolean(entry, fn_sig='', indent=0) -> str:
     f3 = '{}({}, {})'          # pd(fn(…), args)
 
     for element in case:
+
+        print('element --> ', element)
 
         if isinstance(element, tuple):
 
@@ -1105,36 +1132,6 @@ def make_assert_stmt(stub, fn_sig, indent=0):
     else:
         # raise error
         pd_name = "OOPS!"
-    #
-    # # write the predicate
-    # if stub['kind'] == 'predicate-value':
-    #     # raises is a special case
-    #     if pd_name == 'raises':
-    #         line = TAB * indent + f'assert {pd_name}({fn_name}, {args}, {stub["value"]})'
-    #     elif use_symbolic and stub['value'] == 'True':
-    #         line = TAB * indent + f4.format(pd_name, fn_sig)
-    #     elif use_symbolic:
-    #         line = TAB * indent + f1.format(fn_sig, pd_name, stub['value'])
-    #     else:
-    #         line = TAB * indent + f2.format(pd_name, fn_sig, stub['value'])
-    # elif stub['kind'] == 'predicate':
-    #     line = indent * TAB + f4.format(pd_name, fn_sig)
-    # elif stub['kind'] == 'predicate-value+':
-    #     line = TAB * indent + f2.format(pd_name, fn_sig, ', '.join(stub['value']))
-    # elif stub['kind'] == 'predicate-values':
-    #     # this is redundant and should be predicate-value+, it is for the groupby
-    #     line = TAB * indent + f2.format(pd_name, fn_sig, ', '.join(stub['values']))
-    # elif stub['kind'] == 'logical':
-    #     line = TAB * indent + 'assert ' + make_boolean(stub['values'], fn_sig, indent)
-    # elif stub['kind'] == 'code':
-    #     line = (TAB * indent) + stub['value']
-    # elif stub['kind'] == 'predicate-side-effect':
-    #     line = TAB * indent + f4.format(pd_name, stub['name'])
-    # elif stub['kind'] == 'predicate-side-effect+':
-    #     args = ', '.join(stub['values'])
-    #     line = TAB * indent + f3.format(pd_name, stub['name'], args)
-    # else:
-    #     print('Test writer -- forgot about --> ', stub)
 
     if stub['kind'] == 'predicate-value':
         # raises is a special case
