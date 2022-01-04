@@ -1,0 +1,6 @@
+setup.py
+falcon.egg-info/PKG-INFO
+falcon.egg-info/SOURCES.txt
+falcon.egg-info/dependency_links.txt
+falcon.egg-info/requires.txt
+falcon.egg-info/top_level.txt

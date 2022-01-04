@@ -10,7 +10,7 @@ Test add Xvalues:
   | is-int?
   | between? -200 200
   |> `x = x + 1`
-  | is-float? -use x
+  |> x is-float?
   ;
 
 Winnow add XValues:
