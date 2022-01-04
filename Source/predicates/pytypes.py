@@ -34,6 +34,28 @@ def is_unique(a, b) -> bool:
 def is_sequence(s) -> bool:
     return isinstance(s, ABC.Sequence) #or issubclass(s, abc.Sequence)
 
+# Basic types -----------------------------------
+
+
+@predicate(alias='is-tuple?')
+def is_tuple(sequence) -> bool:
+    return isinstance(sequence, tuple)
+
+
+@predicate(alias='is-list?')
+def is_list(sequence) -> bool:
+    return isinstance(sequence, list)
+
+
+@predicate(alias='is-dict?')
+def is_dict(d) -> bool:
+    return isinstance(d, dict)
+
+
+@predicate(alias=['is-str?', 'is-string?'])
+def is_string(s) -> bool:
+    return isinstance(s, str)
+
 # numbers ---------------------------------------
 
 # I'm not sure how redundant some of this is...

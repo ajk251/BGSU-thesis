@@ -2,10 +2,19 @@
 
 Domain Xvalues Integers -100 100 -nrandom 100
 Domain Yvalues Integers -100 100 -nrandom 100
+Domain Zvalues Numbers -1000 1000
 
 Test add Xvalues:
   | :labels [answer case] :suffix _i
+  | :method ART -initial [0,0,0]
   | is-int?
-  | between -200 200
+  | between? -200 200
+  |> `x = x + 1`
+  | is-float? -use x
   ;
 
+Winnow add XValues:
+  | 'a' is-str?
+  | 'b' is-int?
+  | 'c' is-list?
+  ;

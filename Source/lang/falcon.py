@@ -303,6 +303,7 @@ class Falcon(FalconVisitor):
                 test['directives'] = directives
             elif isinstance(stub, FalconParser.Stub_codeContext):
                 self.visit(stub)
+                # TODO: THIS IS MISSING!!!
 
         self.ns[self.current_ns]['tests'][test['id']] = test
         self.ns[self.current_ns]['ordering'].append(('assertion', test['id']))
@@ -334,6 +335,9 @@ class Falcon(FalconVisitor):
                 stub = self.visit(child)
                 test['stubs'].append(stub)
                 test['group-predicates'].append((stub['group'], stub['predicate'], stub['values']))
+            elif isinstance(child, FalconParser.Winnow_codeContext):
+                stub = self.visit(child)
+                test['stubs'].append(stub)
             else:
                 # print(self.visit(child), type(child))
                 continue
@@ -394,7 +398,7 @@ class Falcon(FalconVisitor):
 
     def visitWinnow_code(self, ctx: FalconParser.Winnow_codeContext):
         # TODO: This!
-        pass
+        return self.visit(ctx.CODESMNT())
 
     def visitWinnow_directives(self, ctx: FalconParser.Winnow_directivesContext):
         # TODO: This!

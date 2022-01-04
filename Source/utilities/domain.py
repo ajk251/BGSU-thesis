@@ -40,7 +40,7 @@ class Naturals(NumericDomainBase):
 
     def __iter__(self):
 
-        n :int = self.lb
+        n: int = self.lb
 
         while True:
             yield n

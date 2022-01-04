@@ -1131,6 +1131,7 @@ def make_assert_stmt(stub, fn_sig, indent=0):
         use_symbolic = False
     else:
         # raise error
+        print('Predicate Not Found!')
         pd_name = "OOPS!"
 
     if stub['kind'] == 'predicate-value':

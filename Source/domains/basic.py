@@ -1,6 +1,6 @@
 
 from itertools import count
-from random import randrange, randint
+from random import randrange, randint, random, uniform
 
 from domains.domains import domain
 
@@ -9,8 +9,9 @@ from domains.domains import domain
 #   • discrete
 #   • empirical
 #   • repeat
-#   • boundary
 #   • numerical
+#   • change nrnandom to number
+#   • create RealRange/IntRange
 
 @domain(alias=['ℝ', 'Reals', 'Floats'])
 def Reals(lower=None, upper=None, nrandom=None, by=None):
@@ -87,3 +88,59 @@ def Integers(lower=None, upper=None, nrandom=None, by=None):
         yield from range(lower, upper, by)
 
 
+# other kinds that might be useful --------------
+
+# numbers - floats & ints
+@domain(alias='Numbers')
+def Numbers(lower=None, upper=None, pct_floats: float = 0.5, nrandom: int = 1000):
+
+    lower = -1_000_000 if lower is None else lower
+    upper = 1_000_000 if upper is None else upper
+
+    n = 0
+
+    while n < nrandom:
+        yield uniform(lower, upper) if random() < pct_floats else randint(lower, upper)
+        n += 1
+
+
+@domain(alias=['Integer-Boundary', 'Int-Boundary'])
+def Integer_Boundary(lower: int = None, upper: int = None, boundary: int = 5, values=10, nrandom: int = 100):
+
+    assert values * 2 <= nrandom, "The number of points at the boundary cannot be greater than the total points"
+
+    lower = -1_000_000 if lower is None else lower
+    upper = 1_000_000 if upper is None else upper
+
+    # left boundary
+    for _ in range(values):
+        yield randint(lower - boundary, lower + boundary)
+
+    # right
+    for _ in range(values):
+        yield randint(upper - boundary, upper + boundary)
+
+    # middle
+    for _ in range(nrandom - 2 * values):
+        yield randint(lower, upper)
+
+
+@domain(alias=['Boundary', 'Real-Boundary', 'Float-Boundary'])
+def Boundary(lower=None, upper=None, boundary=5.0, values: int = 10, nrandom: int = 100):
+
+    assert values * 2 <= nrandom, "The number of points at the boundary cannot be greater than the total points"
+
+    lower = -1_000_000 if lower is None else lower
+    upper = 1_000_000 if upper is None else upper
+
+    # left boundary
+    for _ in range(values):
+        yield uniform(lower - boundary, lower + boundary)
+
+    # right
+    for _ in range(values):
+        yield uniform(upper - boundary, upper + boundary)
+
+    # middle
+    for _ in range(nrandom - (2 * values)):
+        yield uniform(lower, upper)
