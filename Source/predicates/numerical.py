@@ -39,13 +39,13 @@ def is_negative(n) -> bool:
     return isinstance(n, Number) and n < 0
 
 
-@predicate(alias=['int?', 'integer?', 'ℤ?'])
+@predicate(alias=['int?', 'integer?', 'is-int?', 'ℤ?'])
 def is_int(n) -> bool:
     '''Tests if a given value is an integer'''
     return isinstance(n, int) or isinstance(n, Integral)
 
 
-@predicate(alias=['float?', 'real?', 'ℝ?'])
+@predicate(alias=['float?', 'real?', 'is-float', 'ℝ?'])
 def is_float(n) -> bool:
     '''Tests if a given value is an float'''
     return isinstance(n, float) or isinstance(n, Real)

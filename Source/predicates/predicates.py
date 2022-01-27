@@ -25,7 +25,7 @@ def predicate(_fn=None, *, alias=None, symbol: NullString = None, is_error=False
     def function(func):
 
         # don't really need the function itself...
-        values = (func.__name__, symbol)#, is_error)
+        values = (func.__name__, symbol, is_error)
 
         if isinstance(alias, (list, tuple)):
             for name in alias:

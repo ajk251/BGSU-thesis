@@ -19,6 +19,9 @@
 
 [Directives]
 :test-name                  the python name of the test
+:suffix <arg>               changes the suffix in the for-loop
+:method <args>              changes the default arguments in the method used
+:message <string>           adds a comment to the generated code
 
 
 [namespace] -------------------------------------

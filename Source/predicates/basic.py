@@ -87,3 +87,26 @@ def le(a, b) -> bool:
 @predicate(alias=['>=', '≥', 'ge?'], symbol='>=')
 def ge(a, b) -> bool:
     return op.ge(a, b)
+
+# search --------------------------------------------------
+
+@predicate(alias=['sorted?', 'sorted≤?', 'sorted<=?'])
+def is_sorted(sequence) -> bool:
+    '''Tests i≤j for all values in sequence'''
+    return all((i <= j for i,j in zip(sequence, sequence[1:])))
+
+
+@predicate(alias=['sorted<?', 'sorted-strict?'])
+def is_stictly_sorted(sequence) -> bool:
+    '''Tests i<j for all values in sequence'''
+    return all((i <= j for i,j in zip(sequence, sequence[1:])))
+
+@predicate(alias=['decending?'])
+def decending(sequence) -> bool:
+    '''Tests for decending order, ie 100, 99, 98, …, where i > j'''
+    return all((i > j for i,j in zip(sequence, sequence[1:])))
+
+@predicate(alias=['ascending?'])
+def ascending(sequence) -> bool:
+    '''Tests for ascending order, ie 1, 2, 3 …, where i < j'''
+    return all((i < j for i,j in zip(sequence, sequence[1:])))

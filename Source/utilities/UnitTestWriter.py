@@ -339,10 +339,27 @@ def basic_Assert(entry, indent=0) -> str:
     #   add directive for value = … \ assert predicate(value, args)...
     #   handle messages, ie assert …, <message>
     #   extra args!!! raise error!
+    #   add explanations
 
     # directives -------------
-    ignore_true = True if entry['directives'].get(':ignore-True', 'no').lower() in ['yes', 'true'] else False
-    message = entry['directives'].get(':message', None)
+
+    for directive in entry['directives']:
+
+        # the ignore true, ie is-thing? True → use is-thing??
+        if directive.get('ignore-True', 'no').lower() in ['yes', 'true']:
+            ignore_true = True
+        else:
+            ignore_true = False
+
+        # add a message
+        if message := directive.get(':message', None):
+            message = message
+        else:
+            message = None
+
+    # ignore_true = True if entry['directives'].get(':ignore-True', 'no').lower() in ['yes', 'true'] else False
+    # message = entry['directives'].get(':message', None)
+
 
     # -----------------------
     a1 = 'assert {} {} {}'              # w/ symbol
@@ -350,7 +367,7 @@ def basic_Assert(entry, indent=0) -> str:
     a3 = 'assert {}({})'                # ignoring True
 
     # -----------------------
-    lines = ['# Assertion test -------------']
+    lines = ['\n# Assertion test -------------']
 
     if message:
         lines.append('# ' + message.strip('"'))
@@ -410,8 +427,8 @@ except Exception as e_bin:
 
     w2 = '''
 try:
-    result = {}
-    group = result
+    group = {}
+    #group = result
 except Exception as e:   
     assert False, "Function error"
     continue
@@ -474,7 +491,8 @@ except Exception as e:
     groups = defaultdict(list)
 
     for stub in entry['stubs']:
-        stmt = make_assert_stmt(stub, 'result', indent)
+        # stmt = make_assert_stmt(stub, 'result', indent)
+        stmt = make_assert_stmt(stub, args, indent)
         groups[stub['group']].append(stmt)
 
     assert len(groups) > 1, "the number of groups must be greater than 1"
@@ -1131,7 +1149,7 @@ def make_assert_stmt(stub, fn_sig, indent=0):
         use_symbolic = False
     else:
         # raise error
-        print('Predicate Not Found!')
+        print('Predicate Not Found!', fn_sig, stub)
         pd_name = "OOPS!"
 
     if stub['kind'] == 'predicate-value':

@@ -1,5 +1,8 @@
 
+from random import choice
 
+def addg(x, y):
+	return random.choice(['a', 'b', 'c'])
 
 def add(x, y):
     return x + y
