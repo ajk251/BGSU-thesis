@@ -1,0 +1,19 @@
+
+Domain X Integers 0 100
+Domain Y Integers
+    0
+    100
+
+// this doesn't work -it can't tell when domain ends
+//`x = fn(xᵢ, yᵢ) / 3.0`
+
+Winnow fna X Y -> fn_to_b:
+  | :message "Let's hope this works"
+  | 'A' float?
+  | 'B' between? 0 1
+  ;
+
+Groupby fnb X Y:
+  | C int?
+  | D between? -50 50
+  ;

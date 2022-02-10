@@ -318,7 +318,7 @@ class Falcon(FalconVisitor):
         test['id'] = self.get_id()
         test['directives'] = {}
         test['stubs'] = []
-        test['group-predicates'] = []                # this is useful later on
+        # test['group-predicates'] = []                # this is useful later on
 
         # there has to be a better way…  _ == Falcon.ARROW?
         if ctx.children[3].getText() == '->' or ctx.children[3].getText() == '→':
@@ -329,17 +329,20 @@ class Falcon(FalconVisitor):
         for child in ctx.children:
             if isinstance(child, FalconParser.Winnow_stubContext):
                 stub = self.visit(child)
+                stub['kind'] = 'group-' + stub['kind']  # rename it
                 test['stubs'].append(stub)
-                # test['group-predicates'].append((stub['group'], stub['predicate']))
+                test['group-predicates'].append((stub['group'], stub['predicate']))
             elif isinstance(child, FalconParser.Winnow_stub_manyContext):
                 stub = self.visit(child)
+                stub['kind'] = 'group-' + stub['kind']  # rename it
                 test['stubs'].append(stub)
-                test['group-predicates'].append((stub['group'], stub['predicate'], stub['values']))
+                ['group-predicates'].append((stub['group'], stub['predicate'], stub['values']))
             elif isinstance(child, FalconParser.Winnow_codeContext):
                 stub = self.visit(child)
                 test['stubs'].append(stub)
             else:
                 # print(self.visit(child), type(child))
+                # TODO: return error
                 continue
 
         self.ns[self.current_ns]['tests'][test['id']] = test

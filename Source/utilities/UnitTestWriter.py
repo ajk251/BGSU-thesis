@@ -236,68 +236,15 @@ def basic_Test(entry, indent=0) -> str:
 
     # print('directives: ', entry)
 
-    #directives --------
+    directives = get_directives(entry)
 
-    # *** message ***
-
-    if entry['directives'].get(':message', None) is not None:
-        message = entry['directives'][':message']['value']
-    else:
-        message = None
-
-    # *** get function name ***
-    # this is mostly for use with pytest
-    fn_name = entry['function']
-
-    if entry['directives'].get(':test-name', None):
-        # TODO: raise warning if it does not start with test
-        t_name = entry['directives'][':test-name']['value']
-        pyfunc = f'def {t_name}():'
-    elif entry['directives'].get(':name', None):
-        t_name = entry['directives'][':name']['value']
-        pyfunc = f'def {t_name}():' if t_name.startswith('test') else f'def test_{t_name}():'
-    else:
-        rand_name = ''.join((choices(ascii_letters+digits, k=randint(2, 5))))
-        pyfunc = 'def test_{}_{}():'.format(fn_name, rand_name)
-
-    # *** get suffix ***
-    if entry['directives'].get(':suffix', False):
-        suffix = entry['directives'][':suffix']['value']
-    else:
-        suffix = 'ᵢ'
-
-    # *** get labels, ie, for <labels> in …: ***
-    # that is, the labels of the domains used inside the loop
-
-    # get the variable names
+    message = directives['message']
+    pyfunc = directives['pyfunc']
     dvars = entry['domain']                                         # the domain names
-
-    if entry['directives'].get(':labels', False):
-        lbs = to_list(entry['directives'][':labels']['value'])
-        labels = [d.lower() + suffix for d in lbs]
-    else:
-        labels = [d.lower() + suffix for d in dvars]                # the name of the values in the domain                                   # the domain names
-
-    # *** get algo ***
-    params = []
-
-    if entry['directives'].get(':method', None):
-
-        algo = entry['directives'][':method']['value']
-
-        if algo not in ALGORITHMS:
-            raise f"Directive :method not found {algo}"
-
-        # get the real name
-        algo = ALGORITHMS[algo]
-
-        # deal with the parameters of the test
-        # params = []                                         # the parameters of the algorithm
-        for name, values in entry['directives'][':method']['params']:
-            params.append('{}={}'.format(name, ''.join(values)))
-    else:
-        algo = 'zip'
-        params = []
+    labels = directives['labels']
+    algo = directives['algo']
+    params = directives['params']
+    fn_name = directives['fn_name']
 
     # write tests ------
     lines = ['\n# start test -----------------', pyfunc, '']
@@ -319,11 +266,11 @@ def basic_Test(entry, indent=0) -> str:
 
     # fn_name = entry['function']
     args = ', '.join(labels)
-    fn_sig = '{}({})'.format(fn_name, args)
+
     indent += 1
 
     for stub in entry['stubs']:
-        stmt = make_assert_stmt(stub, fn_sig, indent)
+        stmt = make_assert_stmt(stub, fn_name, args, indent)
         lines.append((indent * TAB) + stmt)
 
     lines.append('')
@@ -343,19 +290,19 @@ def basic_Assert(entry, indent=0) -> str:
 
     # directives -------------
 
+    print(entry['directives'])
+    ignore_true = True
+    message = None
+
     for directive in entry['directives']:
 
         # the ignore true, ie is-thing? True → use is-thing??
         if directive.get('ignore-True', 'no').lower() in ['yes', 'true']:
             ignore_true = True
-        else:
-            ignore_true = False
 
         # add a message
-        if message := directive.get(':message', None):
-            message = message
-        else:
-            message = None
+        if directive.get(':message', None) is not None:
+            message = directive[':message']
 
     # ignore_true = True if entry['directives'].get(':ignore-True', 'no').lower() in ['yes', 'true'] else False
     # message = entry['directives'].get(':message', None)
@@ -400,10 +347,20 @@ def basic_Assert(entry, indent=0) -> str:
 
 def basic_Winnow(entry, indent=0) -> str:
 
-    lines = []
+    lines = ['']
 
-    # build the function name & vars
-    fn_name = entry['function']
+    directives = get_directives(entry)
+
+    message = directives['message']
+    pyfunc = directives['pyfunc']
+    dvars = entry['domain']                                         # the domain names
+    labels = directives['labels']
+    algo = directives['algo']
+    params = directives['params']
+    fn_name = directives['fn_name']
+
+    args = ', '.join(labels)
+    fn_sig = '{}({})'.format(fn_name, args)
 
     # def name
     lines.extend((f'def test_groupby_{fn_name}():', ''))
@@ -420,7 +377,7 @@ except Exception as e:
                 
 try:
     group = {}(result)
-except Exception as e_bin:
+except Exception as e:
     assert False, "Group-by error"   
     continue
     '''
@@ -428,54 +385,19 @@ except Exception as e_bin:
     w2 = '''
 try:
     group = {}
-    #group = result
 except Exception as e:   
     assert False, "Function error"
     continue
 '''
-
-        # *** get suffix ***
-    if entry['directives'].get(':suffix', None):
-        suffix = entry['directives'][':suffix']['value']
-    else:
-        suffix = 'ᵢ'
-
-    # get the variable names
-    dvars = entry['domain']                                 # the domain names
-    ivars = [d.lower() + suffix for d in dvars]                # the name of the values in the domain
-    args = ', '.join(ivars)
-    fn_sig = '{}({})'.format(fn_name, args)
-
-    # *** get algo ***
-    params = []
-
-    if entry['directives'].get(':method', None):
-
-        algo = entry['directives'][':method']['value']
-
-        if algo not in ALGORITHMS:
-            raise f"Directive :method not found {algo}"
-
-        # get the real name
-        algo = ALGORITHMS[algo]
-
-        # deal with the parameters of the test
-        # params = []                                         # the parameters of the algorithm
-        for name, values in entry['directives'][':method']['params']:
-            params.append('{}={}'.format(name, ''.join(values)))
-    else:
-        algo = 'zip'
-        params = []
-
     indent += 1
 
     # build the for loop, naked/with custom iterator/generic & no parameters
-    if len(ivars) == 1:
-        template = indent * TAB + "for {} in {}:".format(ivars[0], dvars[0])
+    if len(labels) == 1:
+        template = indent * TAB + "for {} in {}:".format(labels[0], dvars[0])
     elif len(params) > 0:
-        template = indent * TAB + 'for {} in {}({}, {}):'.format(', '.join(ivars), algo, ', '.join(dvars), ', '.join(params))
+        template = indent * TAB + 'for {} in {}({}, {}):'.format(', '.join(labels), algo, ', '.join(dvars), ', '.join(params))
     else:
-        template = indent * TAB + "for {} in {}({}):".format(', '.join(ivars), algo, ', '.join(dvars))
+        template = indent * TAB + "for {} in {}({}):".format(', '.join(labels), algo, ', '.join(dvars))
 
     lines.append(template)
 
@@ -483,16 +405,25 @@ except Exception as e:
     if entry['bin'] is not None:
         line = textwrap.indent(w1.format(fn_sig, entry['bin']), TAB * 2)
         lines.append(line)
+        using_bin_fn = True
     else:
         line = textwrap.indent(w2.format(fn_sig), TAB * 2)
         lines.append(line)
+        using_bin_fn = False
 
     # deal with the groups
     groups = defaultdict(list)
 
     for stub in entry['stubs']:
-        # stmt = make_assert_stmt(stub, 'result', indent)
-        stmt = make_assert_stmt(stub, args, indent)
+
+        if using_bin_fn:
+            # stmt = make_assert_stmt(stub, args, indent)
+            stmt = make_assert_stmt(stub, fn_name, args, indent)
+        else:
+            # stmt = make_assert_stmt(stub, fn_name, args, indent)
+            stmt = make_assert_stmt(stub, 'result', indent)
+
+        print('winnow stub ￫', stub, stmt)
         groups[stub['group']].append(stmt)
 
     assert len(groups) > 1, "the number of groups must be greater than 1"
@@ -665,7 +596,7 @@ def unit_Test(entry, indent=1):
         pyfunc = (indent * TAB ) + f'def {t_name}(self):' if t_name.startswith('test') else (indent * TAB ) +  f'def test_{t_name}(self):'
     else:
         rand_name = ''.join((choices(ascii_letters+digits, k=randint(2, 5))))
-        pyfunc = (indent * TAB ) + 'def test_{}_{}(self):'.format(fn_name, rand_name)
+        pyfunc = (indent * TAB) + 'def test_{}_{}(self):'.format(fn_name, rand_name)
 
     # *** get suffix ***
     if entry['directives'].get(':suffix', None):
@@ -704,8 +635,21 @@ def unit_Test(entry, indent=1):
         lines.append(line)
 
     # get the variable names
-    dvars = entry['domain']                                 # the domain names
-    ivars = [d.lower() + suffix for d in dvars]                # the name of the values in the domain
+    # dvars = entry['domain']                                 # the domain names
+    # ivars = [d.lower() + suffix for d in dvars]                # the name of the values in the domain
+
+    # get the variable names
+    dvars = entry['domain']                                         # the domain names
+
+    if entry['directives'].get(':labels', False):
+        # TODO: input must be a list - how to catch bad input?
+        lbs = to_list(entry['directives'][':labels']['value'])
+        labels = [d.lower() + suffix for d in lbs]
+    else:
+        labels = [d.lower() + suffix for d in dvars]                # the name of the values in the domain
+
+    # ivars = [d.lower() + suffix for d in dvars]                # the name of the values in the domain
+    ivars = [d.lower() + suffix for d in labels]                # the name of the values in the domain
 
     # build the for loop, naked/with custom iterator/generic & no parameters
     if len(ivars) == 1:
@@ -1070,7 +1014,7 @@ def make_domain(entry, indent=0) -> str:
         args = ', '.join(entry['args']) if entry['args'] else ''
 
         if entry['kwargs']:
-            for k,v in entry['kwargs'].items():
+            for k, v in entry['kwargs'].items():
                 args += ', '
                 args += k.strip('-') + '='
                 args += v
@@ -1121,16 +1065,15 @@ def make_boolean(entry, fn_sig='', indent=0) -> str:
     return ''.join(line)
 
 
-def make_assert_stmt(stub, fn_sig, indent=0):
+# def make_assert_stmt(stub, fn_sig, fn_name=None, fn_args=None, indent=0):
+def make_assert_stmt(stub, fn_name, args, indent=0):
 
     f1 = 'assert {} {} {}'              # w/ symbol
     f2 = 'assert {}({}, {})'            # pd( fn(arg), value)
     f3 = 'assert {}({}, {})'            # w/ function
     f4 = 'assert {}({})'                # ignoring True
 
-    # fn_name = entry['function']
-    # args = ', '.join(ivars)
-    # fn_sig = '{}({})'.format(fn_name, args)
+    fn_sig = '{}({})'.format(fn_name, args)
     indent += 1
     line = ''
 
@@ -1147,10 +1090,10 @@ def make_assert_stmt(stub, fn_sig, indent=0):
     elif stub['kind'].startswith('predicate'):
         pd_name = stub['predicate']
         use_symbolic = False
-    else:
-        # raise error
-        print('Predicate Not Found!', fn_sig, stub)
-        pd_name = "OOPS!"
+    # else:
+    #     # TODO: raise error
+    #     print('Predicate Not Found!', fn_sig, stub)
+    #     pd_name = "OOPS!"
 
     if stub['kind'] == 'predicate-value':
         # raises is a special case
@@ -1179,6 +1122,94 @@ def make_assert_stmt(stub, fn_sig, indent=0):
         args = ', '.join(stub['values'])
         line = f3.format(pd_name, stub['name'], args)
     else:
-        print('Test writer -- forgot about --> ', stub)
+        print('Test writer -- forgot about ￫ ', stub)
 
     return line
+
+
+def get_directives(entry):
+
+    # supported:
+    # message, pyfunc, suffix, method, label, algorithm, & algo-params
+
+    directives = {}
+
+    #directives --------
+
+    # *** message ***
+
+    if entry['directives'].get(':message', None) is not None:
+        directives['message'] = entry['directives'][':message']['value']
+    else:
+        directives['message'] = None
+
+    # *** get function name ***
+    # this is mostly for use with pytest
+    # fn_name = entry['function']
+    directives['fn_name'] = entry['function']
+
+    if entry['directives'].get(':test-name', None):
+        # TODO: raise warning if it does not start with test
+        t_name = entry['directives'][':test-name']['value']
+        directives['pyfunc'] = f'def {t_name}():'
+    elif entry['directives'].get(':name', None):
+        t_name = entry['directives'][':name']['value']
+        directives['pyfunc'] = f'def {t_name}():' if t_name.startswith('test') else f'def test_{t_name}():'
+    else:
+        rand_name = ''.join((choices(ascii_letters+digits, k=randint(2, 5))))
+        directives['pyfunc'] = 'def test_{}_{}():'.format(directives['fn_name'], rand_name)
+
+    # *** get suffix ***
+    if entry['directives'].get(':suffix', False):
+        suffix = entry['directives'][':suffix']['value']
+    else:
+        suffix = 'ᵢ'
+
+    # *** get labels, ie, for <labels> in …: ***
+    # that is, the labels of the domains used inside the loop
+
+    # get the variable names
+    dvars = entry['domain']                                         # the domain names
+
+    if entry['directives'].get(':labels', False):
+        # TODO: input must be a list - how to catch bad input?
+        lbs = to_list(entry['directives'][':labels']['value'])
+        directives['labels'] = [d.lower() + suffix for d in lbs]
+    else:
+        directives['labels'] = [d.lower() + suffix for d in dvars]                # the name of the values in the domain                                   # the domain names
+
+    # make the labels here
+    assert len(directives['labels']) >= 1, 'Must have 1 or more Domains defined'
+
+    if len(directives['labels']) == 1:
+        directives['args'] = directives['labels'][0]
+    else:
+        directives['args'] = ', '.join(directives['labels'])
+
+    # *** get algo ***
+    params = []
+
+    if entry['directives'].get(':method', None):
+
+        algo = entry['directives'][':method']['value']
+
+        if algo not in ALGORITHMS:
+            raise f"Directive :method not found {algo}"
+
+        # get the real name
+        algo = ALGORITHMS[algo]
+
+        # deal with the parameters of the test
+        # params = []                                         # the parameters of the algorithm
+        for name, values in entry['directives'][':method']['params']:
+            params.append('{}={}'.format(name, ''.join(values)))
+
+        directives['params'] = params
+    else:
+        algo = 'zip'
+        directives['params'] = []
+
+    directives['algo'] = algo
+
+    return directives
+

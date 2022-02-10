@@ -105,7 +105,7 @@ def Numbers(lower=None, upper=None, pct_floats: float = 0.5, nrandom: int = 1000
 
 
 @domain(alias=['Integer-Boundary', 'Int-Boundary'])
-def Integer_Boundary(lower: int = None, upper: int = None, boundary: int = 5, values=10, nrandom: int = 100):
+def Integer_Boundary(lower: int = None, upper: int = None, epsilon: int = 5, values=10, nrandom: int = 100):
 
     assert values * 2 <= nrandom, "The number of points at the boundary cannot be greater than the total points"
 
@@ -114,11 +114,11 @@ def Integer_Boundary(lower: int = None, upper: int = None, boundary: int = 5, va
 
     # left boundary
     for _ in range(values):
-        yield randint(lower - boundary, lower + boundary)
+        yield randint(lower - epsilon, lower + epsilon)
 
     # right
     for _ in range(values):
-        yield randint(upper - boundary, upper + boundary)
+        yield randint(upper - epsilon, upper + epsilon)
 
     # middle
     for _ in range(nrandom - 2 * values):
@@ -126,7 +126,7 @@ def Integer_Boundary(lower: int = None, upper: int = None, boundary: int = 5, va
 
 
 @domain(alias=['Boundary', 'Real-Boundary', 'Float-Boundary'])
-def Boundary(lower=None, upper=None, boundary=5.0, values: int = 10, nrandom: int = 100):
+def Boundary(lower=None, upper=None, epsilon=5.0, values: int = 10, nrandom: int = 100):
 
     assert values * 2 <= nrandom, "The number of points at the boundary cannot be greater than the total points"
 
@@ -135,11 +135,11 @@ def Boundary(lower=None, upper=None, boundary=5.0, values: int = 10, nrandom: in
 
     # left boundary
     for _ in range(values):
-        yield uniform(lower - boundary, lower + boundary)
+        yield uniform(lower - epsilon, lower + epsilon)
 
     # right
     for _ in range(values):
-        yield uniform(upper - boundary, upper + boundary)
+        yield uniform(upper - epsilon, upper + epsilon)
 
     # middle
     for _ in range(nrandom - (2 * values)):

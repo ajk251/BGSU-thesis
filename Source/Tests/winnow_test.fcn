@@ -2,7 +2,7 @@
 Domain X Integers 0 100
 Domain Y Integers 0 100
 
-`x = fnnnn(xᵢ, yᵢ) / 3.0`
+`x = fn(xᵢ, yᵢ) / 3.0`
 
 Test fn X Y:
   | :method ART -initial [0,0,0]

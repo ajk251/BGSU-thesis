@@ -6,7 +6,10 @@ Domain Yvalues Integers -10 10 -nrandom 100
 Domain Zvalues Numbers -1000 1000
 Domain Avalues Boundary -10 10
 
-// `x = 4 + 5` → this doesn't work!
+Assert add:
+  | (1,2,3) is-int?
+  | (4,5,6) > 0
+  ;
 
 Assert add:
   | :message "This is a test of some random stuff"
@@ -16,12 +19,13 @@ Assert add:
   ;
 
 Test add Xvalues Yvalues:
-  | :suffix _i
   | :method ART -initial [0,0,0]
-  | :message 'here I am testing to see if it works'
+  | :labels [x y z] :suffix _i
+  | :message 'here I am testing to see if it works and it is the one with >'
   | is-int?
+  | > 1
   | between? -100 100
-  |> `x = xvalues_i + 1.0`
+  |> `x = x_i + y_i + 1.0`
   |> x is-float?
   ;
 
@@ -30,15 +34,17 @@ Test add Xvalues Zvalues:
   | between? -100 100
   ;
 
-Groupby addg Xvalues Yvalues:
+Groupby addg Xvalues:
   | 'a' is-float?
   | 'b' is-int?
   | 'c' positive?
+  | 'd' > 1
   ;
 
-Groupby addf Xvalues Yvalues -> bin:
+Groupby addf Xvalues -> bin_fn:
   | 'a' is-float?
   | 'b' is-int?
   | 'c' positive?
+  | 'd' between? 0 1
+  | 'e' >= 1
   ;
-
