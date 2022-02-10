@@ -362,10 +362,8 @@ def basic_Winnow(entry, indent=0) -> str:
     args = ', '.join(labels)
     fn_sig = '{}({})'.format(fn_name, args)
 
-    # def name
+    # the def name
     lines.extend((f'def test_groupby_{fn_name}():', ''))
-
-    # if something goes wrong with the 1st…
 
     # w1 has a separate bin function defined
     w1 = '''
@@ -416,14 +414,10 @@ except Exception as e:
 
     for stub in entry['stubs']:
 
-        if using_bin_fn:
-            # stmt = make_assert_stmt(stub, args, indent)
-            stmt = make_assert_stmt(stub, fn_name, args, indent)
-        else:
-            # stmt = make_assert_stmt(stub, fn_name, args, indent)
-            stmt = make_assert_stmt(stub, 'result', indent)
+        stub['using-bin-fn'] = using_bin_fn
+        stmt = make_assert_group_stmt(stub, fn_name, args, indent)
 
-        print('winnow stub ￫', stub, stmt)
+        print('winnow stub ￫', stmt)
         groups[stub['group']].append(stmt)
 
     assert len(groups) > 1, "the number of groups must be greater than 1"
@@ -1068,6 +1062,7 @@ def make_boolean(entry, fn_sig='', indent=0) -> str:
 # def make_assert_stmt(stub, fn_sig, fn_name=None, fn_args=None, indent=0):
 def make_assert_stmt(stub, fn_name, args, indent=0):
 
+    # TODO: 2 & 3 are the same!
     f1 = 'assert {} {} {}'              # w/ symbol
     f2 = 'assert {}({}, {})'            # pd( fn(arg), value)
     f3 = 'assert {}({}, {})'            # w/ function
@@ -1109,9 +1104,9 @@ def make_assert_stmt(stub, fn_name, args, indent=0):
         line = f4.format(pd_name, fn_sig)
     elif stub['kind'] == 'predicate-value+':
         line = f2.format(pd_name, fn_sig, ', '.join(stub['value']))
-    elif stub['kind'] == 'predicate-values':
-        # this is redundant and should be predicate-value+, it is for the groupby
-        line = f2.format(pd_name, fn_sig, ', '.join(stub['values']))
+    # elif stub['kind'] == 'predicate-values':
+    #     # this is redundant and should be predicate-value+, it is for the groupby
+    #     line = f2.format(pd_name, fn_sig, ', '.join(stub['values']))
     elif stub['kind'] == 'logical':
         line = 'assert ' + make_boolean(stub['values'], fn_sig, indent)
     elif stub['kind'] == 'code':
@@ -1121,10 +1116,70 @@ def make_assert_stmt(stub, fn_name, args, indent=0):
     elif stub['kind'] == 'predicate-side-effect+':
         args = ', '.join(stub['values'])
         line = f3.format(pd_name, stub['name'], args)
+    # these are for winnow/satisfy ------------------------
+    elif stub['kind'] == 'group-predicate' and stub['using-bin-fn']:
+        line = ''
+        print('at gp')
+    elif stub['kind'] == 'group-predicate' and not stub['using-bin-fn']:
+        line = ''
+        print('at !gp')
+    elif stub['kind'] == 'group-predicate-values' and stub['using-bin-fn']:
+        line = ''
+        print('at gpv')
+    elif stub['kind'] == 'group-predicate-values' and not stub['using-bin-fn']:
+        line = ''
+        print('at not gpv')
     else:
         print('Test writer -- forgot about ￫ ', stub)
 
     return line
+
+
+def make_assert_group_stmt(stub, fn_name, args, indent=0):
+
+    fn_sig = '{}({})'.format(fn_name, args)
+    indent += 1
+    line = ''
+
+    # get the name of the predicate if it knows it's a predicate (or should be, ie OOPS)
+    if stub['predicate'] in PREDICATES:
+        # get the symbolic name if there is one, otherwise the function name
+
+        if PREDICATES[stub['predicate']][1]:
+            pd_name = PREDICATES[stub['predicate']][1]
+            use_symbolic = True
+        else:
+            pd_name = PREDICATES[stub['predicate']][0]
+            use_symbolic = False
+    else:
+        pd_name = stub['predicate']
+        use_symbolic = False
+    # else:
+    #     # TODO: raise error
+    #     print('Predicate Not Found!', fn_sig, stub)
+    #     pd_name = "OOPS!"
+
+    f1 = 'assert {} {} {}'              # w/ symbol
+    f2 = 'assert {}({}, {})'            # pd( fn(arg), value)
+    f3 = 'assert {}({})'                # ignoring True
+
+    if stub['using-bin-fn']:
+        if stub['kind'] == 'group-predicate':
+            line = f3.format(pd_name, 'result')
+        elif stub['kind'] == 'group-predicate-values' and use_symbolic:
+            line = f1.format('result', pd_name, ''.join(stub['values']))
+        elif stub['kind'] == 'group-predicate-values':
+            line = f2.format(pd_name, 'result', ', '.join(stub['values']))
+    else:
+        if stub['kind'] == 'group-predicate':
+            line = f3.format(pd_name, args)
+        elif stub['kind'] == 'group-predicate-values' and use_symbolic:
+            line = f1.format('result', pd_name, args)
+        elif stub['kind'] == 'group-predicate-values':
+            line = f2.format(pd_name, 'result', args)
+
+    return line
+
 
 
 def get_directives(entry):

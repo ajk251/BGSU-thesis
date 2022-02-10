@@ -8,7 +8,7 @@ from test_functions import add
 
 # This file was generated automatically by falcon.
 # from: Tests/pytest-tests.fcn
-# on 2022 Feb 09 Wed 19:50:23
+# on 2022 Feb 09 Wed 21:30:03
 
 Xvalues = Integers(-10, 10, nrandom=100)
 Yvalues = Integers(-10, 10, nrandom=100)
@@ -25,7 +25,7 @@ assert add(1, 2, three=3, four=4) != 5
 assert is_float(add(1, [2.0], three=3.0))
 
 # start test -----------------
-def test_add_c3n():
+def test_add_fs():
 
     # 'here I am testing to see if it works and it is the one with >'
 
@@ -38,7 +38,7 @@ def test_add_c3n():
 
 
 # start test -----------------
-def test_add_SF():
+def test_add_Nt():
 
     for xvaluesᵢ, zvaluesᵢ in zip(Xvalues, Zvalues):
         assert is_integer(add(xvaluesᵢ, zvaluesᵢ))
@@ -56,13 +56,13 @@ def test_groupby_addg():
             continue
 
         if group == 'a':
-            assert is_float(result(1))
+            assert is_float(xvaluesᵢ)
         elif group == 'b':
-            assert is_integer(result(1))
+            assert is_integer(xvaluesᵢ)
         elif group == 'c':
-            assert is_positive(result(1))
+            assert is_positive(xvaluesᵢ)
         elif group == 'd':
-            assert >(result(1), 1)
+            assert result > xvaluesᵢ
         else:
             print("You shouldn't be here!") 		# TODO…
 
@@ -84,14 +84,14 @@ def test_groupby_addf():
             continue
     
         if group == 'a':
-            assert is_float(addf(xvaluesᵢ))
+            assert is_float(result)
         elif group == 'b':
-            assert is_integer(addf(xvaluesᵢ))
+            assert is_integer(result)
         elif group == 'c':
-            assert is_positive(addf(xvaluesᵢ))
+            assert is_positive(result)
         elif group == 'd':
-            assert between(addf(xvaluesᵢ), 0, 1)
+            assert between(result, 0, 1)
         elif group == 'e':
-            assert >=(addf(xvaluesᵢ), 1)
+            assert result >= 1
         else:
             print("You shouldn't be here!") 		# TODO…

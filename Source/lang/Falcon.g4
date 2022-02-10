@@ -67,6 +67,8 @@ bin_stub: BAR value predicate                                       #winnow_stub
         | BAR value predicate value+                                #winnow_stub_many
         | BAR CODESMNT                                              #winnow_code
         | BAR compiler*                                             #winnow_directives
+        //        | BAR test_logical                                          #winnow_logical
+
         ;
 
 // Domain stuff -------------------------------------------
@@ -115,9 +117,9 @@ predicate: name
          | OPERATORS
          ;
 
-expression: OP_CARDINALITY name                                     #get_card
-          | OP_NOT name                                             #get_not
-          ;
+//expression: OP_CARDINALITY name                                     #get_card
+//          | OP_NOT name                                             #get_not
+//          ;
 
 // add list?
 value: name
@@ -162,14 +164,15 @@ COLON: ':';
 //OP_NATS:  'ℕ';
 
 // NOR?
-OP_LOGICAL: OP_AND | OP_NAND | OP_OR | OP_XOR;
+OP_LOGICAL: OP_AND | OP_OR;
 OP_AND:  '∧' | '&&' | 'and';
-OP_NAND: '⊼';
 OP_OR:   '∨' | '||' | 'or';
-OP_XOR:  '⊻';
+//OP_NAND: '⊼';
+//OP_NOR: '⊽';
+//OP_XOR:  '⊻';
 
 OP_NOT:  '￢' | '!';
-OP_CARDINALITY: '#';
+//OP_CARDINALITY: '#';
 
 // kinds of names used ------
 DIRECTIVE: COLON (CHAR | [-_])*;

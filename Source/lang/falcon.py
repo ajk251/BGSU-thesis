@@ -329,14 +329,12 @@ class Falcon(FalconVisitor):
         for child in ctx.children:
             if isinstance(child, FalconParser.Winnow_stubContext):
                 stub = self.visit(child)
-                stub['kind'] = 'group-' + stub['kind']  # rename it
                 test['stubs'].append(stub)
-                test['group-predicates'].append((stub['group'], stub['predicate']))
+                # test['group-predicates'].append((stub['group'], stub['predicate']))
             elif isinstance(child, FalconParser.Winnow_stub_manyContext):
                 stub = self.visit(child)
-                stub['kind'] = 'group-' + stub['kind']  # rename it
                 test['stubs'].append(stub)
-                ['group-predicates'].append((stub['group'], stub['predicate'], stub['values']))
+                # test['group-predicates'].append((stub['group'], stub['predicate'], stub['values']))
             elif isinstance(child, FalconParser.Winnow_codeContext):
                 stub = self.visit(child)
                 test['stubs'].append(stub)
@@ -384,7 +382,7 @@ class Falcon(FalconVisitor):
     # winnow/satisfy----
     def visitWinnow_stub(self, ctx: FalconParser.Winnow_stubContext):
 
-        stub = {'kind': 'predicate'}
+        stub = {'kind': 'group-predicate'}
         stub['group'] = self.visit(ctx.value())
         stub['predicate'] = self.visit(ctx.predicate())
 
@@ -392,7 +390,7 @@ class Falcon(FalconVisitor):
 
     def visitWinnow_stub_many(self, ctx: FalconParser.Winnow_stub_manyContext):
 
-        stub = {'kind': 'predicate-values'}
+        stub = {'kind': 'group-predicate-values'}
         stub['group'] = self.visit(ctx.value(0))
         stub['predicate'] = self.visit(ctx.predicate())
         stub['values'] = tuple(self.visit(child) for child in ctx.children[3:])
