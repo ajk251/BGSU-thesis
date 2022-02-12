@@ -26,7 +26,7 @@ tabsize = 4
 TAB = ' ' * tabsize
 nl = '\n'
 
-# ⊻ ⊼ ⊽
+# ⊻ ⊼ ⊽ ￫ these require special treatment…
 booleans = {'∧': 'and', '&&': 'and', 'and': 'and',
             '∨': 'or', '||': 'or', 'or': 'or',
             '!': 'not', '¬': 'not', 'not': 'not'}
@@ -290,7 +290,8 @@ def basic_Assert(entry, indent=0) -> str:
 
     # directives -------------
 
-    print(entry['directives'])
+    # print(entry['directives'])
+
     ignore_true = True
     message = None
 
@@ -306,7 +307,6 @@ def basic_Assert(entry, indent=0) -> str:
 
     # ignore_true = True if entry['directives'].get(':ignore-True', 'no').lower() in ['yes', 'true'] else False
     # message = entry['directives'].get(':message', None)
-
 
     # -----------------------
     a1 = 'assert {} {} {}'              # w/ symbol
@@ -325,6 +325,10 @@ def basic_Assert(entry, indent=0) -> str:
 
         # if not stub['argument']['kind'] == 'assertion': raise "WTF"
 
+        if stub['kind'] == 'code':
+            lines.append(stub['value'])
+            continue
+
         args = make_args(stub['argument'])
         fn = fn_name + args
         value = stub['value']
@@ -339,6 +343,10 @@ def basic_Assert(entry, indent=0) -> str:
                 line = a3.format(pd_name, fn)
             else:
                 line = a2.format(pd_name, fn, value)
+
+        # TODO: 'message' should be in all the stubs, eventually
+        if 'message' in stub and stub['message'] is not None:
+            line += f", {stub['message']}"
 
         lines.append(line)
 
@@ -417,7 +425,7 @@ except Exception as e:
         stub['using-bin-fn'] = using_bin_fn
         stmt = make_assert_group_stmt(stub, fn_name, args, indent)
 
-        print('winnow stub ￫', stmt)
+        # print('winnow stub ￫', stmt)
         groups[stub['group']].append(stmt)
 
     assert len(groups) > 1, "the number of groups must be greater than 1"
@@ -951,9 +959,9 @@ def make_domains(entry, indent=0) -> str:
 
     lines = [nl, '# domains -------------------\n']
 
-    f1 = '{} = {}()'              # x = Reals()
-    f2 = '{} = {}({})'            # x = Reals(lb, ub)
-    f3 = '{} = {}({}, {})'        # x = Reals(lb, ub, nrandom=10)
+    f1 = (indent * TAB) + '{} = {}()'              # x = Reals()
+    f2 = (indent * TAB) + '{} = {}({})'            # x = Reals(lb, ub)
+    f3 = (indent * TAB) + '{} = {}({}, {})'        # x = Reals(lb, ub, nrandom=10)
 
     # print(entry)
 
@@ -990,9 +998,9 @@ def make_domain(entry, indent=0) -> str:
     # TODO: if name fails raise error
     #       add :annotate to add/or not "# domains"
 
-    f1 = '{} = {}()'              # x = Reals()
-    f2 = '{} = {}({})'            # x = Reals(lb, ub)
-    f3 = '{} = {}({}, {})'        # x = Reals(lb, ub, nrandom=10)
+    f1 = (indent * TAB) + '{} = {}()'              # x = Reals()
+    f2 = (indent * TAB) + '{} = {}({})'            # x = Reals(lb, ub)
+    f3 = (indent * TAB) + '{} = {}({}, {})'        # x = Reals(lb, ub, nrandom=10)
 
     # print(entry)
 
@@ -1025,7 +1033,15 @@ def make_boolean(entry, fn_sig='', indent=0) -> str:
 
     for element in entry['values']:
 
-        if element == '(': continue
+        # if element == '(': continue
+        # elif element == ')': continue
+
+        if element == '(':
+            case.append('(')
+            continue
+        elif element == ')':
+            case.append(')')
+            continue
 
         if element in ('!', '¬', 'not'): case.append('not ')
         elif element in booleans: case.append(' ' + booleans[element] + ' ')
@@ -1039,20 +1055,24 @@ def make_boolean(entry, fn_sig='', indent=0) -> str:
 
     for element in case:
 
-        print('element --> ', element)
-
         if isinstance(element, tuple):
 
             predicate = element[0]
             use_symbolic = element[1]
-            args = element[2:] if len(element) > 2 else None
+            # args = element[2:] if len(element) > 2 else None
+            args = element[3:] if element[2] is False else None
 
-            if use_symbolic:
-                line.append(f1.format(fn_sig, use_symbolic, ''.join(args)))
-            elif args is None:
+            print(f'element ￫ {element}')
+
+            if use_symbolic is not None:
+                # line.append(f1.format(fn_sig, use_symbolic, ''.join(args[1:])))
+                line.append(f1.format(fn_sig, use_symbolic, args[0]))
+            elif not args:
                 line.append(f2.format(predicate, fn_sig))
             else:
-                line.append(f3.format(predicate, fn_sig, ', '.join(args)))
+                # print(f'predicate: {predicate}, fn: {fn_sig}, args: {args}')
+                line.append(f3.format(predicate, fn_sig, ', '.join([str(a) for a in args])))
+                # line.append(f3.format(predicate, fn_sig, ', '.join(args)))
         else:
             line.append(element)
 
@@ -1116,21 +1136,10 @@ def make_assert_stmt(stub, fn_name, args, indent=0):
     elif stub['kind'] == 'predicate-side-effect+':
         args = ', '.join(stub['values'])
         line = f3.format(pd_name, stub['name'], args)
-    # these are for winnow/satisfy ------------------------
-    elif stub['kind'] == 'group-predicate' and stub['using-bin-fn']:
-        line = ''
-        print('at gp')
-    elif stub['kind'] == 'group-predicate' and not stub['using-bin-fn']:
-        line = ''
-        print('at !gp')
-    elif stub['kind'] == 'group-predicate-values' and stub['using-bin-fn']:
-        line = ''
-        print('at gpv')
-    elif stub['kind'] == 'group-predicate-values' and not stub['using-bin-fn']:
-        line = ''
-        print('at not gpv')
-    else:
-        print('Test writer -- forgot about ￫ ', stub)
+
+    # TODO: 'message' should be in all the stubs, eventually
+    if 'message' in stub and stub['message'] is not None:
+        line += f", {stub['message']}"
 
     return line
 
@@ -1179,7 +1188,6 @@ def make_assert_group_stmt(stub, fn_name, args, indent=0):
             line = f2.format(pd_name, 'result', args)
 
     return line
-
 
 
 def get_directives(entry):

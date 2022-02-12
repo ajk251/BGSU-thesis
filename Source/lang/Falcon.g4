@@ -38,16 +38,16 @@ domain_names: name                                                  #get_domain_
             | name (COMMA? name)+                                   #get_domain_names
             ;
 
-test_stub: BAR predicate                                            #stub_p
-         | BAR predicate value                                      #stub_pv
-         | BAR predicate (value)+                                   #stub_many_pv
-         | BAR arg_list predicate value                             #stub_assert
-         | BAR arg_list predicate                                   #stub_assert_p
+test_stub: BAR predicate ('~~' STRING)?                             #stub_p
+         | BAR predicate value ('~~' STRING)?                       #stub_pv
+         | BAR predicate (value)+ ('~~' STRING)?                    #stub_many_pv
+         | BAR arg_list predicate value ('~~' STRING)?              #stub_assert
+         | BAR arg_list predicate ('~~' STRING)?                    #stub_assert_p
          | BAR compiler*                                            #stub_directives
-         | BAR test_logical                                         #stub_logical
+         | BAR test_logical ('~~' STRING)?                          #stub_logical
          | ABAR code                                                #stub_code
-         | ABAR value predicate (value)+                            #stub_side_effect_many
-         | ABAR value predicate                                     #stub_side_effect
+         | ABAR value predicate (value)+ ('~~' STRING)?             #stub_side_effect_many
+         | ABAR value predicate ('~~' STRING)?                      #stub_side_effect
          ;
 
 test_logical: OP_NOT? predicate value* (OP_LOGICAL OP_NOT? predicate value*)* #stub_logic

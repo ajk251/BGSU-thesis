@@ -8,7 +8,7 @@ from test_functions import add
 
 # This file was generated automatically by falcon.
 # from: Tests/pytest-tests.fcn
-# on 2022 Feb 09 Wed 21:30:03
+# on 2022 Feb 12 Sat 17:59:52
 
 Xvalues = Integers(-10, 10, nrandom=100)
 Yvalues = Integers(-10, 10, nrandom=100)
@@ -16,32 +16,35 @@ Zvalues = Numbers(-1000, 1000)
 Avalues = Boundary(-10, 10)
 
 # Assertion test -------------
-assert is_integer(add(1, 2, 3))
-assert add(4, 5, 6) > 0
+assert is_integer(add(1, 2, 3)), "Does this even work?"
+assert add(4, 5, 6) > 0, "Does *this* even work?"
 
 # Assertion test -------------
-assert add(1, 2, 3) > 4
-assert add(1, 2, three=3, four=4) != 5
-assert is_float(add(1, [2.0], three=3.0))
+assert add2(1, 2, 3) > 4
+assert add2(1, 2, three=3, four=4) != 5
+x = 1 + 2
+assert is_float(add2(1, [2.0], three=3.0))
 
 # start test -----------------
-def test_add_fs():
+def test_add_eFa():
 
     # 'here I am testing to see if it works and it is the one with >'
 
     for x_i, y_i, z_i in ART(Xvalues, Yvalues, initial=[0, 0, 0]):
-        assert is_integer(add(x_i, y_i, z_i))
-        assert add(x_i, y_i, z_i) > 1
+        assert is_integer(add(x_i, y_i, z_i)) or is_float(add(x_i, y_i, z_i)), "This is the error"
+        assert add(x_i, y_i, z_i) > 1, "This is another problem"
         assert between(add(x_i, y_i, z_i), -100, 100)
         x = x_i + y_i + 1.0
         assert is_float(x)
 
 
 # start test -----------------
-def test_add_Nt():
+def test_add_vTyl4():
 
     for xvaluesᵢ, zvaluesᵢ in zip(Xvalues, Zvalues):
-        assert is_integer(add(xvaluesᵢ, zvaluesᵢ))
+        assert is_integer(add(xvaluesᵢ, zvaluesᵢ)) or is_float(add(xvaluesᵢ, zvaluesᵢ))
+        assert add(xvaluesᵢ, zvaluesᵢ) >= 0.0 or add(xvaluesᵢ, zvaluesᵢ) <= 1.0
+        assert between(add(xvaluesᵢ, zvaluesᵢ), 0, 1) and is_float(add(xvaluesᵢ, zvaluesᵢ))
         assert between(add(xvaluesᵢ, zvaluesᵢ), -100, 100)
 
 

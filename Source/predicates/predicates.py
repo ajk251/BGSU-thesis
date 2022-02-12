@@ -11,9 +11,7 @@ Value = namedtuple('Value', 'name,symbol,is_error')
 
 #help from: https://realpython.com/primer-on-python-decorators/
 
-# TODO: add complement option, ala toolz
-#       add underscore to dash -ify option
-#       check whether the name already exists
+# TODO: check whether the name already exists
 #       wrap the functions so they don't fail, just return False
 #       add arg analysis to predicate, ie breakdown of args
 

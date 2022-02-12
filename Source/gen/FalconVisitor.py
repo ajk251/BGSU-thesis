@@ -204,16 +204,6 @@ class FalconVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by FalconParser#get_card.
-    def visitGet_card(self, ctx:FalconParser.Get_cardContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by FalconParser#get_not.
-    def visitGet_not(self, ctx:FalconParser.Get_notContext):
-        return self.visitChildren(ctx)
-
-
     # Visit a parse tree produced by FalconParser#value.
     def visitValue(self, ctx:FalconParser.ValueContext):
         return self.visitChildren(ctx)

@@ -359,24 +359,6 @@ class FalconListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by FalconParser#get_card.
-    def enterGet_card(self, ctx:FalconParser.Get_cardContext):
-        pass
-
-    # Exit a parse tree produced by FalconParser#get_card.
-    def exitGet_card(self, ctx:FalconParser.Get_cardContext):
-        pass
-
-
-    # Enter a parse tree produced by FalconParser#get_not.
-    def enterGet_not(self, ctx:FalconParser.Get_notContext):
-        pass
-
-    # Exit a parse tree produced by FalconParser#get_not.
-    def exitGet_not(self, ctx:FalconParser.Get_notContext):
-        pass
-
-
     # Enter a parse tree produced by FalconParser#value.
     def enterValue(self, ctx:FalconParser.ValueContext):
         pass
