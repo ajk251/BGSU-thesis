@@ -18,6 +18,7 @@ Assert add2:
   | (1, 2, three=3, four=4) ≠ 5
   |> `x = 1 + 2`
   | (1, `[2.0]`, three=3.0) float?
+  | (`[1,2,3]`) #< 5
   ;
 
 Test add Xvalues Yvalues:

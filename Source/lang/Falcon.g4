@@ -178,7 +178,8 @@ OP_NOT:  '￢' | '!';
 DIRECTIVE: COLON (CHAR | [-_])*;
 FNARG:     '-' (CHAR | [-_])*;
 
-ID: (CHAR | '_')(CHAR | DIGIT | [_.])*;
+//ID: (CHAR | '_')(CHAR | DIGIT | _.])*;
+ID: (CHAR | [_#])(CHAR | DIGIT | [_.] | OPERATORS)*;
 
 OPERATORS: [><≤≥] | '<=' | '>=' | '==' | '±';
 OP_EQ:  '=';
