@@ -119,28 +119,38 @@ class FalconVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by FalconParser#test_groupby.
+    def visitTest_groupby(self, ctx:FalconParser.Test_groupbyContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by FalconParser#test_satisfy.
     def visitTest_satisfy(self, ctx:FalconParser.Test_satisfyContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by FalconParser#winnow_stub.
-    def visitWinnow_stub(self, ctx:FalconParser.Winnow_stubContext):
+    # Visit a parse tree produced by FalconParser#groupby_stub.
+    def visitGroupby_stub(self, ctx:FalconParser.Groupby_stubContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by FalconParser#winnow_stub_many.
-    def visitWinnow_stub_many(self, ctx:FalconParser.Winnow_stub_manyContext):
+    # Visit a parse tree produced by FalconParser#groupby_stub_many.
+    def visitGroupby_stub_many(self, ctx:FalconParser.Groupby_stub_manyContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by FalconParser#winnow_code.
-    def visitWinnow_code(self, ctx:FalconParser.Winnow_codeContext):
+    # Visit a parse tree produced by FalconParser#groupby_code.
+    def visitGroupby_code(self, ctx:FalconParser.Groupby_codeContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by FalconParser#winnow_directives.
-    def visitWinnow_directives(self, ctx:FalconParser.Winnow_directivesContext):
+    # Visit a parse tree produced by FalconParser#groupby_directives.
+    def visitGroupby_directives(self, ctx:FalconParser.Groupby_directivesContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#winnow_stub_many_many.
+    def visitWinnow_stub_many_many(self, ctx:FalconParser.Winnow_stub_many_manyContext):
         return self.visitChildren(ctx)
 
 

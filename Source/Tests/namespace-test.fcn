@@ -57,7 +57,7 @@ ns-t1a {
    :enumerate True
    :verbose 4
 
-   `x = 4`
+   //`x = 4`
 
    Test fn D:
      | ≠ 4
@@ -66,7 +66,7 @@ ns-t1a {
      | > 2
      | == 5.0
      | = -1
-     | == a
+     | = a
      ;
 }
 
@@ -83,7 +83,7 @@ ns-1a {
      | `x = 3`
      | ≠  4
      | >  5
-     | == 5.0
+     | = 5.0
      | = "asdf"
      | = `[1,2,3]`
      | ± 7
@@ -91,11 +91,11 @@ ns-1a {
      | any? str int
      ;
 
-     `x = 1`
+     //`x = 1`
 
-     x := 2
-     y := `List[str]` : `[1,2,3]`
-     z := str : "string!"
+     //x := 2
+     //y := `List[str]` : `[1,2,3]`
+     //z := str : "string!"
 
     Assert fn:
       | :do thing :are-sure yes
@@ -107,7 +107,7 @@ ns-1a {
       | is? int
       | ==  `[1,2,3]`
       | ≠   z
-      | ≠   "a"
+      | ≠ "a"
       ;
 
     }

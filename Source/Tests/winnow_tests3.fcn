@@ -1,0 +1,9 @@
+
+Domain X Integers 0 100
+Domain Y Integers 0 100
+
+Winnow fn X Y -> gb:
+  | 'a' is-int? : #> 1
+  | 'b' between 0 1 : #± 100 10
+  | 'c' is-float? : #< 3
+  ;

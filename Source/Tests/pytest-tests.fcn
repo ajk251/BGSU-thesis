@@ -52,5 +52,6 @@ Groupby addf Xvalues -> bin_fn:
   | 'c' positive?
   | 'd' between? 0 1
   | 'e' >= 1
+  | _ raises InvalidInputError
   ;
 

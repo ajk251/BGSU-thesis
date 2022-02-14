@@ -33,6 +33,7 @@ booleans = {'∧': 'and', '&&': 'and', 'and': 'and',
 
 # writes the file -----------------------------------------
 
+
 def write_basic_unittest(intermediate, source=None):
 
     # print('Predicates avaliable: ', len(p.PREDICATES))
@@ -149,8 +150,9 @@ def make_unittest(entry, indent=0):
             if entry['tests'][value]['kind'] == 'test-basic':
                 line = unit_Test(entry['tests'][value], indent)
                 lines.append(line)
-            elif entry['tests'][value]['kind'] == 'winnow-test':
-                line = unit_Winnow(entry['tests'][value], indent)
+            elif entry['tests'][value]['kind'] == 'groupby-test':
+                #line = unit_Winnow(entry['tests'][value], indent)
+                line = unit_Groupby(entry['tests'][value], indent)
                 lines.append(line)
             elif entry['tests'][value]['kind'] == 'satisfy-test':
                 line = unit_Satisfy(entry['tests'][value], indent)
@@ -186,8 +188,10 @@ def make_global(entry, indent=0) -> str:
             if entry['tests'][value]['kind'] == 'test-basic':
                 line = basic_Test(entry['tests'][value], indent)
                 lines.append(line)
-            elif entry['tests'][value]['kind'] == 'winnow-test':
-                line = basic_Winnow(entry['tests'][value], indent)
+            # elif entry['tests'][value]['kind'] == 'winnow-test':
+            elif entry['tests'][value]['kind'] == 'groupby-test':
+                # line = basic_Winnow(entry['tests'][value], indent)
+                line = basic_Groupby(entry['tests'][value], indent)
                 lines.append(line)
             elif entry['tests'][value]['kind'] == 'satisfy-test':
                 line = basic_Satisfy(entry['tests'][value], indent)
@@ -353,14 +357,14 @@ def basic_Assert(entry, indent=0) -> str:
     return '\n'.join(lines)
 
 
-def basic_Winnow(entry, indent=0) -> str:
+def basic_Groupby(entry, indent=0) -> str:
 
     lines = ['']
 
     directives = get_directives(entry)
 
-    message = directives['message']
-    pyfunc = directives['pyfunc']
+    # message = directives['message']
+    # pyfunc = directives['pyfunc']
     dvars = entry['domain']                                         # the domain names
     labels = directives['labels']
     algo = directives['algo']
@@ -380,6 +384,7 @@ try:
 except Exception as e:
     assert False, "Function error"
     continue
+    result = e
                 
 try:
     group = {}(result)
@@ -573,7 +578,15 @@ except Exception as e:
 
     return '\n'.join(lines)
 
+
+def basic_Winnow(entry, indent=0) -> str:
+
+    passe
+
+
 # for unit tests -------
+
+
 def unit_Test(entry, indent=1):
 
     #directives --------
@@ -679,7 +692,8 @@ def unit_Test(entry, indent=1):
     return '\n'.join(lines)
 
 
-def unit_Winnow(entry, indent=1) -> str:
+#def unit_Winnow(entry, indent=1) -> str:
+def unit_Groupby(entry, indent=1) -> str:
 
     lines = []
 

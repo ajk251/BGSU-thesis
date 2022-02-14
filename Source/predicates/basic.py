@@ -1,25 +1,26 @@
 
 import operator as op
 
-
-
 from predicates.predicates import predicate
 
 
 # useful -----------------------------------------
 
-@predicate(alias=['catches', 'raises', 'raises?'], is_error=True)
-def raises(fn, args, kwargs, error) -> bool:
+@predicate(alias=['raises?'], is_error=True)
+def raises(e, error) -> bool:
 
-    try:
-        fn(*args, **kwargs)
-    except Exception as e:
-        return isinstance(e, Exception)
-    finally:
-        return False
+    # try:
+    #     fn(*args, **kwargs)
+    # except Exception as e:
+    #     return isinstance(e, Exception)
+    # finally:
+    #     return False
+    return e is error
 
 
-@predicate(alias=['is_assertion', 'is-assertion', 'is-assertion?'], is_error=True)
+# Be careful with this, you can't test for an AssertionError like in raises? --> it must be an instance of the
+#   error
+@predicate(alias=['asserts?', 'is_assertion', 'is-assertion', 'is-assertion?'], is_error=True)
 def assertion(fn, args, kwargs, error=AssertionError):
 
     try:
@@ -61,7 +62,20 @@ def not_in(value, container) -> bool:
 
 @predicate(alias=['=', 'eq?'], symbol='==')
 def eq(a, b) -> bool:
+    """Weak equality, ie a = b, and does not check for types. For instance, 1 = 1.0"""
     return op.eq(a, b)
+
+
+@predicate(alias=['==', 'equals?'])
+def equals(a, b) -> bool:
+    """Strong equality, ie a == b, where type(a) == type(b) and a == b"""
+    return type(a) == type(b) and a == b
+
+
+@predicate(alias=['===', 'strong-equals?'])
+def strong_equals(a, b) -> bool:
+    """The strongest notion of equality, not the same object, where type(a) == type(b) and a == b"""
+    return id(a) != id(b) and type(a) == type(b) and a == b
 
 
 @predicate(alias=['!=', '¬=', '≠', 'ne?'], symbol='!=')
@@ -92,21 +106,23 @@ def ge(a, b) -> bool:
 
 @predicate(alias=['sorted?', 'sorted≤?', 'sorted<=?'])
 def is_sorted(sequence) -> bool:
-    '''Tests i≤j for all values in sequence'''
-    return all((i <= j for i,j in zip(sequence, sequence[1:])))
+    """Tests i≤j for all values in sequence"""
+    return all((i <= j for i, j in zip(sequence, sequence[1:])))
 
 
 @predicate(alias=['sorted<?', 'sorted-strict?'])
-def is_stictly_sorted(sequence) -> bool:
-    '''Tests i<j for all values in sequence'''
-    return all((i <= j for i,j in zip(sequence, sequence[1:])))
+def is_strictly_sorted(sequence) -> bool:
+    """Tests i<j for all values in sequence"""
+    return all((i < j for i, j in zip(sequence, sequence[1:])))
 
-@predicate(alias=['decending?'])
-def decending(sequence) -> bool:
-    '''Tests for decending order, ie 100, 99, 98, …, where i > j'''
-    return all((i > j for i,j in zip(sequence, sequence[1:])))
+
+@predicate(alias=['descending?'])
+def descending(sequence) -> bool:
+    """Tests for decending order, ie 100, 99, 98, …, where i > j"""
+    return all((i > j for i, j in zip(sequence, sequence[1:])))
+
 
 @predicate(alias=['ascending?'])
 def ascending(sequence) -> bool:
-    '''Tests for ascending order, ie 1, 2, 3 …, where i < j'''
-    return all((i < j for i,j in zip(sequence, sequence[1:])))
+    """Tests for ascending order, ie 1, 2, 3 …, where i < j"""
+    return all((i < j for i, j in zip(sequence, sequence[1:])))

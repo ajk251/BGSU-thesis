@@ -206,6 +206,15 @@ class FalconListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by FalconParser#test_groupby.
+    def enterTest_groupby(self, ctx:FalconParser.Test_groupbyContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#test_groupby.
+    def exitTest_groupby(self, ctx:FalconParser.Test_groupbyContext):
+        pass
+
+
     # Enter a parse tree produced by FalconParser#test_satisfy.
     def enterTest_satisfy(self, ctx:FalconParser.Test_satisfyContext):
         pass
@@ -215,39 +224,48 @@ class FalconListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by FalconParser#winnow_stub.
-    def enterWinnow_stub(self, ctx:FalconParser.Winnow_stubContext):
+    # Enter a parse tree produced by FalconParser#groupby_stub.
+    def enterGroupby_stub(self, ctx:FalconParser.Groupby_stubContext):
         pass
 
-    # Exit a parse tree produced by FalconParser#winnow_stub.
-    def exitWinnow_stub(self, ctx:FalconParser.Winnow_stubContext):
-        pass
-
-
-    # Enter a parse tree produced by FalconParser#winnow_stub_many.
-    def enterWinnow_stub_many(self, ctx:FalconParser.Winnow_stub_manyContext):
-        pass
-
-    # Exit a parse tree produced by FalconParser#winnow_stub_many.
-    def exitWinnow_stub_many(self, ctx:FalconParser.Winnow_stub_manyContext):
+    # Exit a parse tree produced by FalconParser#groupby_stub.
+    def exitGroupby_stub(self, ctx:FalconParser.Groupby_stubContext):
         pass
 
 
-    # Enter a parse tree produced by FalconParser#winnow_code.
-    def enterWinnow_code(self, ctx:FalconParser.Winnow_codeContext):
+    # Enter a parse tree produced by FalconParser#groupby_stub_many.
+    def enterGroupby_stub_many(self, ctx:FalconParser.Groupby_stub_manyContext):
         pass
 
-    # Exit a parse tree produced by FalconParser#winnow_code.
-    def exitWinnow_code(self, ctx:FalconParser.Winnow_codeContext):
+    # Exit a parse tree produced by FalconParser#groupby_stub_many.
+    def exitGroupby_stub_many(self, ctx:FalconParser.Groupby_stub_manyContext):
         pass
 
 
-    # Enter a parse tree produced by FalconParser#winnow_directives.
-    def enterWinnow_directives(self, ctx:FalconParser.Winnow_directivesContext):
+    # Enter a parse tree produced by FalconParser#groupby_code.
+    def enterGroupby_code(self, ctx:FalconParser.Groupby_codeContext):
         pass
 
-    # Exit a parse tree produced by FalconParser#winnow_directives.
-    def exitWinnow_directives(self, ctx:FalconParser.Winnow_directivesContext):
+    # Exit a parse tree produced by FalconParser#groupby_code.
+    def exitGroupby_code(self, ctx:FalconParser.Groupby_codeContext):
+        pass
+
+
+    # Enter a parse tree produced by FalconParser#groupby_directives.
+    def enterGroupby_directives(self, ctx:FalconParser.Groupby_directivesContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#groupby_directives.
+    def exitGroupby_directives(self, ctx:FalconParser.Groupby_directivesContext):
+        pass
+
+
+    # Enter a parse tree produced by FalconParser#winnow_stub_many_many.
+    def enterWinnow_stub_many_many(self, ctx:FalconParser.Winnow_stub_many_manyContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#winnow_stub_many_many.
+    def exitWinnow_stub_many_many(self, ctx:FalconParser.Winnow_stub_many_manyContext):
         pass
 
 
