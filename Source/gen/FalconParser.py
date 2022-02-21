@@ -158,7 +158,7 @@ def serializedATN():
         buf.write("\5,\27\2\u0119\u011c\5\16\b\2\u011a\u011b\7\37\2\2\u011b")
         buf.write("\u011d\5,\27\2\u011c\u011a\3\2\2\2\u011c\u011d\3\2\2\2")
         buf.write("\u011d\u011e\3\2\2\2\u011e\u0120\7\25\2\2\u011f\u0121")
-        buf.write("\5\32\16\2\u0120\u011f\3\2\2\2\u0121\u0122\3\2\2\2\u0122")
+        buf.write("\5\20\t\2\u0120\u011f\3\2\2\2\u0121\u0122\3\2\2\2\u0122")
         buf.write("\u0120\3\2\2\2\u0122\u0123\3\2\2\2\u0123\u0124\3\2\2\2")
         buf.write("\u0124\u0125\7\3\2\2\u0125\31\3\2\2\2\u0126\u0127\7\23")
         buf.write("\2\2\u0127\u0128\5\60\31\2\u0128\u0129\5.\30\2\u0129\u013c")
@@ -2138,11 +2138,11 @@ class FalconParser ( Parser ):
             return self.getToken(FalconParser.COLON, 0)
         def ARROW(self):
             return self.getToken(FalconParser.ARROW, 0)
-        def bin_stub(self, i:int=None):
+        def test_stub(self, i:int=None):
             if i is None:
-                return self.getTypedRuleContexts(FalconParser.Bin_stubContext)
+                return self.getTypedRuleContexts(FalconParser.Test_stubContext)
             else:
-                return self.getTypedRuleContext(FalconParser.Bin_stubContext,i)
+                return self.getTypedRuleContext(FalconParser.Test_stubContext,i)
 
 
         def enterRule(self, listener:ParseTreeListener):
@@ -2192,11 +2192,11 @@ class FalconParser ( Parser ):
             _la = self._input.LA(1)
             while True:
                 self.state = 285
-                self.bin_stub()
+                self.test_stub()
                 self.state = 288 
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
-                if not (_la==FalconParser.BAR):
+                if not (_la==FalconParser.BAR or _la==FalconParser.ABAR):
                     break
 
             self.state = 290

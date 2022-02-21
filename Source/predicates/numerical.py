@@ -59,16 +59,34 @@ def is_number(n) -> bool:
 # Fraction, Complex...
 
 
-@predicate(alias='nan?')
+@predicate(alias=['nan?', 'is-nan?'])
 def is_nan(n) -> bool:
     '''Tests whether a value is Not-A-Number or nan (Nan, NaN)'''
     return math.isnan(n)
+
+
+@predicate(alias=['inf?', 'is-inf?', '∞?'])
+def is_inf(n) -> bool:
+    return math.isinf(n)
 
 
 @predicate(alias='close?')
 def is_close(a, b, tol=0.00001):
     '''Tests whether a float is close in real and absolute terms'''
     return math.isclose(a, b, rel_tol=tol, abs_tol=tol)
+
+
+@predicate(alias=['safe-number?', 'not-nan-or-inf?'])
+def is_valid_float(n: float) -> bool:
+    """Returns whether a number is an actual float, not a NaN or Inf."""
+    return not (math.isnan(n) or math.isnan(n))
+
+
+@predicate(alias=['is-nan-inf?'])
+def is_nan_or_inf(n: float) -> bool:
+    """Returns whether a number is an actual float, not a NaN or Inf."""
+    return math.isnan(n) or math.isnan(n)
+
 
 # bounds testing --------------------------------
 # these names need some thought…

@@ -6,34 +6,66 @@ from predicates.predicates import predicate
 
 # useful -----------------------------------------
 
-@predicate(alias=['raises?'], is_error=True)
-def raises(e, error) -> bool:
+# simple list, comes from:  https://docs.python.org/3/library/exceptions.html
 
-    # try:
-    #     fn(*args, **kwargs)
-    # except Exception as e:
-    #     return isinstance(e, Exception)
-    # finally:
-    #     return False
-    return e is error
+@predicate(alias=['error?', 'raises?'], is_error=True)
+def catch_error(error, error_kind) -> bool:
+    return isinstance(error, error_kind)
 
 
-# Be careful with this, you can't test for an AssertionError like in raises? --> it must be an instance of the
-#   error
-@predicate(alias=['asserts?', 'is_assertion', 'is-assertion', 'is-assertion?'], is_error=True)
-def assertion(fn, args, kwargs, error=AssertionError):
+@predicate(alias=['error-message?', 'error-says?'], is_error=True)
+def catch_error_message(error, error_kind, message):
+    return isinstance(error, error_kind) and message in error.args[0]
 
-    try:
-        fn(*args, **kwargs)
-    except AssertionError as ae:
-        return isinstance(ae, AssertionError)
-    finally:
-        return False
+
+@predicate(alias='zero-error?', is_error=True)
+def catch_zero_div(error) -> bool:
+    return isinstance(error, ZeroDivisionError)
+
+
+@predicate(alias=['asserts?', 'is-assertion?'], is_error=True)
+def catch_assertion(error) -> bool:
+    return isinstance(error, AssertionError)
+
+
+@predicate(alias='math-error?', is_error=True)
+def catch_arithmetic(error) -> bool:
+    return isinstance(error, ArithmeticError)
+
+
+@predicate(alias='lookup-error?', is_error=True)
+def catch_lookup(error) -> bool:
+    return isinstance(error, LookupError)
+
+
+# @predicate(alias=['raises?'], is_error=True)
+# def raises(e, error) -> bool:
+#
+#     # try:
+#     #     fn(*args, **kwargs)
+#     # except Exception as e:
+#     #     return isinstance(e, Exception)
+#     # finally:
+#     #     return False
+#     return e is error
+#
+#
+# # Be careful with this, you can't test for an AssertionError like in raises? --> it must be an instance of the
+# #   error
+# @predicate(alias=['asserts?', 'is_assertion', 'is-assertion', 'is-assertion?'], is_error=True)
+# def assertion(fn, args, kwargs, error=AssertionError):
+#
+#     try:
+#         fn(*args, **kwargs)
+#     except AssertionError as ae:
+#         return isinstance(ae, AssertionError)
+#     finally:
+#         return False
 
 # basic -----------------------------------------
 
 
-@predicate(alias=['is-None?', 'None?', 'none?'])
+@predicate(alias=['is-None?', 'is-none?', 'None?', 'none?'])
 def is_none(value) -> bool:
     return value is None
 

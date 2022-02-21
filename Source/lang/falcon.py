@@ -298,8 +298,11 @@ class Falcon(FalconVisitor):
             if isinstance(stub, okay_stubs):
                 test['stubs'].append(self.visit(stub))
             elif isinstance(stub, FalconParser.Stub_directivesContext):
-                directives = self.visit(stub)
-                test['directives'] = directives
+                # directives = self.visit(stub)
+                # test['directives'] = directives
+                ds = self.visit(stub)
+                for d in ds:
+                    test['directives'][d['directive']] = {'value': d['value'], 'params': d['params']}
             elif isinstance(stub, FalconParser.Stub_codeContext):
                 self.visit(stub)
                 # TODO: THIS IS MISSING!!!
@@ -357,32 +360,62 @@ class Falcon(FalconVisitor):
         test = {'kind': 'satisfy-test'}
         test['function'] = self.visit(ctx.name(0))
         test['domain'] = self.visit(ctx.domain_names())
+        test['bin'] = None
         test['id'] = self.get_id()
         test['directives'] = {}
         test['stubs'] = []
         test['group-predicates'] = []                # this is useful later on
 
-        # there has to be a better way…  _ == Falcon.ARROW?
-        if ctx.children[3].getText() == '->' or ctx.children[3].getText() == '→':
-            test['bin'] = self.visit((ctx.name(1)))
-        else:
-            test['bin'] = None
+        # this is for the old version of Satisfy
+        # # there has to be a better way…  _ == Falcon.ARROW?
+        # if ctx.children[3].getText() == '->' or ctx.children[3].getText() == '→':
+        #     test['bin'] = self.visit((ctx.name(1)))
+        # else:
+        #     test['bin'] = None
+        #
+        # for child in ctx.children:
+        #     if isinstance(child, FalconParser.Winnow_stubContext):
+        #         stub = self.visit(child)
+        #         test['stubs'].append(stub)
+        #         # test['group-predicates'].append((stub['group'], stub['predicate']))
+        #     elif isinstance(child, FalconParser.Winnow_stub_manyContext):
+        #         stub = self.visit(child)
+        #         test['stubs'].append(stub)
+        #         test['group-predicates'].append((stub['group'], stub['predicate'], stub['values']))
+        #     else:
+        #         # print(self.visit(child), type(child))
+        #         continue
+        #
+        # self.ns[self.current_ns]['tests'][test['id']] = test
+        # self.ns[self.current_ns]['ordering'].append(('test', test['id']))
 
-        for child in ctx.children:
-            if isinstance(child, FalconParser.Winnow_stubContext):
-                stub = self.visit(child)
-                test['stubs'].append(stub)
-                # test['group-predicates'].append((stub['group'], stub['predicate']))
-            elif isinstance(child, FalconParser.Winnow_stub_manyContext):
-                stub = self.visit(child)
-                test['stubs'].append(stub)
-                test['group-predicates'].append((stub['group'], stub['predicate'], stub['values']))
+        okay_stubs = (FalconParser.Stub_pvContext,
+                      FalconParser.Stub_pContext,
+                      FalconParser.Stub_many_pvContext,
+                      FalconParser.Stub_codeContext,
+                      FalconParser.Stub_logicalContext,
+                      FalconParser.Stub_side_effectContext,
+                      FalconParser.Stub_side_effect_manyContext)
+
+        for stub in ctx.children:
+
+            if isinstance(stub, okay_stubs):
+                test['stubs'].append(self.visit(stub))
+            elif isinstance(stub, FalconParser.Stub_directivesContext):
+                # directives = self.visit(stub)
+                ds = self.visit(stub)
+                for d in ds:
+                    test['directives'][d['directive']] = {'value': d['value'], 'params': d['params']}
+                # test['directives'][d['directive']].append({'value': d['value'], 'params': d['params']})
             else:
-                # print(self.visit(child), type(child))
+                # TODO raise error! How did it get here‽
+                # print('Test -> ', type(stub))
                 continue
 
         self.ns[self.current_ns]['tests'][test['id']] = test
         self.ns[self.current_ns]['ordering'].append(('test', test['id']))
+
+        return
 
     def visitTest_winnow(self, ctx: FalconParser.Test_winnowContext):
 
@@ -397,7 +430,6 @@ class Falcon(FalconVisitor):
         # test['group-predicates'] = []                # this is useful later on
 
         test['bin'] = self.visit((ctx.name(1)))
-
 
         for child in ctx.children:
             if isinstance(child, FalconParser.Winnow_stub_many_manyContext):
@@ -487,35 +519,35 @@ class Falcon(FalconVisitor):
     # test/assert ------
     def visitStub_p(self, ctx: FalconParser.Stub_pContext):
 
-        stub = {'kind': 'predicate', 'value': 'True', 'message': None}
+        stub = {'kind': 'predicate', 'value': 'True', 'error-message': None}
         stub['predicate'] = self.visit(ctx.predicate())
 
         if ctx.STRING():
-            stub['message'] = str(ctx.STRING())
+            stub['error-message'] = str(ctx.STRING())
 
         return stub
 
     def visitStub_pv(self, ctx: FalconParser.Stub_pvContext):
 
-        stub = {'kind': 'predicate-value', 'value': None, 'message': None}
+        stub = {'kind': 'predicate-value', 'value': None, 'error-message': None}
 
         stub['predicate'] = self.visit(ctx.predicate())
         stub['value'] = self.visit(ctx.value())
 
         if ctx.STRING():
-            stub['message'] = str(ctx.STRING())
+            stub['error-message'] = str(ctx.STRING())
 
         return stub
 
     def visitStub_many_pv(self, ctx: FalconParser.Stub_many_pvContext):
 
-        stub = {'kind': 'predicate-value+', 'message': None}
+        stub = {'kind': 'predicate-value+', 'error-message': None}
         # stub['name'] = self.visit(ctx.label())
         stub['predicate'] = self.visit(ctx.predicate())
         stub['value'] = tuple(self.visit(child) for child in ctx.children[2:])
 
         if ctx.STRING():
-            stub['message'] = str(ctx.STRING())
+            stub['error-message'] = str(ctx.STRING())
 
         return stub
 
@@ -531,7 +563,7 @@ class Falcon(FalconVisitor):
 
     def visitStub_side_effect(self, ctx: FalconParser.Stub_side_effectContext):
 
-        stub = {'kind': 'predicate-side-effect', 'values': [], 'message': None}
+        stub = {'kind': 'predicate-side-effect', 'values': [], 'error-message': None}
         stub['name'] = self.visit(ctx.value())
         stub['predicate'] = self.visit(ctx.predicate())
 
@@ -540,13 +572,13 @@ class Falcon(FalconVisitor):
         #         stub['values'].append(self.visit(child))
 
         if ctx.STRING():
-            stub['message'] = str(ctx.STRING())
+            stub['error-message'] = str(ctx.STRING())
 
         return stub
 
     def visitStub_side_effect_many(self, ctx: FalconParser.Stub_side_effect_manyContext):
 
-        stub = {'kind': 'predicate-side-effect+', 'values': [], 'message': None}
+        stub = {'kind': 'predicate-side-effect+', 'values': [], 'error-message': None}
         stub['name'] = self.visit(ctx.value(0))
         stub['predicate'] = self.visit(ctx.predicate())
 
@@ -555,7 +587,7 @@ class Falcon(FalconVisitor):
                 stub['values'].append(self.visit(child))
 
         if ctx.STRING():
-            stub['message'] = str(ctx.STRING())
+            stub['error-message'] = str(ctx.STRING())
 
         return stub
 
@@ -578,33 +610,33 @@ class Falcon(FalconVisitor):
 
     def visitStub_assert(self, ctx: FalconParser.Stub_assertContext):
 
-        stub = {'value': None, 'message': None}
+        stub = {'value': None, 'error-message': None}
         stub['kind'] = 'assertion'
         stub['argument'] = self.visit(ctx.arg_list())
         stub['predicate'] = self.visit(ctx.predicate())
         stub['value'] = self.visit(ctx.value())
 
         if ctx.STRING():
-            stub['message'] = str(ctx.STRING())
+            stub['error-message'] = str(ctx.STRING())
 
         return stub
 
     def visitStub_assert_p(self, ctx: FalconParser.Stub_assert_pContext):
 
-        stub = {'value': None, 'message': None}
+        stub = {'value': None, 'error-message': None}
         stub['kind'] = 'assertion-p'
         stub['argument'] = self.visit(ctx.arg_list())
         stub['predicate'] = self.visit(ctx.predicate())
         stub['value'] = 'True'
 
         if ctx.STRING():
-            stub['message'] = str(ctx.STRING())
+            stub['error-message'] = str(ctx.STRING())
 
         return stub
 
     def visitStub_logical(self, ctx: FalconParser.Stub_logicalContext):
 
-        stub = {'kind': 'logical', 'message': None}
+        stub = {'kind': 'logical', 'error-message': None}
 
         values = None
         okay_logicals = (FalconParser.Stub_logicContext,
@@ -617,7 +649,7 @@ class Falcon(FalconVisitor):
                 values = self.visit(child)
 
         if ctx.STRING():
-            stub['message'] = str(ctx.STRING())
+            stub['error-message'] = str(ctx.STRING())
 
         stub['values'] = values
 

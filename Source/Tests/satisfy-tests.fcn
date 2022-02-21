@@ -1,0 +1,16 @@
+
+:import test_functions -from [add, add2, sub]
+
+Domain X Integers -10 10 -nrandom 100
+Domain Y Integers -10 10 -nrandom 100
+
+
+Satisfy add X Y:
+  | :min 1 :max 2
+  | is-int?
+  | is-float?
+  | < 4
+  //|> `x = 1 + 2`
+  | is-none? ~~ "This should be rare"
+  | error-says? ZeroDivisionError "0"
+  ;

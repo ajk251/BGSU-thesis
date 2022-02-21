@@ -14,6 +14,7 @@ Value = namedtuple('Value', 'name,symbol,is_error')
 # TODO: check whether the name already exists
 #       wrap the functions so they don't fail, just return False
 #       add arg analysis to predicate, ie breakdown of args
+#		if error, wrap and return ([Error|None], [True|False])
 
 
 NullString = Union[None, str]

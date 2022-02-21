@@ -13,6 +13,7 @@ import predicates
 from predicates.predicates import PREDICATES
 from algorithms.algorithms import ALGORITHMS
 import domains
+from . import utls
 
 # TODO:
 #   add overwrite directive
@@ -194,7 +195,7 @@ def make_global(entry, indent=0) -> str:
                 line = basic_Groupby(entry['tests'][value], indent)
                 lines.append(line)
             elif entry['tests'][value]['kind'] == 'satisfy-test':
-                line = basic_Satisfy(entry['tests'][value], indent)
+                line = basic_Satisfy2(entry['tests'][value], indent)
                 lines.append(line)
 
     return '\n'.join(lines)
@@ -203,8 +204,12 @@ def make_global(entry, indent=0) -> str:
 # boilerplate ----------
 def add_imports(entry) -> str:
 
+    # TODO: Make these pretty
+
     lines = ['from predicates import *',
              'from domains import *\n',
+             'from utilities.utls import call\n',
+             'from utilities import FalconError',
              'from algorithms import *',
              'import unittest\n']
 
@@ -216,6 +221,9 @@ def add_imports(entry) -> str:
             line = 'import ' + module
         elif 'from' in args and 'as' in args:
             line = 'from {} import {} as {}'.format(module, args['from'], args['as'])
+        elif 'from' in args and '[' in args['from']:
+            s = args['from'].strip('[]').split(',')         # for some reason, this is just a string
+            line = 'from {} import {}'.format(module, ','.join(fn for fn in s))
         elif 'from' in args:
             line = 'from {} import {}'.format(module, args['from'])
         elif 'as' in args:
@@ -294,23 +302,36 @@ def basic_Assert(entry, indent=0) -> str:
 
     # directives -------------
 
-    # print(entry['directives'])
+    ignore_true = True          # this was an earlier attempt, eg is-int? True, TODO: refactor out
 
-    ignore_true = True
-    message = None
+    # because assert is different, it can't use get_directives - it doesn't have the function & domain
+    # message, pyfunc,
 
-    for directive in entry['directives']:
+    # get the message, if any
+    if entry['directives'].get(':message', None) is not None:
+        message = entry['directives'][':message']['value']
+    else:
+        message = None
 
-        # the ignore true, ie is-thing? True → use is-thing??
-        if directive.get('ignore-True', 'no').lower() in ['yes', 'true']:
-            ignore_true = True
+    # get the name of the function, create one, or append one
+    # test-name ￫ user name, as-is. :name any name, but decorated
 
-        # add a message
-        if directive.get(':message', None) is not None:
-            message = directive[':message']
+    print(entry)
 
-    # ignore_true = True if entry['directives'].get(':ignore-True', 'no').lower() in ['yes', 'true'] else False
-    # message = entry['directives'].get(':message', None)
+    fn_name = entry['function']
+
+    if entry['directives'].get(':test-name', None):
+        # TODO: raise warning if it does not start with test
+        t_name = entry['directives'][':test-name']['value']
+        pyfunc = f'def {t_name}():'
+    elif entry['directives'].get(':name', None):
+        t_name = entry['directives'][':name']['value']
+        pyfunc = f'def {t_name}():' if t_name.startswith('test') else f'def test_{t_name}():'
+    else:
+        rand_name = ''.join((choices(ascii_letters+digits, k=randint(2, 5))))
+        pyfunc = f'def test_{fn_name}_assertions_{rand_name}():' #.format(fn_name, rand_name)
+
+    indent += 1
 
     # -----------------------
     a1 = 'assert {} {} {}'              # w/ symbol
@@ -318,10 +339,10 @@ def basic_Assert(entry, indent=0) -> str:
     a3 = 'assert {}({})'                # ignoring True
 
     # -----------------------
-    lines = ['\n# Assertion test -------------']
+    lines = ['', pyfunc + '\n']
 
     if message:
-        lines.append('# ' + message.strip('"'))
+        lines.append((TAB * indent) + '# ' + message.strip('"'))
 
     fn_name = entry['function']
 
@@ -330,7 +351,7 @@ def basic_Assert(entry, indent=0) -> str:
         # if not stub['argument']['kind'] == 'assertion': raise "WTF"
 
         if stub['kind'] == 'code':
-            lines.append(stub['value'])
+            lines.append((TAB * indent) + stub['value'])
             continue
 
         args = make_args(stub['argument'])
@@ -349,10 +370,11 @@ def basic_Assert(entry, indent=0) -> str:
                 line = a2.format(pd_name, fn, value)
 
         # TODO: 'message' should be in all the stubs, eventually
-        if 'message' in stub and stub['message'] is not None:
-            line += f", {stub['message']}"
+        if 'error-message' in stub and stub['error-message'] is not None:
+            line += f", {stub['error-message']}"
 
-        lines.append(line)
+        # line = (TAB * indent) + line
+        lines.append((TAB * indent) + line)
 
     return '\n'.join(lines)
 
@@ -382,24 +404,21 @@ def basic_Groupby(entry, indent=0) -> str:
 try:
     result = {}
 except Exception as e:
-    assert False, "Function error"
-    continue
     result = e
                 
 try:
     group = {}(result)
 except Exception as e:
-    assert False, "Group-by error"   
-    continue
+    raise FalconError('Failed to property partition function')
     '''
 
     w2 = '''
 try:
     group = {}
 except Exception as e:   
-    assert False, "Function error"
-    continue
+    raise FalconError('Failed to property partition function')
 '''
+
     indent += 1
 
     # build the for loop, naked/with custom iterator/generic & no parameters
@@ -428,7 +447,11 @@ except Exception as e:
     for stub in entry['stubs']:
 
         stub['using-bin-fn'] = using_bin_fn
+
+        # if using_bin_fn:
         stmt = make_assert_group_stmt(stub, fn_name, args, indent)
+        # else:
+        #     stmt = make_assert_stmt(stub, fn_name, args, indent)
 
         # print('winnow stub ￫', stmt)
         groups[stub['group']].append(stmt)
@@ -450,7 +473,7 @@ except Exception as e:
         lines.append(line)
 
     # add failure case
-    failure = (indent * TAB) + f'else:\n' + ((indent + 1) * TAB) + 'print("You shouldn\'t be here!") \t\t# TODO…'
+    failure = (indent * TAB) + f'else:\n' + ((indent + 1) * TAB) + 'raise FalconError("Failed to meet at least one group") \t\t# TODO…'
     lines.append(failure)
 
     lines.append('')
@@ -458,6 +481,7 @@ except Exception as e:
     return '\n'.join(lines)
 
 
+# TODO: Remove this...
 def basic_Satisfy(entry, indent=0) -> str:
 
     lines = []
@@ -569,7 +593,7 @@ except Exception as e:
         line += '\n' + ((indent + 1) * TAB) + 'count += 1'
         lines.append(line)
 
-    # add failure case
+   # add failure case
     case = '{' + ",".join(ivars) + '}'
     failure = (indent * TAB) + 'assert count >= 1, f"Case {} did not satisfy at least 1 case"'.format(case)
     lines.append(failure)
@@ -581,7 +605,112 @@ except Exception as e:
 
 def basic_Winnow(entry, indent=0) -> str:
 
-    passe
+    pass
+
+
+def basic_Satisfy2(entry, indent=0):
+
+    directives = get_directives(entry)
+
+    message = directives['message']
+    pyfunc = directives['pyfunc']
+    dvars = entry['domain']                                         # the domain names
+    labels = directives['labels']
+    algo = directives['algo']
+    params = directives['params']
+    fn_name = directives['fn_name']
+
+    # these are the minimum and maximum number of predicates that should be meet.
+    if entry['directives'].get(':min', False):
+        minimum = entry['directives'][':min']['value']
+    else:
+        minimum = 1
+
+    if entry['directives'].get(':max', False):
+        maximum = entry['directives'][':max']['value']
+    else:
+        maximum = None
+
+    # write tests ------
+    lines = ['', pyfunc, '']
+    indent += 1
+
+    if message:
+        line = indent * TAB + '# ' + message.strip('"') + nl
+        lines.append(line)
+
+    lines.append((indent * TAB + 'errors = []\n'))
+
+    # build the for loop, naked/with custom iterator/generic & no parameters
+    if len(labels) == 1:
+        template = indent * TAB + "for {} in {}:".format(labels[0], dvars[0])
+    elif len(params) > 0:
+        template = indent * TAB + 'for {} in {}({}, {}):'.format(', '.join(labels), algo, ', '.join(dvars), ', '.join(params))
+    else:
+        template = indent * TAB + "for {} in {}({}):".format(', '.join(labels), algo, ', '.join(dvars))
+
+    lines.append(template)
+
+    header = """
+try:
+    result = {}
+except Exception as error:
+    result = error
+
+count = 0
+has_error = True
+"""
+
+    args = ', '.join(labels)
+    fn_sig = '{}({})'.format(fn_name, args)
+
+    line = textwrap.indent(header.format(fn_sig), TAB * 2)
+    lines.append(line)
+
+    indent += 1
+
+    for stub in entry['stubs']:
+        # the actual test assertion
+        stmt = make_assert_stmt(stub, 'result', '', indent, just_result=True)
+
+        if stub['kind'].startswith('predicate'):
+
+            # this is cheating and bad form
+            #remove the left
+            test = stmt.lstrip('assert').lstrip()           # otherwise a weird bug with result < 4 --> sult < 4
+            #remove the right, if needed
+            if stub['error-message'] is not None:
+                test = test.rstrip(', ' + stub['error-message'])
+
+            lines.append((indent * TAB) + 'if ' + test + ':')
+            lines.append(((indent+1) * TAB) + 'count += 1')
+            # lines.append(((indent+1) * TAB) + stmt)
+
+            # assume that the error has been caught
+            if PREDICATES[stub['predicate']][2]:
+                lines.append(((indent+1) * TAB) + 'has_error = False')
+        elif stub['kind'] == 'code':
+            line = '\n' + (indent * TAB) + stub['value'] + '\n'
+            lines.append(line)
+
+    # finish
+    line = '\n' + (indent * TAB) + 'if has_error:\n' + ((indent+1) * TAB) + 'errors.append((({}), result))'.format(', '.join(labels))
+    lines.append(line)
+    lines.append('')
+
+    line = (indent * TAB) + f'assert count >= {minimum}, f"The minimum number of predicates has not been met - met: {{count}}, min: {minimum}"'
+    lines.append(line)
+
+    if maximum is not None:
+        line = (indent * TAB) + f'assert count <= {maximum}, f"Exceed number of predicates met - met: {{count}}, max: {maximum}"'
+        lines.append(line)
+
+    line = (indent * TAB) + f'assert len(errors) == 0, f"Unaccounted for errors - {{len(errors)}} errors occurred"'
+    lines.append(line)
+
+    lines.append('')
+
+    return '\n'.join(lines)
 
 
 # for unit tests -------
@@ -1094,7 +1223,7 @@ def make_boolean(entry, fn_sig='', indent=0) -> str:
 
 
 # def make_assert_stmt(stub, fn_sig, fn_name=None, fn_args=None, indent=0):
-def make_assert_stmt(stub, fn_name, args, indent=0):
+def make_assert_stmt(stub, fn_name, args, indent=0, just_result=False):
 
     # TODO: 2 & 3 are the same!
     f1 = 'assert {} {} {}'              # w/ symbol
@@ -1102,7 +1231,7 @@ def make_assert_stmt(stub, fn_name, args, indent=0):
     f3 = 'assert {}({}, {})'            # w/ function
     f4 = 'assert {}({})'                # ignoring True
 
-    fn_sig = '{}({})'.format(fn_name, args)
+    fn_sig = '{}({})'.format(fn_name, args) if not just_result else fn_name
     indent += 1
     line = ''
 
@@ -1126,8 +1255,15 @@ def make_assert_stmt(stub, fn_name, args, indent=0):
 
     if stub['kind'] == 'predicate-value':
         # raises is a special case
-        if pd_name == 'raises':
-            line = f'assert {pd_name}({fn_name}, {args}, {stub["value"]})'
+        # if pd_name == 'raises':
+        #     line = f'assert {pd_name}({fn_name}, {args}, {stub["value"]})'
+        if PREDICATES[stub['predicate']][2] and not just_result:
+            # it's an error
+            line = f'assert {pd_name}(call({fn_name}, {args}, {stub["value"]}))'
+        elif PREDICATES[stub['predicate']][2] and isinstance(stub["value"], tuple):
+            line = f2.format(pd_name, 'result', ','.join(stub["value"]))
+        elif PREDICATES[stub['predicate']][2]:
+            line = f4.format(pd_name, 'result')
         elif use_symbolic and stub['value'] == 'True':
             line = f4.format(pd_name, fn_sig)
         elif use_symbolic:
@@ -1152,8 +1288,8 @@ def make_assert_stmt(stub, fn_name, args, indent=0):
         line = f3.format(pd_name, stub['name'], args)
 
     # TODO: 'message' should be in all the stubs, eventually
-    if 'message' in stub and stub['message'] is not None:
-        line += f", {stub['message']}"
+    if 'error-message' in stub and stub['error-message'] is not None:
+        line += f", {stub['error-message']}"
 
     return line
 
@@ -1196,8 +1332,10 @@ def make_assert_group_stmt(stub, fn_name, args, indent=0):
     else:
         if stub['kind'] == 'group-predicate':
             line = f3.format(pd_name, args)
+        # elif stub['kind'] == 'group-predicate-values' and use_symbolic:           # this can't really happen
+        #     line = f1.format('result', pd_name, ''.join(stub['values']))
         elif stub['kind'] == 'group-predicate-values' and use_symbolic:
-            line = f1.format('result', pd_name, args)
+            line = f3.format(pd_name, args)
         elif stub['kind'] == 'group-predicate-values':
             line = f2.format(pd_name, 'result', args)
 
@@ -1207,11 +1345,11 @@ def make_assert_group_stmt(stub, fn_name, args, indent=0):
 def get_directives(entry):
 
     # supported:
-    # message, pyfunc, suffix, method, label, algorithm, & algo-params
+    # message, pyfunc, suffix, method (of enumeration), labels, algorithm, & algo-params
 
     directives = {}
 
-    #directives --------
+    # directives --------
 
     # *** message ***
 

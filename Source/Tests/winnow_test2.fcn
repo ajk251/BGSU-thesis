@@ -1,19 +1,27 @@
 
 Domain X Integers 0 100
-Domain Y Integers
-    0
-    100
+Domain Y Integers 0 100
 
 // this doesn't work -it can't tell when domain ends
 //`x = fn(xᵢ, yᵢ) / 3.0`
+
+
+Winnow fn X Y -> gb:
+  | 'a' is-int?     : #> 1
+  | 'b' between 0 1 : #± 100 10
+  | 'c' is-float?   : #< 3
+  ;
 
 Groupby fna X Y -> fn_to_b:
   | :message "Let's hope this works"
   | 'A' float?
   | 'B' between? 0 1
+  | 'Error' raises? ZeroDivisionError
   ;
 
 Groupby fnb X Y:
-  | C int?
-  | D between? -50 50
+  | :message "This doesn't really make sense"
+  | 'C' int?
+  | 'D' between? -50 50
+  | 'E' raises? ZeroDivisionError
   ;

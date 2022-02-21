@@ -44,6 +44,7 @@ test_stub: BAR predicate ('~~' STRING)?                             #stub_p
          | BAR predicate (value)+ ('~~' STRING)?                    #stub_many_pv
          | BAR arg_list predicate value ('~~' STRING)?              #stub_assert
          | BAR arg_list predicate ('~~' STRING)?                    #stub_assert_p
+//         | BAR arg_list test_logical ('~~' STRING)?                 #stub_assert_logical
          | BAR compiler*                                            #stub_directives
          | BAR test_logical ('~~' STRING)?                          #stub_logical
          | ABAR code                                                #stub_code
@@ -73,13 +74,16 @@ test_logical: OP_NOT? predicate value* (OP_LOGICAL OP_NOT? predicate value*)* #s
 //        ;
 
 
-winnow_test: WINNOW name domain_names ARROW name ':' winnow_stub+ ';'   #test_winnow
+winnow_test: WINNOW name domain_names ARROW name ':' winnow_stub+ ';'    #test_winnow
            ;
 
-groupby_test: GROUPBY name domain_names (ARROW name)? ':' bin_stub+ ';'   #test_groupby
+groupby_test: GROUPBY name domain_names (ARROW name)? ':' bin_stub+ ';'  #test_groupby
            ;
 
-satisfy_test: SATISFY name domain_names (ARROW name)? ':' bin_stub+ ';' #test_satisfy
+//satisfy_test: SATISFY name domain_names (ARROW name)? ':' bin_stub+ ';'  #test_satisfy
+//            ;
+
+satisfy_test: SATISFY name domain_names (ARROW name)? ':' test_stub+ ';'  #test_satisfy
             ;
 
 bin_stub: BAR value predicate                                       #groupby_stub
@@ -201,7 +205,7 @@ DIRECTIVE: COLON (CHAR | [-_])*;
 FNARG:     '-' (CHAR | [-_])*;
 
 //ID: (CHAR | '_')(CHAR | DIGIT | _.])*;
-ID: (CHAR | [_#])(CHAR | DIGIT | [_.] | OPERATORS)*;
+ID: (CHAR | [_#])(CHAR | DIGIT | [_.&￫] | OPERATORS)*;
 
 OPERATORS: [><≤≥] | '<=' | '>=' | '==' | '±';
 OP_EQ:  '=';
