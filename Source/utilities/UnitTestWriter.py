@@ -194,6 +194,9 @@ def make_global(entry, indent=0) -> str:
                 # line = basic_Winnow(entry['tests'][value], indent)
                 line = basic_Groupby(entry['tests'][value], indent)
                 lines.append(line)
+            elif entry['tests'][value]['kind'] == 'winnow-test':
+                line = basic_Winnow(entry['tests'][value], indent)
+                lines.append(line)
             elif entry['tests'][value]['kind'] == 'satisfy-test':
                 line = basic_Satisfy2(entry['tests'][value], indent)
                 lines.append(line)
@@ -316,7 +319,7 @@ def basic_Assert(entry, indent=0) -> str:
     # get the name of the function, create one, or append one
     # test-name ￫ user name, as-is. :name any name, but decorated
 
-    print(entry)
+    # print(entry)
 
     fn_name = entry['function']
 
@@ -409,14 +412,14 @@ except Exception as e:
 try:
     group = {}(result)
 except Exception as e:
-    raise FalconError('Failed to property partition function')
+    raise FalconError('Failed to properly partition the function')
     '''
 
     w2 = '''
 try:
     group = {}
 except Exception as e:   
-    raise FalconError('Failed to property partition function')
+    raise FalconError('Failed to properly partition the function')
 '''
 
     indent += 1
@@ -605,7 +608,111 @@ except Exception as e:
 
 def basic_Winnow(entry, indent=0) -> str:
 
-    pass
+    lines = ['']
+
+    directives = get_directives(entry)
+
+    # message = directives['message']
+    # pyfunc = directives['pyfunc']
+    dvars = entry['domain']                                         # the domain names
+    labels = directives['labels']
+    algo = directives['algo']
+    params = directives['params']
+    fn_name = directives['fn_name']
+    followup = directives['follow-up']
+
+    args = ', '.join(labels)
+    fn_sig = '{}({})'.format(fn_name, args)
+
+    # the def name
+    lines.extend((f'def test_winnow_{fn_name}():', ''))
+
+    # w1 has a separate bin function defined
+    w1 = '''
+try:
+    result = {}
+except Exception as e:
+    result = e
+                
+try:
+    group = {}(result)
+except Exception as e:
+    raise FalconError('Failed to properly partition the function')
+    '''
+
+    indent += 1
+
+    # build the for loop, naked/with custom iterator/generic & no parameters
+    if len(labels) == 1:
+        template = indent * TAB + "for {} in {}:".format(labels[0], dvars[0])
+    elif len(params) > 0:
+        template = indent * TAB + 'for {} in {}({}, {}):'.format(', '.join(labels), algo, ', '.join(dvars), ', '.join(params))
+    else:
+        template = indent * TAB + "for {} in {}({}):".format(', '.join(labels), algo, ', '.join(dvars))
+
+    # deal with the groups
+    groups = defaultdict(list)
+
+    for stub in entry['stubs']:
+
+        stub['using-bin-fn'] = True
+        stmt = make_assert_group_stmt(stub, fn_name, args, indent)
+
+        groups[stub['group']].append(stmt)
+
+    assert len(groups) > 1, "the number of groups must be greater than 1"
+
+    # start building it here...
+    group_names = ', '.join(gn for gn in groups.keys())
+    line = (indent * TAB) + f'groups = {{group: [] for group in ({group_names})}}\n'
+    lines.append(line)
+
+    indent += 1
+    lines.append(template)
+
+    groups = tuple(groups.items())
+
+    # build the template
+    line = textwrap.indent(w1.format(fn_sig, entry['bin']), TAB * 2)
+    lines.append(line)
+
+    # first one is a special case, ie 'if'
+    line = (indent * TAB) + f'if group == {groups[0][0]}:\n' + ((indent + 1) * TAB) + '\n'.join(groups[0][1])
+    lines.append(line)
+
+    # TODO: if there are multiple statements, this will fail.
+
+    for group, stmt in groups[1:]:
+        line = (indent * TAB) + f'elif group == {group}:\n' + ((indent + 1) * TAB) + '\n'.join(stmt)
+        line += '\n' + ((indent + 1) * TAB) + f'groups[{group}].append(result)'
+        lines.append(line)
+
+    # add failure case
+    failure = (indent * TAB) + f'else:\n' + ((indent + 1) * TAB) + 'raise FalconError("Failed to meet at least one group") \t\t# TODO…'
+    lines.append(failure)
+
+    lines.append('')
+
+    # add group predicate tests
+    # TODO: this seems somewhat fragile - but only one type of predicate makes sense here
+
+    test = 'assert {}(groups[{}], {}), "group str({}) failed to satisfy predicate"'
+
+    for stub in entry['stubs']:
+
+        gpd_name = PREDICATES[stub['group-predicate']][0]
+        gpd_values = ', '.join(stub['group-values'])
+
+        line = f'assert {gpd_name}(groups[{stub["group"]}], {gpd_values}), "group str({stub["group"]}) failed to satisfy predicate"'
+        # line = test.format(gpd_name, stub['group'], gpd_values, stub['group'])
+        lines.append((indent * TAB) + line)
+
+    # add a follow-up function, if necessary
+    if followup is not None:
+        lines.append('')
+        lines.append((indent * TAB) + f'{followup}(groups)')
+
+    return '\n'.join(lines)
 
 
 def basic_Satisfy2(entry, indent=0):
@@ -1322,18 +1429,25 @@ def make_assert_group_stmt(stub, fn_name, args, indent=0):
     f2 = 'assert {}({}, {})'            # pd( fn(arg), value)
     f3 = 'assert {}({})'                # ignoring True
 
-    if stub['using-bin-fn']:
+    if stub['using-bin-fn'] and stub['kind'] != 'winnow-many':
         if stub['kind'] == 'group-predicate':
             line = f3.format(pd_name, 'result')
         elif stub['kind'] == 'group-predicate-values' and use_symbolic:
             line = f1.format('result', pd_name, ''.join(stub['values']))
         elif stub['kind'] == 'group-predicate-values':
             line = f2.format(pd_name, 'result', ', '.join(stub['values']))
+    elif stub['kind'] == 'winnow-many':
+        if use_symbolic:
+            line = f1.format('result', pd_name, ''.join(stub['values']))
+        elif len(stub['values']) > 1:
+            line = f2.format(pd_name, 'result', ', '.join(stub['values']))
+        else:
+            line = f3.format(pd_name, 'result') #'''.join(stub['values']))
     else:
         if stub['kind'] == 'group-predicate':
             line = f3.format(pd_name, args)
-        # elif stub['kind'] == 'group-predicate-values' and use_symbolic:           # this can't really happen
-        #     line = f1.format('result', pd_name, ''.join(stub['values']))
+        elif stub['kind'] == 'group-predicate-values' and use_symbolic:           # this can't really happen
+            line = f1.format(''.join(args), pd_name, ''.join(stub['values']))
         elif stub['kind'] == 'group-predicate-values' and use_symbolic:
             line = f3.format(pd_name, args)
         elif stub['kind'] == 'group-predicate-values':
@@ -1345,11 +1459,17 @@ def make_assert_group_stmt(stub, fn_name, args, indent=0):
 def get_directives(entry):
 
     # supported:
-    # message, pyfunc, suffix, method (of enumeration), labels, algorithm, & algo-params
+    # message, pyfunc, suffix, method (of enumeration), labels, only (groupby/winnow), algorithm, & algo-params
 
     directives = {}
 
     # directives --------
+
+    # *** follow-up function ***
+    if entry['directives'].get(':follow-up', False):
+        directives['follow-up'] = entry['directives'][':follow-up']['value']
+    else:
+        directives['follow-up'] = None
 
     # *** message ***
 
@@ -1357,6 +1477,12 @@ def get_directives(entry):
         directives['message'] = entry['directives'][':message']['value']
     else:
         directives['message'] = None
+
+    # *** get the only args
+    if entry['directives'].get(':only', None) is not None:
+        directives['only'] = entry['directives'][':only']['value']
+    else:
+        directives['only'] = None
 
     # *** get function name ***
     # this is mostly for use with pytest

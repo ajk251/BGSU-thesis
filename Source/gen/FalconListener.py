@@ -269,6 +269,15 @@ class FalconListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by FalconParser#winnow_stub_directives.
+    def enterWinnow_stub_directives(self, ctx:FalconParser.Winnow_stub_directivesContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#winnow_stub_directives.
+    def exitWinnow_stub_directives(self, ctx:FalconParser.Winnow_stub_directivesContext):
+        pass
+
+
     # Enter a parse tree produced by FalconParser#make_domain.
     def enterMake_domain(self, ctx:FalconParser.Make_domainContext):
         pass

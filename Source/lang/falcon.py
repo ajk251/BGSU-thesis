@@ -316,7 +316,6 @@ class Falcon(FalconVisitor):
     # def visitTest_winnow(self, ctx: FalconParser.Test_winnowContext):
     def visitTest_groupby(self, ctx: FalconParser.Test_groupbyContext):
 
-        # NOTE: HERE!!!
         # test = {'kind': 'winnow-test'}
         test = {'kind': 'groupby-test'}
         test['function'] = self.visit(ctx.name(0))
@@ -347,9 +346,14 @@ class Falcon(FalconVisitor):
             elif isinstance(child, FalconParser.Groupby_codeContext):
                 stub = self.visit(child)
                 test['stubs'].append(stub)
+            elif isinstance(child, FalconParser.Groupby_directivesContext):
+                ds = self.visit(child)
+                for d in ds:
+                    test['directives'][d['directive']] = {'value': d['value'], 'params': d['params']}
             else:
                 # print(self.visit(child), type(child))
                 # TODO: return error
+                # raise FalconError('')
                 continue
 
         self.ns[self.current_ns]['tests'][test['id']] = test
@@ -444,6 +448,10 @@ class Falcon(FalconVisitor):
             # # elif isinstance(child, FalconParser.Groupby_codeContext):
             #     stub = self.visit(child)
             #     test['stubs'].append(stub)
+            if isinstance(child, FalconParser.Winnow_stub_directivesContext):
+                ds = self.visit(child)
+                for d in ds:
+                    test['directives'][d['directive']] = {'value': d['value'], 'params': d['params']}
             else:
                 # print(self.visit(child), type(child))
                 # TODO: return error
@@ -480,8 +488,15 @@ class Falcon(FalconVisitor):
 
     # def visitWinnow_directives(self, ctx: FalconParser.Winnow_directivesContext):
     def visitGroupby_directives(self, ctx: FalconParser.Groupby_directivesContext):
-        # TODO: This!
-        pass
+
+        directives = []
+
+        for child in ctx.children:
+            if isinstance(child, FalconParser.Set_directiveContext):
+                d = self.visitSet_directive(child, False)
+                directives.append(d)
+
+        return directives
 
     # Winnow stubs ------------------------------
 
@@ -515,6 +530,17 @@ class Falcon(FalconVisitor):
             stub['group-values'].append(self.visit(child))
 
         return stub
+
+    def visitWinnow_stub_directives(self, ctx: FalconParser.Stub_directivesContext):
+
+        directives = []
+
+        for child in ctx.children:
+            if isinstance(child, FalconParser.Set_directiveContext):
+                d = self.visitSet_directive(child, False)
+                directives.append(d)
+
+        return directives
 
     # test/assert ------
     def visitStub_p(self, ctx: FalconParser.Stub_pContext):

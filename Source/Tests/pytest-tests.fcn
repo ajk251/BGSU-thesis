@@ -35,7 +35,7 @@ Test add Xvalues Yvalues:
   | raises? ZeroDivisionError
   ;
 
-Test add Xvalues Zvalues:
+Test add Xvalues Zvalues A_arg B_arg:
   | is-int? ∨ is-float?
   | ≥ 0.0 ∨ ≤ 1.0
   | between? 0 1 ∧ is-float?
@@ -43,6 +43,7 @@ Test add Xvalues Zvalues:
   ;
 
 Groupby addg Xvalues:
+  | :only [Xvalues, Zvalues]
   | 'a' is-float?
   | 'b' is-int?
   | 'c' positive?
@@ -50,6 +51,7 @@ Groupby addg Xvalues:
   ;
 
 Groupby addf Xvalues -> bin_fn:
+  | :only Xvalues
   | 'a' is-float?
   | 'b' is-int?
   | 'c' positive?

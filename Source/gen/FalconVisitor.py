@@ -154,6 +154,11 @@ class FalconVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by FalconParser#winnow_stub_directives.
+    def visitWinnow_stub_directives(self, ctx:FalconParser.Winnow_stub_directivesContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by FalconParser#make_domain.
     def visitMake_domain(self, ctx:FalconParser.Make_domainContext):
         return self.visitChildren(ctx)

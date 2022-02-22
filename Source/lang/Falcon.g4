@@ -94,6 +94,7 @@ bin_stub: BAR value predicate                                       #groupby_stu
         ;
 
 winnow_stub: BAR value predicate value* ':' predicate value*        #winnow_stub_many_many
+           | BAR compiler*                                          #winnow_stub_directives
        ;
 
 // Domain stuff -------------------------------------------
