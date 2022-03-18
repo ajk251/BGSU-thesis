@@ -1,9 +1,11 @@
 
 :import test_functions -from [add, add2, sub]
+:import test_functions -all
 
 Domain X Integers -10 10 -nrandom 100
 Domain Y Integers -10 10 -nrandom 100
 
+`x = 1 # this is a test`
 
 Satisfy add X Y:
   | :min 1 :max 2

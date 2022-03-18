@@ -174,8 +174,18 @@ class FalconVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by FalconParser#set_single_directive.
+    def visitSet_single_directive(self, ctx:FalconParser.Set_single_directiveContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by FalconParser#make_fn_directive.
     def visitMake_fn_directive(self, ctx:FalconParser.Make_fn_directiveContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#make_fn_flag_directive.
+    def visitMake_fn_flag_directive(self, ctx:FalconParser.Make_fn_flag_directiveContext):
         return self.visitChildren(ctx)
 
 

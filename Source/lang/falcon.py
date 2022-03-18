@@ -185,6 +185,8 @@ class Falcon(FalconVisitor):
         for child in ctx.children:
             if isinstance(child, FalconParser.Make_fn_directiveContext):
                 params.append(self.visit(child))
+            elif isinstance(child, FalconParser.Make_fn_flag_directiveContext):
+                params.append(self.visit(child))
 
         # if initial...
         if set_global:
@@ -196,13 +198,22 @@ class Falcon(FalconVisitor):
         else:
             return {'directive': directive, 'value': value, 'params': params}
 
+    def visitSet_single_directive(self, ctx:FalconParser.Set_single_directiveContext):
+
+        directive = str(ctx.DIRECTIVE())
+
+        self.ns[self.current_ns].setdefault('directives', {})[directive] = (None, None)
+
+        return {'directive': directive, 'value': None, 'params': None}
+
     def visitMake_codestmt(self, ctx: FalconParser.Make_codestmtContext, set_global=False):
 
-        # this could be better...
+        # this logic is ugly...
+
         if set_global:
             self.ns[self.current_ns]['ordering'].append(('code', ctx.getText().strip('`')))
         else:
-            # self.ns[self.current_ns]['ordering'].append(('code', ctx.getText().strip('`')))
+            self.ns[self.current_ns]['ordering'].append(('code', ctx.getText().strip('`')))
             return {'kind': 'code', 'value': ctx.getText().strip('`')}
 
     def visitMake_fn_directive(self, ctx: FalconParser.Make_fn_directiveContext):
@@ -211,6 +222,14 @@ class Falcon(FalconVisitor):
         params = self.visit(ctx.dictate())
 
         return directive.strip('-'), params
+
+    def visitMake_fn_flag_directive(self, ctx: FalconParser.Make_fn_flag_directiveContext):
+
+        directive = str(ctx.FNARG())
+        # params = self.visit(ctx.dictate())
+        flag = self.visit(ctx.FNARG())
+
+        return directive.strip('-'), flag
 
     # ------------------------------------------
 
@@ -539,6 +558,9 @@ class Falcon(FalconVisitor):
             if isinstance(child, FalconParser.Set_directiveContext):
                 d = self.visitSet_directive(child, False)
                 directives.append(d)
+            elif isinstance(child, FalconParser.Set_single_directiveContext):
+                d = self.visitSet_single_directive(child)
+                directives.append(d)
 
         return directives
 
@@ -619,18 +641,15 @@ class Falcon(FalconVisitor):
 
     def visitStub_directives(self, ctx: FalconParser.Stub_directivesContext):
 
-        # directives = {}
         directives = []
 
         for child in ctx.children:
             if isinstance(child, FalconParser.Set_directiveContext):
-                # directives = self.visitSet_directive(child, False)
                 d = self.visitSet_directive(child, False)
                 directives.append(d)
-                # directives.append(self.visitSet_directive(child, False))
-                # d = child.DIRECTIVE().getText()
-                # directives[d] = child.dictate().getText()
-                # print(directives['directive'])
+            elif isinstance(child, FalconParser.Set_single_directiveContext):
+                d = self.visitSet_single_directive(child)
+                directives.append(d)
 
         return directives
 

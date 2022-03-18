@@ -16,13 +16,18 @@ from utilities.UnitTestWriter import write_basic_unittest
 #   How to invoke pytest
 #       https://docs.pytest.org/en/latest/how-to/usage.html
 
+# TODO:
+#   Finish command line stuff
+#   add file not found error & stuff
+
+
+
 def main(argv):
 
     if len(argv) > 1:
         print(argv)
 
     return None
-
 
 if __name__ == '__main__':
 
@@ -37,8 +42,9 @@ if __name__ == '__main__':
         # file = 'Tests/unit-tests.fcn'
         # file = 'Tests/pytest-tests.fcn'
         # file = 'Tests/winnow_test2.fcn'
-        file = 'Tests/winnow_tests3.fcn'
+        # file = 'Tests/winnow_tests3.fcn'
         # file = 'Tests/satisfy-tests.fcn'
+        file = 'Tests/complex.fcn'
 
     input_stream = FileStream(file, encoding='utf-8')
     lexer = FalconLexer(input_stream)

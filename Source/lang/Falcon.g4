@@ -99,18 +99,20 @@ winnow_stub: BAR value predicate value* ':' predicate value*        #winnow_stub
 
 // Domain stuff -------------------------------------------
 
-domain: 'Domain' name name                                          #make_domain
-      | 'Domain' name name (value (value*))? (fn_arg (fn_arg*))?    #make_domain_args
+domain: 'Domain' name name                                         #make_domain
+      | 'Domain' name name (value (value*))? (fn_arg (fn_arg*))?   #make_domain_args
       ;
 
 // set parameters -----------------------------------------
-compiler: DIRECTIVE dictate (fn_arg+)?                              #set_directive
+compiler: DIRECTIVE dictate (fn_arg+)?                             #set_directive
+        | DIRECTIVE                                                #set_single_directive
 //        | DIRECTIVE dictate (fn_arg*)?                              #set_directive_args
 //        | DIRECTIVE LIST
 //        | DIRECTIVE NAME OP_EQ tuple...
         ;
 
 fn_arg: FNARG dictate                                               #make_fn_directive
+      | FNARG                                                       #make_fn_flag_directive
       ;
 
 code: CODESMNT                                                      #make_codestmt
@@ -206,7 +208,7 @@ DIRECTIVE: COLON (CHAR | [-_])*;
 FNARG:     '-' (CHAR | [-_])*;
 
 //ID: (CHAR | '_')(CHAR | DIGIT | _.])*;
-ID: (CHAR | [_#])(CHAR | DIGIT | [_.&￫] | OPERATORS)*;
+ID: (CHAR | [_#] | [ℝℂℤ²])(CHAR | DIGIT | [_.&￫] | OPERATORS)*;
 
 OPERATORS: [><≤≥] | '<=' | '>=' | '==' | '±';
 OP_EQ:  '=';

@@ -1,19 +1,25 @@
 
 import re
+import runpy
 import textwrap
 
 from collections import defaultdict
 from datetime import datetime
 from random import choices, randint
 from string import ascii_letters, digits
+from runpy import run_module
 # from time import strftime
 from textwrap import indent
 
-import predicates
+# import predicates
 from predicates.predicates import PREDICATES
 from algorithms.algorithms import ALGORITHMS
 import domains
 from . import utls
+
+# from Tests.ComplexNumber import *
+# from Tests.ComplexPredicates import *
+
 
 # TODO:
 #   add overwrite directive
@@ -177,7 +183,7 @@ def make_global(entry, indent=0) -> str:
         kind, value = block if len(block) == 2 else (block[0], block[1:])
 
         if kind == 'code':
-            line = code_block(value)
+            line = '\n' + code_block(value)
             lines.append(line)
         elif kind == 'assertion':
             line = basic_Assert(entry['tests'][value])
@@ -211,10 +217,12 @@ def add_imports(entry) -> str:
 
     lines = ['from predicates import *',
              'from domains import *\n',
-             'from utilities.utls import call\n',
+             'from utilities.utls import call',
+             'from utilities.TestLogWriter import write_to_log',
              'from utilities import FalconError',
              'from algorithms import *',
-             'import unittest\n']
+             'import unittest\n',
+             'from collections import defaultdict\n']
 
     for module, args in entry:
 
@@ -227,10 +235,16 @@ def add_imports(entry) -> str:
         elif 'from' in args and '[' in args['from']:
             s = args['from'].strip('[]').split(',')         # for some reason, this is just a string
             line = 'from {} import {}'.format(module, ','.join(fn for fn in s))
+        elif 'all' in args:
+            line = 'from {} import *'.format(module)
         elif 'from' in args:
             line = 'from {} import {}'.format(module, args['from'])
         elif 'as' in args:
             line = 'import {} as {}'.format(module, args['as'])
+
+        # has to load the module to get the predicates from predicates.PREDICATES
+        # TODO: maybe force every test module to have …_predicates, to avoid imports‽
+        runpy.run_module(module)
 
         lines.append(line)
 
@@ -270,8 +284,9 @@ def basic_Test(entry, indent=0) -> str:
         lines.append(line)
 
     # build the for loop, naked/with custom iterator/generic & no parameters
-    if len(labels) == 1:
-        template = indent * TAB + "for {} in {}:".format(labels[0], dvars[0])
+    if len(dvars) == 1:
+        # note dvars is the number of domains, labels can be user-defined number to unpac
+        template = indent * TAB + "for {} in {}:".format(','.join(labels), dvars[0])
     elif len(params) > 0:
         template = indent * TAB + 'for {} in {}({}, {}):'.format(', '.join(labels), algo, ', '.join(dvars), ', '.join(params))
     else:
@@ -727,6 +742,10 @@ def basic_Satisfy2(entry, indent=0):
     params = directives['params']
     fn_name = directives['fn_name']
 
+    # these are for the log
+    use_log = directives['use-log']
+    log_name = directives['log-name']
+
     # these are the minimum and maximum number of predicates that should be meet.
     if entry['directives'].get(':min', False):
         minimum = entry['directives'][':min']['value']
@@ -746,11 +765,13 @@ def basic_Satisfy2(entry, indent=0):
         line = indent * TAB + '# ' + message.strip('"') + nl
         lines.append(line)
 
-    lines.append((indent * TAB + 'errors = []\n'))
+    # lines.append((indent * TAB + 'errors = []\n'))
+    if use_log:
+        lines.append((indent * TAB + 'oracles = defaultdict(list)\n'))
 
     # build the for loop, naked/with custom iterator/generic & no parameters
-    if len(labels) == 1:
-        template = indent * TAB + "for {} in {}:".format(labels[0], dvars[0])
+    if len(dvars) == 1:
+        template = indent * TAB + "for {} in {}:".format(','.join(labels), dvars[0])
     elif len(params) > 0:
         template = indent * TAB + 'for {} in {}({}, {}):'.format(', '.join(labels), algo, ', '.join(dvars), ', '.join(params))
     else:
@@ -758,20 +779,22 @@ def basic_Satisfy2(entry, indent=0):
 
     lines.append(template)
 
-    header = """
+    args = ', '.join(labels)
+    fn_sig = '{}({})'.format(fn_name, args)
+
+    header = f"""
 try:
-    result = {}
+    result = {fn_sig}
 except Exception as error:
     result = error
 
 count = 0
-has_error = True
 """
 
-    args = ', '.join(labels)
-    fn_sig = '{}({})'.format(fn_name, args)
+    # has_error = True    -> this was on the code, removing it...
 
-    line = textwrap.indent(header.format(fn_sig), TAB * 2)
+    # line = textwrap.indent(header.format(fn_sig), TAB * 2)
+    line = textwrap.indent(header, TAB * 2)
     lines.append(line)
 
     indent += 1
@@ -785,24 +808,36 @@ has_error = True
             # this is cheating and bad form
             #remove the left
             test = stmt.lstrip('assert').lstrip()           # otherwise a weird bug with result < 4 --> sult < 4
+
             #remove the right, if needed
             if stub['error-message'] is not None:
                 test = test.rstrip(', ' + stub['error-message'])
 
             lines.append((indent * TAB) + 'if ' + test + ':')
             lines.append(((indent+1) * TAB) + 'count += 1')
+
+            if use_log:
+                lines.append(((indent+1) * TAB) + f"oracles['{stub['predicate']}'].append((({', '.join(labels)}), repr(result)))")
+
             # lines.append(((indent+1) * TAB) + stmt)
 
-            # assume that the error has been caught
-            if PREDICATES[stub['predicate']][2]:
-                lines.append(((indent+1) * TAB) + 'has_error = False')
+            # # assume that the error has been caught
+            # if PREDICATES[stub['predicate']][2]:
+            #     lines.append(((indent+1) * TAB) + 'has_error = False')
         elif stub['kind'] == 'code':
             line = '\n' + (indent * TAB) + stub['value'] + '\n'
             lines.append(line)
 
-    # finish
-    line = '\n' + (indent * TAB) + 'if has_error:\n' + ((indent+1) * TAB) + 'errors.append((({}), result))'.format(', '.join(labels))
-    lines.append(line)
+    # finish    part of the has_error stuff
+    # line = '\n' + (indent * TAB) + 'if has_error:\n' + ((indent+1) * TAB) + 'errors.append((({}), result))'.format(', '.join(labels))
+    # lines.append(line)
+    # lines.append('')
+
+    # add an 'if not captured…'
+    if use_log:
+        line = '\n' + (indent * TAB) + 'if count == 0:\n' + ((indent+1) * TAB) + 'oracles["random-test"].append((({}), repr(result)))'.format(', '.join(labels))
+        lines.append(line)
+
     lines.append('')
 
     line = (indent * TAB) + f'assert count >= {minimum}, f"The minimum number of predicates has not been met - met: {{count}}, min: {minimum}"'
@@ -812,8 +847,16 @@ has_error = True
         line = (indent * TAB) + f'assert count <= {maximum}, f"Exceed number of predicates met - met: {{count}}, max: {maximum}"'
         lines.append(line)
 
-    line = (indent * TAB) + f'assert len(errors) == 0, f"Unaccounted for errors - {{len(errors)}} errors occurred"'
-    lines.append(line)
+    # this doesn't work...
+    # line = (indent * TAB) + f'assert len(errors) == 0, f"Unaccounted for errors - {{len(errors)}} errors occurred"'
+    # lines.append(line)
+
+    indent -= 1         # out of the for-loop
+
+    if use_log:
+        logname = "./FalconTestLog.txt" if not log_name else log_name
+        line = '\n' + (indent * TAB) + f'write_to_log("{logname}", {{"name": {fn_name}, "predicates": oracles}})'
+        lines.append(line)
 
     lines.append('')
 
@@ -1551,6 +1594,19 @@ def get_directives(entry):
         directives['params'] = []
 
     directives['algo'] = algo
+
+
+    # *** logging ***
+
+    if entry['directives'].get(':log', False):
+        directives['use-log'] = True
+    else:
+        directives['use-log'] = False
+
+    if entry['directives'].get(':log-name', False):
+        directives['log-name'] = entry['directives'][':log-name']['value']
+    else:
+        directives['log-name'] = None
 
     return directives
 

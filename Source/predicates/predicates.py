@@ -1,7 +1,6 @@
 
-
-
 from collections import namedtuple
+from functools import wraps
 from typing import Union
 
 PREDICATES = dict()
@@ -19,7 +18,9 @@ Value = namedtuple('Value', 'name,symbol,is_error')
 
 NullString = Union[None, str]
 
+
 def predicate(_fn=None, *, alias=None, symbol: NullString = None, is_error=False):
+    """Function decorator to define predicates for Falcon."""
 
     def function(func):
 
@@ -37,3 +38,18 @@ def predicate(_fn=None, *, alias=None, symbol: NullString = None, is_error=False
         return func
     
     return function if _fn is None else function(_fn)
+
+
+def onfail_false(fn) -> bool:
+    """Decorator to wrap a predicate, ensure that it *only* returns a Boolean, even in the case of failure."""
+    @wraps(fn)
+    def call_fn(*args, **kwargs):
+        """Decorates a predicate. If the predicate fails, it returns False"""
+
+        try:
+            result = fn(*args, **kwargs)
+        except Exception as error:
+            result = False
+
+        return result
+    return call_fn

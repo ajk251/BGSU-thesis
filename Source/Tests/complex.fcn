@@ -1,0 +1,22 @@
+
+:import Tests.ComplexNumber -from Complex
+:import Tests.ComplexPredicates -all
+
+Domain A Reals2
+Domain B Reals2
+
+Domain CT ComplexTest
+
+Test Complex A:
+  | :message "Test the unary properties"
+  | :labels [a b]
+  | additive-id?
+  | multiplicative-id?
+  | additive-inverse?
+  ;
+
+Satisfy Complex CT:
+  | :labels [a, b] :log
+  | valid-complex?
+  | complex-num?
+  ;

@@ -305,12 +305,30 @@ class FalconListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by FalconParser#set_single_directive.
+    def enterSet_single_directive(self, ctx:FalconParser.Set_single_directiveContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#set_single_directive.
+    def exitSet_single_directive(self, ctx:FalconParser.Set_single_directiveContext):
+        pass
+
+
     # Enter a parse tree produced by FalconParser#make_fn_directive.
     def enterMake_fn_directive(self, ctx:FalconParser.Make_fn_directiveContext):
         pass
 
     # Exit a parse tree produced by FalconParser#make_fn_directive.
     def exitMake_fn_directive(self, ctx:FalconParser.Make_fn_directiveContext):
+        pass
+
+
+    # Enter a parse tree produced by FalconParser#make_fn_flag_directive.
+    def enterMake_fn_flag_directive(self, ctx:FalconParser.Make_fn_flag_directiveContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#make_fn_flag_directive.
+    def exitMake_fn_flag_directive(self, ctx:FalconParser.Make_fn_flag_directiveContext):
         pass
 
 
