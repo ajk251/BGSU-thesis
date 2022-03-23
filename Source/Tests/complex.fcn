@@ -10,13 +10,41 @@ Domain CT ComplexTest
 Test Complex A:
   | :message "Test the unary properties"
   | :labels [a b]
+  | valid-complex?
+  | complex-num?
   | additive-id?
   | multiplicative-id?
-  | additive-inverse?
+  | additive-id?
+  ;
+
+Domain C1 ComplexDomain
+Domain C2 ComplexDomain
+
+Test _ C1 C2:
+  | :message "Test the properties of Complex numbers" :no-suffix
+  | closure+?
+  | closure*?
+  | commutative+?
+  | commutative*?
+  | multiplicative-inverse?
+  ;
+
+Test _ C1 C2:
+  | :message "Test the mathematical properties" :suffix
+  | complex+?
+  | complex-?
+  | complex*?
+  //| complex÷?
+  | complex+=?
+  | complex-=?
+  | complex*=?
+  |> `c = c1 + c2`
+  |> c valid-complex?
+  |> c complex-num?
   ;
 
 Satisfy Complex CT:
   | :labels [a, b] :log
   | valid-complex?
-  | complex-num?
+  | complex-number?
   ;

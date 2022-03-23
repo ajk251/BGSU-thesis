@@ -140,7 +140,7 @@ def property_additive_inverse(a: Complex):
     return (-a + a) == Complex(0.0, 0.0) and (a + -a) == Complex(0.0, 0.0)
 
 
-# these are binary functions
+# these are binary functions --------------------
 @predicate(alias=['closure-additive?', 'closure+?'])
 @onfail_false
 def property_closure_add(a: Complex, b: Complex):
@@ -206,7 +206,7 @@ def property_distributive(a: Complex, b: Complex, c: Complex):
 # properties ------------------------------------
 
 
-@predicate(alias=['ℂ?', 'complex-num?'])
+@predicate(alias=['ℂ?', 'complex-num?', 'complex-number?'])
 def valid_complex(complex_number: Complex):
     return isinstance(complex_number, Number) and \
            isinstance(complex_number, Complex)
@@ -226,13 +226,14 @@ def valid_number(complex_number: Complex):
 @predicate(alias=['complex=?', 'complex-eq?'])
 @onfail_false
 def complex_equal(a: Complex, b: Complex):
-    return Complex(a[0] + a[0], b[1] + b[1]) == Complex(a[0] + a[0], b[1] + b[1])
+    return a.real == b.real and a.imaginary == b.imaginary
 
 
 @predicate(alias=['complex!=?', 'complex≠?', 'complex-ne?'])
 @onfail_false
 def complex_not_equal(a: Complex, b: Complex):
-    return Complex(a[0] + a[0], b[1] + b[1]) != Complex(a[0] + a[0], b[1] + b[1])
+    # return Complex(a[0] + a[1], b[0] + b[1]) != Complex(a[0] + a[1], b[0] + b[1])
+    return a.real == b.real or a.imaginary == b.imaginary
 
 
 @predicate(alias=['complex+?'])
@@ -247,16 +248,16 @@ def complex_sub(a: Complex, b: Complex):
     return (Complex(a[0], a[1]) - Complex(b[0], b[1])) == Complex(a[0] - b[0], a[1] - b[1])
 
 
-@predicate(alias=['complex*?'])
+@predicate(alias=['complex*?', 'complex•'])
 @onfail_false
 def complex_mult(a: Complex, b: Complex):
     return (Complex(a[0], a[1]) * Complex(b[0], b[1])) == Complex(a[0] * b[0], a[1] * b[1])
 
 
-@predicate(alias=['complex/?', 'complex÷?'])
+@predicate(alias=['complex-div?', 'complex÷?'])
 @onfail_false
 def complex_div(a: Complex, b: Complex):
-    return (Complex(a[0], a[1]) / Complex(b[0], b[1])) == Complex(a[0] / a[0], b[1] / b[1])
+    return (Complex(a[0], a[1]) / Complex(b[0], b[1])) == Complex(a[0] / b[0], a[1] / b[1])
 
 
 # Note: id() does not work here ￫ id() changes after operation

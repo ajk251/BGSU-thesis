@@ -15,7 +15,8 @@ from textwrap import indent
 from predicates.predicates import PREDICATES
 from algorithms.algorithms import ALGORITHMS
 import domains
-from . import utls
+
+from utilities.FalconError import FalconError
 
 # from Tests.ComplexNumber import *
 # from Tests.ComplexPredicates import *
@@ -263,8 +264,6 @@ def falcon_intro(source=None):
 # testers --------------
 def basic_Test(entry, indent=0) -> str:
 
-    # print('directives: ', entry)
-
     directives = get_directives(entry)
 
     message = directives['message']
@@ -333,8 +332,6 @@ def basic_Assert(entry, indent=0) -> str:
 
     # get the name of the function, create one, or append one
     # test-name ￫ user name, as-is. :name any name, but decorated
-
-    # print(entry)
 
     fn_name = entry['function']
 
@@ -471,7 +468,6 @@ except Exception as e:
         # else:
         #     stmt = make_assert_stmt(stub, fn_name, args, indent)
 
-        # print('winnow stub ￫', stmt)
         groups[stub['group']].append(stmt)
 
     assert len(groups) > 1, "the number of groups must be greater than 1"
@@ -1256,8 +1252,6 @@ def make_domains(entry, indent=0) -> str:
     f2 = (indent * TAB) + '{} = {}({})'            # x = Reals(lb, ub)
     f3 = (indent * TAB) + '{} = {}({}, {})'        # x = Reals(lb, ub, nrandom=10)
 
-    # print(entry)
-
     for name, info in entry.items():
 
         if info['kind'] == 'domain':
@@ -1294,8 +1288,6 @@ def make_domain(entry, indent=0) -> str:
     f1 = (indent * TAB) + '{} = {}()'              # x = Reals()
     f2 = (indent * TAB) + '{} = {}({})'            # x = Reals(lb, ub)
     f3 = (indent * TAB) + '{} = {}({}, {})'        # x = Reals(lb, ub, nrandom=10)
-
-    # print(entry)
 
     if entry['kind'] == 'domain':
         var = entry['var-name']
@@ -1355,15 +1347,12 @@ def make_boolean(entry, fn_sig='', indent=0) -> str:
             # args = element[2:] if len(element) > 2 else None
             args = element[3:] if element[2] is False else None
 
-            print(f'element ￫ {element}')
-
             if use_symbolic is not None:
                 # line.append(f1.format(fn_sig, use_symbolic, ''.join(args[1:])))
                 line.append(f1.format(fn_sig, use_symbolic, args[0]))
             elif not args:
                 line.append(f2.format(predicate, fn_sig))
             else:
-                # print(f'predicate: {predicate}, fn: {fn_sig}, args: {args}')
                 line.append(f3.format(predicate, fn_sig, ', '.join([str(a) for a in args])))
                 # line.append(f3.format(predicate, fn_sig, ', '.join(args)))
         else:
@@ -1381,9 +1370,18 @@ def make_assert_stmt(stub, fn_name, args, indent=0, just_result=False):
     f3 = 'assert {}({}, {})'            # w/ function
     f4 = 'assert {}({})'                # ignoring True
 
-    fn_sig = '{}({})'.format(fn_name, args) if not just_result else fn_name
+    # deal with no function, just acting on the predicates
+    if fn_name == '_':
+        fn_sig = args
+    else:
+        fn_sig = '{}({})'.format(fn_name, args) if not just_result else fn_name
+
     indent += 1
     line = ''
+
+    # find
+    if (stub['kind'].startswith('predicate')) and (stub.get('predicate', '') not in PREDICATES):
+        raise FalconError(f'Predicate "{stub["predicate"]}" not found')
 
     # get the name of the predicate if it knows it's a predicate (or should be, ie OOPS)
     if stub['kind'].startswith('predicate') and stub['predicate'] in PREDICATES:
@@ -1399,9 +1397,9 @@ def make_assert_stmt(stub, fn_name, args, indent=0, just_result=False):
         pd_name = stub['predicate']
         use_symbolic = False
     # else:
-    #     # TODO: raise error
+    # #     # TODO: raise error
     #     print('Predicate Not Found!', fn_sig, stub)
-    #     pd_name = "OOPS!"
+    # #     pd_name = "OOPS!"
 
     if stub['kind'] == 'predicate-value':
         # raises is a special case
@@ -1449,6 +1447,9 @@ def make_assert_group_stmt(stub, fn_name, args, indent=0):
     fn_sig = '{}({})'.format(fn_name, args)
     indent += 1
     line = ''
+
+    if stub['predicate'] not in PREDICATES:
+        raise FalconError(f'Predicate "{stub["predicate"]}" not found')
 
     # get the name of the predicate if it knows it's a predicate (or should be, ie OOPS)
     if stub['predicate'] in PREDICATES:
@@ -1544,8 +1545,12 @@ def get_directives(entry):
         directives['pyfunc'] = 'def test_{}_{}():'.format(directives['fn_name'], rand_name)
 
     # *** get suffix ***
-    if entry['directives'].get(':suffix', False):
-        suffix = entry['directives'][':suffix']['value']
+    # looks for :no-suffix or :suffix <blank> or :suffix '' or :suffix '_i'
+    if entry['directives'].get('no-suffix', False):
+        suffix = ''
+    elif entry['directives'].get(':suffix', False):
+        value = entry['directives'][':suffix']['value']
+        suffix = value if (value is not None) else ''
     else:
         suffix = 'ᵢ'
 

@@ -5,10 +5,6 @@
 
 grammar Falcon;
 
-program: block+
-       | EOF
-       ;
-
 block: namespace+
       | stmt+
       ;
@@ -208,10 +204,11 @@ DIRECTIVE: COLON (CHAR | [-_])*;
 FNARG:     '-' (CHAR | [-_])*;
 
 //ID: (CHAR | '_')(CHAR | DIGIT | _.])*;
-ID: (CHAR | [_#] | [ℝℂℤ²])(CHAR | DIGIT | [_.&￫] | OPERATORS)*;
+ID: (CHAR | [_#] | [ℝℂℤ])(CHAR | DIGIT | [_.*⨯+\-&≠=￫?] | OPERATORS)*;
 
 OPERATORS: [><≤≥] | '<=' | '>=' | '==' | '±';
 OP_EQ:  '=';
+OP_NE: '!=' | '/=' | '≠';
 ARROW: '->' | '→';
 
 // CODE/ID is meant to represent the variable names used in most languages

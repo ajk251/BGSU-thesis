@@ -212,9 +212,10 @@ class Falcon(FalconVisitor):
 
         if set_global:
             self.ns[self.current_ns]['ordering'].append(('code', ctx.getText().strip('`')))
-        else:
-            self.ns[self.current_ns]['ordering'].append(('code', ctx.getText().strip('`')))
-            return {'kind': 'code', 'value': ctx.getText().strip('`')}
+        # else:
+        #     self.ns[self.current_ns]['ordering'].append(('code', ctx.getText().strip('`')))
+
+        return {'kind': 'code', 'value': ctx.getText().strip('`')}
 
     def visitMake_fn_directive(self, ctx: FalconParser.Make_fn_directiveContext):
 
