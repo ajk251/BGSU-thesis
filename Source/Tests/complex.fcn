@@ -5,11 +5,13 @@
 Domain A Reals2
 Domain B Reals2
 
-Domain CT ComplexTest
-
 Test Complex A:
-  | :message "Test the unary properties"
+  | :message "Test the unary properties blah blah blah"
   | :labels [a b]
+  |! valid-complex?
+  |! ZeroDivisionError valid-complex?
+  |! TypeError between? -10 10
+  |! between? 1 2
   | valid-complex?
   | complex-num?
   | additive-id?
@@ -42,6 +44,8 @@ Test _ C1 C2:
   |> c valid-complex?
   |> c complex-num?
   ;
+
+Domain CT ComplexTest
 
 Satisfy Complex CT:
   | :labels [a, b] :log

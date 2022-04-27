@@ -46,6 +46,8 @@ test_stub: BAR predicate ('~~' STRING)?                             #stub_p
          | ABAR code                                                #stub_code
          | ABAR value predicate (value)+ ('~~' STRING)?             #stub_side_effect_many
          | ABAR value predicate ('~~' STRING)?                      #stub_side_effect
+         | EBAR value? predicate ('~~' STRING)?                     #stub_fail_side_effect
+         | EBAR value? predicate (value)+ ('~~' STRING)?            #stub_fail_side_effect_many
          ;
 
 test_logical: OP_NOT? predicate value* (OP_LOGICAL OP_NOT? predicate value*)* #stub_logic
@@ -182,6 +184,7 @@ COMMA: ',';
 ASSIGN: ':=' | '≔';
 BAR: '|';
 ABAR: '|>';
+EBAR: '|!';
 COLON: ':';
 
 // others?

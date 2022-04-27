@@ -222,8 +222,9 @@ def add_imports(entry) -> str:
              'from utilities.TestLogWriter import write_to_log',
              'from utilities import FalconError',
              'from algorithms import *',
-             'import unittest\n',
-             'from collections import defaultdict\n']
+             'import unittest',
+             'from collections import defaultdict\n',
+             'import pytest']
 
     for module, args in entry:
 
@@ -1434,6 +1435,12 @@ def make_assert_stmt(stub, fn_name, args, indent=0, just_result=False):
     elif stub['kind'] == 'predicate-side-effect+':
         args = ', '.join(stub['values'])
         line = f3.format(pd_name, stub['name'], args)
+    elif stub['kind'] == 'predicate-fail-side-effect+':
+        e = 'Exception' if stub["error"] is None else stub['error']
+        line = f'with pytest.raises({e}):\n' + (indent * TAB) + f2.format(pd_name, fn_sig, ', '.join(stub['value']))
+    elif stub['kind'] == 'predicate-fail-side-effect':
+        e = 'Exception' if stub["error"] is None else stub['error']
+        line = f'with pytest.raises({e}):\n' + (indent * TAB) + f4.format(pd_name, fn_sig)
 
     # TODO: 'message' should be in all the stubs, eventually
     if 'error-message' in stub and stub['error-message'] is not None:

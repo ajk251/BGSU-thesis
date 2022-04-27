@@ -53,12 +53,21 @@ if __name__ == '__main__':
 
     parser = FalconParser(token_stream)
 
-    tree = parser.program()
+    # tree = parser.program()
+    # falcon = Falcon()
+    # falcon.visit(tree)
+    #
+    # tests = falcon.intermediate_tests()
+    # write_basic_unittest(tests, file)
+
+    tree = parser.block()
     falcon = Falcon()
     falcon.visit(tree)
 
     tests = falcon.intermediate_tests()
     write_basic_unittest(tests, file)
+
+    # -------------------------------------------
 
     print('-'*45)
     print('tests:')

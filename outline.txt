@@ -24,6 +24,7 @@
 	• random/combinatorial/…/mocking/unit testing
 	• why they work
 	• why they fail
+	• testing in theory
 	
 [falcon language]
 	• overview 

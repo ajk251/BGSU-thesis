@@ -6,26 +6,33 @@ from utilities.TestLogWriter import write_to_log
 from utilities import FalconError
 from algorithms import *
 import unittest
-
 from collections import defaultdict
 
+import pytest
 from Tests.ComplexNumber import Complex
 from Tests.ComplexPredicates import *
 
 # This file was generated automatically by falcon.
 # from: Tests/complex.fcn
-# on 2022 Mar 23 Wed 12:15:27
+# on 2022 Apr 27 Wed 12:42:02
 
 A = Reals2()
 B = Reals2()
-CT = ComplexTestDomain()
 
 # start test -----------------
-def test_Complex_aFnS():
+def test_Complex_5FC():
 
-    # Test the unary properties
+    # Test the unary properties blah blah blah
 
     for aᵢ,bᵢ in A:
+        with pytest.raises(Exception):
+            assert valid_number(Complex(aᵢ, bᵢ))
+        with pytest.raises(ZeroDivisionError):
+            assert valid_number(Complex(aᵢ, bᵢ))
+        with pytest.raises(TypeError):
+            assert between(Complex(aᵢ, bᵢ), -10, 10)
+        with pytest.raises(Exception):
+            assert between(Complex(aᵢ, bᵢ), 1, 2)
         assert valid_number(Complex(aᵢ, bᵢ))
         assert valid_complex(Complex(aᵢ, bᵢ))
         assert property_additive_identity(Complex(aᵢ, bᵢ))
@@ -36,7 +43,7 @@ C1 = ComplexDomain()
 C2 = ComplexDomain()
 
 # start test -----------------
-def test___sE():
+def test___Igc17():
 
     # Test the properties of Complex numbers
 
@@ -49,7 +56,7 @@ def test___sE():
 
 
 # start test -----------------
-def test___Xk():
+def test___GLdr():
 
     # Test the mathematical properties
 
@@ -64,8 +71,9 @@ def test___Xk():
         assert valid_number(c)
         assert valid_complex(c)
 
+CT = ComplexTestDomain()
 
-def test_Complex_MTC():
+def test_Complex_FH():
 
     oracles = defaultdict(list)
 

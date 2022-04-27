@@ -280,7 +280,9 @@ class Falcon(FalconVisitor):
                       FalconParser.Stub_codeContext,
                       FalconParser.Stub_logicalContext,
                       FalconParser.Stub_side_effectContext,
-                      FalconParser.Stub_side_effect_manyContext)
+                      FalconParser.Stub_side_effect_manyContext,
+                      FalconParser.Stub_fail_side_effectContext,
+                      FalconParser.Stub_fail_side_effect_manyContext)
 
         for stub in ctx.children:
 
@@ -634,6 +636,36 @@ class Falcon(FalconVisitor):
         if len(ctx.children) > 2:
             for child in ctx.children[3:]:
                 stub['values'].append(self.visit(child))
+
+        if ctx.STRING():
+            stub['error-message'] = str(ctx.STRING())
+
+        return stub
+
+    def visitStub_fail_side_effect(self, ctx: FalconParser.Stub_fail_side_effectContext):
+
+        stub = {'kind': 'predicate-fail-side-effect', 'values': [], 'error-message': None}
+        stub['predicate'] = self.visit(ctx.predicate())
+
+        stub['error'] = self.visit(ctx.value()) if ctx.value() else None
+
+        if ctx.STRING():
+            stub['error-message'] = str(ctx.STRING())
+
+        return stub
+
+    def visitStub_fail_side_effect_many(self, ctx: FalconParser.Stub_fail_side_effect_manyContext):
+
+        stub = {'kind': 'predicate-fail-side-effect+', 'values': [], 'error-message': None}
+        stub['predicate'] = self.visit(ctx.predicate())
+
+        has_error = isinstance(ctx.children[1], FalconParser.ValueContext) and isinstance(ctx.children[2], FalconParser.PredicateContext)
+        stub['error'] = self.visit(ctx.value(0)) if has_error else None
+
+        n = 3 if has_error else 2
+        stub['value'] = tuple(self.visit(child) for child in ctx.children[n:])
+
+        print(f'{has_error} ', stub['error'], ' children ', stub['value'])
 
         if ctx.STRING():
             stub['error-message'] = str(ctx.STRING())

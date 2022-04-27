@@ -88,3 +88,6 @@
 {"name": "some-func", "a": 1, "b": 2, "c": 3}
 {"name": "some-func2", "a": 1, "c": 3, "rt": 0}
 {"name": "test", "z": [["a", "b", "c"], ["d", "e", "f"]]}
+{"name": "some-func", "a": 1, "b": 2, "c": 3}
+{"name": "some-func2", "a": 1, "c": 3, "rt": 0}
+{"name": "test", "z": [["a", "b", "c"], ["d", "e", "f"]]}

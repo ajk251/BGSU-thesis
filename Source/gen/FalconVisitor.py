@@ -9,11 +9,6 @@ else:
 
 class FalconVisitor(ParseTreeVisitor):
 
-    # Visit a parse tree produced by FalconParser#program.
-    def visitProgram(self, ctx:FalconParser.ProgramContext):
-        return self.visitChildren(ctx)
-
-
     # Visit a parse tree produced by FalconParser#block.
     def visitBlock(self, ctx:FalconParser.BlockContext):
         return self.visitChildren(ctx)
@@ -96,6 +91,16 @@ class FalconVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by FalconParser#stub_side_effect.
     def visitStub_side_effect(self, ctx:FalconParser.Stub_side_effectContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#stub_fail_side_effect.
+    def visitStub_fail_side_effect(self, ctx:FalconParser.Stub_fail_side_effectContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#stub_fail_side_effect_many.
+    def visitStub_fail_side_effect_many(self, ctx:FalconParser.Stub_fail_side_effect_manyContext):
         return self.visitChildren(ctx)
 
 

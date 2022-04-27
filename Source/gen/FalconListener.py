@@ -8,15 +8,6 @@ else:
 # This class defines a complete listener for a parse tree produced by FalconParser.
 class FalconListener(ParseTreeListener):
 
-    # Enter a parse tree produced by FalconParser#program.
-    def enterProgram(self, ctx:FalconParser.ProgramContext):
-        pass
-
-    # Exit a parse tree produced by FalconParser#program.
-    def exitProgram(self, ctx:FalconParser.ProgramContext):
-        pass
-
-
     # Enter a parse tree produced by FalconParser#block.
     def enterBlock(self, ctx:FalconParser.BlockContext):
         pass
@@ -167,6 +158,24 @@ class FalconListener(ParseTreeListener):
 
     # Exit a parse tree produced by FalconParser#stub_side_effect.
     def exitStub_side_effect(self, ctx:FalconParser.Stub_side_effectContext):
+        pass
+
+
+    # Enter a parse tree produced by FalconParser#stub_fail_side_effect.
+    def enterStub_fail_side_effect(self, ctx:FalconParser.Stub_fail_side_effectContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#stub_fail_side_effect.
+    def exitStub_fail_side_effect(self, ctx:FalconParser.Stub_fail_side_effectContext):
+        pass
+
+
+    # Enter a parse tree produced by FalconParser#stub_fail_side_effect_many.
+    def enterStub_fail_side_effect_many(self, ctx:FalconParser.Stub_fail_side_effect_manyContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#stub_fail_side_effect_many.
+    def exitStub_fail_side_effect_many(self, ctx:FalconParser.Stub_fail_side_effect_manyContext):
         pass
 
 
