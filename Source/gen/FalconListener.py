@@ -1,4 +1,4 @@
-# Generated from /media/aaron/Shared2/School/BGSU-thesis/Source/lang/Falcon.g4 by ANTLR 4.9.1
+# Generated from /media/aaron/Shared2/School/BGSU-thesis/Source/lang/Falcon.g4 by ANTLR 4.10.1
 from antlr4 import *
 if __name__ is not None and "." in __name__:
     from .FalconParser import FalconParser
@@ -50,6 +50,15 @@ class FalconListener(ParseTreeListener):
 
     # Exit a parse tree produced by FalconParser#test_basic.
     def exitTest_basic(self, ctx:FalconParser.Test_basicContext):
+        pass
+
+
+    # Enter a parse tree produced by FalconParser#macro_basic.
+    def enterMacro_basic(self, ctx:FalconParser.Macro_basicContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#macro_basic.
+    def exitMacro_basic(self, ctx:FalconParser.Macro_basicContext):
         pass
 
 

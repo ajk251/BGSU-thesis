@@ -19,6 +19,10 @@ Test Complex A:
   | additive-id?
   ;
 
+Hypothesis fn X Y:
+  | is-int?
+  ;
+
 Domain C1 ComplexDomain
 Domain C2 ComplexDomain
 

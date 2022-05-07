@@ -152,7 +152,7 @@ def make_unittest(entry, indent=0):
         kind, value = block if len(block) == 2 else (block[0], block[1:])
 
         if kind == 'assertion':
-            line = basic_Assert(entry['tests'][value])
+            line = unit_Assert(entry['tests'][value])
             lines.append(line)
         elif kind == 'test':
             if entry['tests'][value]['kind'] == 'test-basic':
@@ -160,7 +160,7 @@ def make_unittest(entry, indent=0):
                 lines.append(line)
             elif entry['tests'][value]['kind'] == 'groupby-test':
                 #line = unit_Winnow(entry['tests'][value], indent)
-                line = unit_Groupby(entry['tests'][value], indent)
+                line = unit_Groupby(entry['tests'][value])
                 lines.append(line)
             elif entry['tests'][value]['kind'] == 'satisfy-test':
                 line = unit_Satisfy(entry['tests'][value], indent)
@@ -221,7 +221,7 @@ def add_imports(entry) -> str:
              'from utilities.utls import call',
              'from utilities.TestLogWriter import write_to_log',
              'from utilities import FalconError',
-             'from algorithms import *',
+             'from algorithms.algorithms import *',
              'import unittest',
              'from collections import defaultdict\n',
              'import pytest']
@@ -631,13 +631,12 @@ def basic_Winnow(entry, indent=0) -> str:
     algo = directives['algo']
     params = directives['params']
     fn_name = directives['fn_name']
-    followup = directives['follow-up']
 
     args = ', '.join(labels)
     fn_sig = '{}({})'.format(fn_name, args)
 
     # the def name
-    lines.extend((f'def test_winnow_{fn_name}():', ''))
+    lines.extend((f'def test_groupby_{fn_name}():', ''))
 
     # w1 has a separate bin function defined
     w1 = '''
@@ -652,6 +651,13 @@ except Exception as e:
     raise FalconError('Failed to properly partition the function')
     '''
 
+    w2 = '''
+try:
+    group = {}
+except Exception as e:   
+    raise FalconError('Failed to properly partition the function')
+'''
+
     indent += 1
 
     # build the for loop, naked/with custom iterator/generic & no parameters
@@ -662,31 +668,37 @@ except Exception as e:
     else:
         template = indent * TAB + "for {} in {}({}):".format(', '.join(labels), algo, ', '.join(dvars))
 
+    lines.append(template)
+
+    # build the template
+    if entry['bin'] is not None:
+        line = textwrap.indent(w1.format(fn_sig, entry['bin']), TAB * 2)
+        lines.append(line)
+        using_bin_fn = True
+    else:
+        line = textwrap.indent(w2.format(fn_sig), TAB * 2)
+        lines.append(line)
+        using_bin_fn = False
+
     # deal with the groups
     groups = defaultdict(list)
 
     for stub in entry['stubs']:
 
-        stub['using-bin-fn'] = True
+        stub['using-bin-fn'] = using_bin_fn
+
+        # if using_bin_fn:
         stmt = make_assert_group_stmt(stub, fn_name, args, indent)
+        # else:
+        #     stmt = make_assert_stmt(stub, fn_name, args, indent)
 
         groups[stub['group']].append(stmt)
 
     assert len(groups) > 1, "the number of groups must be greater than 1"
 
-    # start building it here...
-    group_names = ', '.join(gn for gn in groups.keys())
-    line = (indent * TAB) + f'groups = {{group: [] for group in ({group_names})}}\n'
-    lines.append(line)
-
     indent += 1
-    lines.append(template)
 
     groups = tuple(groups.items())
-
-    # build the template
-    line = textwrap.indent(w1.format(fn_sig, entry['bin']), TAB * 2)
-    lines.append(line)
 
     # first one is a special case, ie 'if'
     line = (indent * TAB) + f'if group == {groups[0][0]}:\n' + ((indent + 1) * TAB) + '\n'.join(groups[0][1])
@@ -696,7 +708,6 @@ except Exception as e:
 
     for group, stmt in groups[1:]:
         line = (indent * TAB) + f'elif group == {group}:\n' + ((indent + 1) * TAB) + '\n'.join(stmt)
-        line += '\n' + ((indent + 1) * TAB) + f'groups[{group}].append(result)'
         lines.append(line)
 
     # add failure case
@@ -704,25 +715,6 @@ except Exception as e:
     lines.append(failure)
 
     lines.append('')
-
-    # add group predicate tests
-    # TODO: this seems somewhat fragile - but only one type of predicate makes sense here
-
-    test = 'assert {}(groups[{}], {}), "group str({}) failed to satisfy predicate"'
-
-    for stub in entry['stubs']:
-
-        gpd_name = PREDICATES[stub['group-predicate']][0]
-        gpd_values = ', '.join(stub['group-values'])
-
-        line = f'assert {gpd_name}(groups[{stub["group"]}], {gpd_values}), "group str({stub["group"]}) failed to satisfy predicate"'
-        # line = test.format(gpd_name, stub['group'], gpd_values, stub['group'])
-        lines.append((indent * TAB) + line)
-
-    # add a follow-up function, if necessary
-    if followup is not None:
-        lines.append('')
-        lines.append((indent * TAB) + f'{followup}(groups)')
 
     return '\n'.join(lines)
 
@@ -862,103 +854,135 @@ count = 0
 
 # for unit tests -------
 
+def unit_Assert(entry):
 
-def unit_Test(entry, indent=1):
+    # TODO:
+    #   add directive for value = … \ assert predicate(value, args)...
+    #   handle messages, ie assert …, <message>
+    #   extra args!!! raise error!
+    #   add explanations
 
-    #directives --------
+    indent = 1
 
-    # *** message ***
+    # directives -------------
 
+    ignore_true = True          # this was an earlier attempt, eg is-int? True, TODO: refactor out
+
+    # because assert is different, it can't use get_directives - it doesn't have the function & domain
+    # message, pyfunc,
+
+    # get the message, if any
     if entry['directives'].get(':message', None) is not None:
         message = entry['directives'][':message']['value']
     else:
         message = None
 
-    # *** get function name ***
-    # this is mostly for use with pytest
+    # get the name of the function, create one, or append one
+    # test-name ￫ user name, as-is. :name any name, but decorated
+
     fn_name = entry['function']
 
     if entry['directives'].get(':test-name', None):
         # TODO: raise warning if it does not start with test
         t_name = entry['directives'][':test-name']['value']
-        pyfunc = (indent * TAB ) + f'def {t_name}(self):'
+        pyfunc = indent * TAB + f'def {t_name}(self):'
     elif entry['directives'].get(':name', None):
         t_name = entry['directives'][':name']['value']
-        pyfunc = (indent * TAB ) + f'def {t_name}(self):' if t_name.startswith('test') else (indent * TAB ) +  f'def test_{t_name}(self):'
+        pyfunc = f'def {t_name}' if t_name.startswith('test') else f'def test_{t_name}'
+        pyfunc = indent * TAB + pyfunc + '(self):'
     else:
         rand_name = ''.join((choices(ascii_letters+digits, k=randint(2, 5))))
-        pyfunc = (indent * TAB) + 'def test_{}_{}(self):'.format(fn_name, rand_name)
+        pyfunc = indent * TAB + f'def test_{fn_name}_assertions_{rand_name}(self):' #.format(fn_name, rand_name)
 
-    # *** get suffix ***
-    if entry['directives'].get(':suffix', None):
-        suffix = entry['directives'][':suffix']['value']
-    else:
-        suffix = 'ᵢ'
+    indent += 1
 
-    # *** get algo ***
-    params = []
+    # -----------------------
+    a1 = 'assert {} {} {}'              # w/ symbol
+    a2 = 'assert {}({}, {})'            # w/ function
+    a3 = 'assert {}({})'                # ignoring True
 
-    if entry['directives'].get(':method', None):
+    # -----------------------
+    lines = ['', pyfunc, '']
 
-        algo = entry['directives'][':method']['value']
+    if message:
+        lines.append((TAB * indent) + '# ' + message.strip('"'))
 
-        if algo not in ALGORITHMS:
-            raise f"Directive :method not found {algo}"
+    fn_name = entry['function']
 
-        # get the real name
-        algo = ALGORITHMS[algo]
+    for stub in entry['stubs']:
 
-        # deal with the parameters of the test
-        # params = []                                         # the parameters of the algorithm
-        for name, values in entry['directives'][':method']['params']:
-            params.append('{}={}'.format(name, ''.join(values)))
-    else:
-        algo = 'zip'
-        params = []
+        # if not stub['argument']['kind'] == 'assertion': raise "WTF"
+
+        if stub['kind'] == 'code':
+            lines.append((TAB * indent) + stub['value'])
+            continue
+
+        args = make_args(stub['argument'])
+        fn = fn_name + args
+        value = stub['value']
+
+        if PREDICATES[stub['predicate']][1]:
+            pd_name = PREDICATES[stub['predicate']][1]
+            line = a1.format(fn, pd_name, value)
+        else:
+            pd_name = PREDICATES[stub['predicate']][0]
+
+            if ignore_true and value == 'True':
+                line = a3.format(pd_name, fn)
+            else:
+                line = a2.format(pd_name, fn, value)
+
+        # TODO: 'message' should be in all the stubs, eventually
+        if 'error-message' in stub and stub['error-message'] is not None:
+            line += f", {stub['error-message']}"
+
+        # line = (TAB * indent) + line
+        lines.append((TAB * indent) + line)
+
+    lines.append('')
+
+    return '\n'.join(lines)
+
+
+def unit_Test(entry, indent=1):
+
+    directives = get_directives(entry)
+
+    message = directives['message']
+    pyfunc = indent * TAB + directives['pyfunc'][:-3] + ('(self):')
+    dvars = entry['domain']                                         # the domain names
+    labels = directives['labels']
+    algo = directives['algo']
+    params = directives['params']
+    fn_name = directives['fn_name']
 
     # write tests ------
-
+    # lines = ['\n# start test -----------------', pyfunc, '']
     lines = [pyfunc, '']
     indent += 1
 
     if message:
-        line = indent * TAB + '# ' + message.strip('"') + nl
+        line = indent * TAB + '# ' + message.strip('"')
         lines.append(line)
 
-    # get the variable names
-    # dvars = entry['domain']                                 # the domain names
-    # ivars = [d.lower() + suffix for d in dvars]                # the name of the values in the domain
-
-    # get the variable names
-    dvars = entry['domain']                                         # the domain names
-
-    if entry['directives'].get(':labels', False):
-        # TODO: input must be a list - how to catch bad input?
-        lbs = to_list(entry['directives'][':labels']['value'])
-        labels = [d.lower() + suffix for d in lbs]
-    else:
-        labels = [d.lower() + suffix for d in dvars]                # the name of the values in the domain
-
-    # ivars = [d.lower() + suffix for d in dvars]                # the name of the values in the domain
-    ivars = [d.lower() + suffix for d in labels]                # the name of the values in the domain
-
     # build the for loop, naked/with custom iterator/generic & no parameters
-    if len(ivars) == 1:
-        template = indent * TAB + "for {} in {}:".format(ivars[0], dvars[0])
+    if len(dvars) == 1:
+        # note dvars is the number of domains, labels can be user-defined number to unpac
+        template = indent * TAB + "for {} in {}:".format(','.join(labels), dvars[0])
     elif len(params) > 0:
-        template = indent * TAB + 'for {} in {}({}, {}):'.format(', '.join(ivars), algo, ', '.join(dvars), ', '.join(params))
+        template = indent * TAB + 'for {} in {}({}, {}):'.format(', '.join(labels), algo, ', '.join(dvars), ', '.join(params))
     else:
-        template = indent * TAB + "for {} in {}({}):".format(', '.join(ivars), algo, ', '.join(dvars))
+        template = indent * TAB + "for {} in {}({}):".format(', '.join(labels), algo, ', '.join(dvars))
 
     lines.append(template)
 
     # fn_name = entry['function']
-    args = ', '.join(ivars)
-    fn_sig = '{}({})'.format(fn_name, args)
+    args = ', '.join(labels)
+
     indent += 1
 
     for stub in entry['stubs']:
-        stmt = make_assert_stmt(stub, fn_sig, indent)
+        stmt = make_assert_stmt(stub, fn_name, args, indent)
         lines.append((indent * TAB) + stmt)
 
     lines.append('')
@@ -969,133 +993,238 @@ def unit_Test(entry, indent=1):
 
 
 #def unit_Winnow(entry, indent=1) -> str:
-def unit_Groupby(entry, indent=1) -> str:
+# def unit_Groupby(entry, indent=1) -> str:
+#
+#     lines = []
+#
+#     # build the function name & vars
+#     fn_name = entry['function']
+#
+#     # def name
+#     line = (indent * TAB) + f'def test_groupby_{fn_name}(self):'
+#     lines.extend((line, ''))
+#
+#     # if something goes wrong with the 1st…
+#
+#     # w1 has a separate bin function defined
+#     w1 = '''
+# try:
+#     result = {}
+# except Exception as e:
+#     assert False, "Function error"
+#     continue
+#
+# try:
+#     group = {}(result)
+# except Exception as e_bin:
+#     assert False, "Group-by error"
+#     continue
+#     '''
+#
+#     w2 = '''
+# try:
+#     result = {}
+#     group = result
+# except Exception as e:
+#     assert False, "Function error"
+#     continue
+# '''
+#
+#     # *** get suffix ***
+#     if entry['directives'].get(':suffix', None):
+#         suffix = entry['directives'][':suffix']['value']
+#     else:
+#         suffix = 'ᵢ'
+#
+#     # get the variable names
+#     dvars = entry['domain']                                 # the domain names
+#     ivars = [d.lower() + suffix for d in dvars]                # the name of the values in the domain
+#     args = ', '.join(ivars)
+#     fn_sig = '{}({})'.format(fn_name, args)
+#
+#     # *** get algo ***
+#     params = []
+#
+#     if entry['directives'].get(':method', None):
+#
+#         algo = entry['directives'][':method']['value']
+#
+#         if algo not in ALGORITHMS:
+#             raise f"Directive :method not found {algo}"
+#
+#         # get the real name
+#         algo = ALGORITHMS[algo]
+#
+#         # deal with the parameters of the test
+#         # params = []                                         # the parameters of the algorithm
+#         for name, values in entry['directives'][':method']['params']:
+#             params.append('{}={}'.format(name, ''.join(values)))
+#     else:
+#         algo = 'zip'
+#         params = []
+#
+#     indent += 1
+#
+#     # build the for loop, naked/with custom iterator/generic & no parameters
+#     if len(ivars) == 1:
+#         template = indent * TAB + "for {} in {}:".format(ivars[0], dvars[0])
+#     elif len(params) > 0:
+#         template = indent * TAB + 'for {} in {}({}, {}):'.format(', '.join(ivars), algo, ', '.join(dvars), ', '.join(params))
+#     else:
+#         template = indent * TAB + "for {} in {}({}):".format(', '.join(ivars), algo, ', '.join(dvars))
+#
+#     lines.append(template)
+#
+#     indent += 1
+#
+#     # build the template
+#     if entry['bin'] is not None:
+#         line = textwrap.indent(w1.format(fn_sig, entry['bin']), TAB * indent)
+#         lines.append(line)
+#     else:
+#         line = textwrap.indent(w2.format(fn_sig), TAB * indent)
+#         lines.append(line)
+#
+#     # deal with the groups
+#     groups = defaultdict(list)
+#
+#     for stub in entry['stubs']:
+#         stmt = make_assert_stmt(stub, 'result', indent)
+#         groups[stub['group']].append(stmt)
+#
+#     assert len(groups) > 1, "the number of groups must be greater than 1"
+#
+#     # indent += 1
+#
+#     groups = tuple(groups.items())
+#
+#     # first one is a special case, ie 'if'
+#     line = (indent * TAB) + f'if group == {groups[0][0]}:\n' + ((indent + 1) * TAB) + '\n'.join(groups[0][1])
+#     lines.append(line)
+#
+#     # TODO: if there are multiple statements, this will fail.
+#
+#     for group, stmt in groups[1:]:
+#         line = (indent * TAB) + f'elif group == {group}:\n' + ((indent + 1) * TAB) + '\n'.join(stmt)
+#         lines.append(line)
+#
+#     # add failure case
+#     failure = (indent * TAB) + f'else:\n' + ((indent + 1) * TAB) + 'print("You shouldn\'t be here!") \t\t# TODO…'
+#     lines.append(failure)
+#
+#     lines.append('')
+#
+#     return '\n'.join(lines)
 
-    lines = []
 
-    # build the function name & vars
-    fn_name = entry['function']
+def  unit_Groupby(entry):
 
-    # def name
-    line = (indent * TAB) + f'def test_groupby_{fn_name}(self):'
-    lines.extend((line, ''))
+    indent = 0
+    lines = ['']
 
-    # if something goes wrong with the 1st…
+    directives = get_directives(entry)
+
+    # message = directives['message']
+    # pyfunc = directives['pyfunc']
+    dvars = entry['domain']                                         # the domain names
+    labels = directives['labels']
+    algo = directives['algo']
+    params = directives['params']
+    fn_name = directives['fn_name']
+
+    args = ', '.join(labels)
+    fn_sig = '{}({})'.format(fn_name, args)
+
+    # the def name
+    lines.extend((f'def test_groupby_{fn_name}():', ''))
 
     # w1 has a separate bin function defined
     w1 = '''
 try:
     result = {}
 except Exception as e:
-    assert False, "Function error"
-    continue
+    result = e
                 
 try:
     group = {}(result)
-except Exception as e_bin:
-    assert False, "Group-by error"   
-    continue
+except Exception as e:
+    raise FalconError('Failed to properly partition the function')
     '''
 
     w2 = '''
 try:
-    result = {}
-    group = result
+    group = {}
 except Exception as e:   
-    assert False, "Function error"
-    continue
+    raise FalconError('Failed to properly partition the function')
 '''
-
-    # *** get suffix ***
-    if entry['directives'].get(':suffix', None):
-        suffix = entry['directives'][':suffix']['value']
-    else:
-        suffix = 'ᵢ'
-
-    # get the variable names
-    dvars = entry['domain']                                 # the domain names
-    ivars = [d.lower() + suffix for d in dvars]                # the name of the values in the domain
-    args = ', '.join(ivars)
-    fn_sig = '{}({})'.format(fn_name, args)
-
-    # *** get algo ***
-    params = []
-
-    if entry['directives'].get(':method', None):
-
-        algo = entry['directives'][':method']['value']
-
-        if algo not in ALGORITHMS:
-            raise f"Directive :method not found {algo}"
-
-        # get the real name
-        algo = ALGORITHMS[algo]
-
-        # deal with the parameters of the test
-        # params = []                                         # the parameters of the algorithm
-        for name, values in entry['directives'][':method']['params']:
-            params.append('{}={}'.format(name, ''.join(values)))
-    else:
-        algo = 'zip'
-        params = []
 
     indent += 1
 
     # build the for loop, naked/with custom iterator/generic & no parameters
-    if len(ivars) == 1:
-        template = indent * TAB + "for {} in {}:".format(ivars[0], dvars[0])
+    if len(labels) == 1:
+        template = indent * TAB + "for {} in {}:".format(labels[0], dvars[0])
     elif len(params) > 0:
-        template = indent * TAB + 'for {} in {}({}, {}):'.format(', '.join(ivars), algo, ', '.join(dvars), ', '.join(params))
+        template = indent * TAB + 'for {} in {}({}, {}):'.format(', '.join(labels), algo, ', '.join(dvars), ', '.join(params))
     else:
-        template = indent * TAB + "for {} in {}({}):".format(', '.join(ivars), algo, ', '.join(dvars))
+        template = indent * TAB + "for {} in {}({}):".format(', '.join(labels), algo, ', '.join(dvars))
 
     lines.append(template)
-
     indent += 1
 
     # build the template
     if entry['bin'] is not None:
-        line = textwrap.indent(w1.format(fn_sig, entry['bin']), TAB * indent)
+        line = textwrap.indent(w1.format(fn_sig, entry['bin']), TAB * 2)
         lines.append(line)
+        using_bin_fn = True
     else:
-        line = textwrap.indent(w2.format(fn_sig), TAB * indent)
+        line = textwrap.indent(w2.format(fn_sig), TAB * 2)
         lines.append(line)
+        using_bin_fn = False
 
     # deal with the groups
     groups = defaultdict(list)
 
+    # the groupby!
     for stub in entry['stubs']:
-        stmt = make_assert_stmt(stub, 'result', indent)
+
+        stub['using-bin-fn'] = using_bin_fn
+        stmt = make_assert_group_stmt(stub, fn_name, args, indent)
         groups[stub['group']].append(stmt)
 
     assert len(groups) > 1, "the number of groups must be greater than 1"
 
     # indent += 1
+    print(groups)
 
-    groups = tuple(groups.items())
+    groups, stmts = tuple(groups.keys()), tuple(groups.values())
+
+    print(groups)
+    print(stmts)
 
     # first one is a special case, ie 'if'
-    line = (indent * TAB) + f'if group == {groups[0][0]}:\n' + ((indent + 1) * TAB) + '\n'.join(groups[0][1])
+    line = (indent * TAB) + f'if group == {groups[0]}:\n' #+ ((indent + 1) * TAB) + '\n'.join(groups[0][1])
+    line += '\n'.join([((indent + 1) * TAB) + stmt for stmt in stmts[0]])
     lines.append(line)
 
-    # TODO: if there are multiple statements, this will fail.
-
-    for group, stmt in groups[1:]:
-        line = (indent * TAB) + f'elif group == {group}:\n' + ((indent + 1) * TAB) + '\n'.join(stmt)
+    for group, stmts in zip(groups[1:], stmts[1:]):
+        # line = (indent * TAB) + f'elif group == {group}:\n' + ((indent + 1) * TAB) + '\n'.join(stmt)
+        line = (indent * TAB) + f'elif group == {group}:\n'
+        line += '\n'.join([(indent + 1) * TAB + stmt for stmt in stmts])
         lines.append(line)
 
     # add failure case
-    failure = (indent * TAB) + f'else:\n' + ((indent + 1) * TAB) + 'print("You shouldn\'t be here!") \t\t# TODO…'
+    failure = (indent * TAB) + f'else:\n' + ((indent + 1) * TAB) + 'raise FalconError("Failed to meet at least one group") \t\t# TODO…'
     lines.append(failure)
 
     lines.append('')
 
     return '\n'.join(lines)
 
-
 def unit_Satisfy(entry, indent=1) -> str:
 
     lines = []
+
+    return '# Satisfy here…'
 
     # build the function name & vars
     fn_name = entry['function']

@@ -29,6 +29,7 @@ assertion: ASSERT name ':' test_stub+ ';'                           #assert_test
          ;
 
 test: TEST name domain_names ':' test_stub+ ';'                     #test_basic
+    | name name domain_names ':' test_stub+ ';'                     #macro_basic
     ;
 
 domain_names: name                                                  #get_domain_name
@@ -41,6 +42,7 @@ test_stub: BAR predicate ('~~' STRING)?                             #stub_p
          | BAR arg_list predicate value ('~~' STRING)?              #stub_assert
          | BAR arg_list predicate ('~~' STRING)?                    #stub_assert_p
 //         | BAR arg_list test_logical ('~~' STRING)?                 #stub_assert_logical
+
          | BAR compiler*                                            #stub_directives
          | BAR test_logical ('~~' STRING)?                          #stub_logical
          | ABAR code                                                #stub_code
@@ -93,7 +95,9 @@ bin_stub: BAR value predicate                                       #groupby_stu
 
 winnow_stub: BAR value predicate value* ':' predicate value*        #winnow_stub_many_many
            | BAR compiler*                                          #winnow_stub_directives
-       ;
+
+
+           ;
 
 // Domain stuff -------------------------------------------
 
@@ -139,6 +143,7 @@ predicate: name
          | CODESMNT
          | OP_NOT
          | OP_EQ
+         | OP_NE
          | UMATH
          | OPERATORS
          ;

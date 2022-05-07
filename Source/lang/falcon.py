@@ -304,6 +304,47 @@ class Falcon(FalconVisitor):
 
         return
 
+    def visitMacro_basic(self, ctx: FalconParser.Macro_basicContext):
+
+        test = {}
+
+        test['kind'] = 'macro'
+        test['name'] = self.visit(ctx.name(0))
+        test['function'] = self.visit(ctx.name(1))
+        test['domain'] = self.visit(ctx.domain_names())
+        test['id'] = self.get_id()
+        test['directives'] = {}
+        # test['directives'] = []
+        test['stubs'] = []
+
+        okay_stubs = (FalconParser.Stub_pvContext,
+                      FalconParser.Stub_pContext,
+                      FalconParser.Stub_many_pvContext,
+                      FalconParser.Stub_codeContext,
+                      FalconParser.Stub_logicalContext,
+                      FalconParser.Stub_side_effectContext,
+                      FalconParser.Stub_side_effect_manyContext,
+                      FalconParser.Stub_fail_side_effectContext,
+                      FalconParser.Stub_fail_side_effect_manyContext)
+
+        for stub in ctx.children:
+
+            if isinstance(stub, okay_stubs):
+                test['stubs'].append(self.visit(stub))
+            elif isinstance(stub, FalconParser.Stub_directivesContext):
+                # directives = self.visit(stub)
+                ds = self.visit(stub)
+                for d in ds:
+                    test['directives'][d['directive']] = {'value': d['value'], 'params': d['params']}
+                # test['directives'][d['directive']].append({'value': d['value'], 'params': d['params']})
+            else:
+                # TODO raise error! How did it get here‽
+                # print('Test -> ', type(stub))
+                continue
+
+        self.ns[self.current_ns]['tests'][test['id']] = test
+        self.ns[self.current_ns]['ordering'].append(('test', test['id']))
+
     def visitAssert_test(self, ctx: FalconParser.Assert_testContext):
 
         test = {}

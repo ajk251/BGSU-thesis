@@ -4,98 +4,67 @@ from domains import *
 from utilities.utls import call
 from utilities.TestLogWriter import write_to_log
 from utilities import FalconError
-from algorithms import *
+from algorithms.algorithms import *
 import unittest
 from collections import defaultdict
 
 import pytest
-from Tests.ComplexNumber import Complex
-from Tests.ComplexPredicates import *
 
 # This file was generated automatically by falcon.
-# from: Tests/complex.fcn
-# on 2022 Apr 27 Wed 12:42:02
+# from: Tests/unit-test2.fcn
+# on 2022 May 06 Fri 21:23:18
 
-A = Reals2()
-B = Reals2()
+X = Integers()
+Y = Integers()
+Z = Integers()
 
-# start test -----------------
-def test_Complex_5FC():
+class Test(unittest.TestCase):
 
-    # Test the unary properties blah blah blah
+    def test_fn_8riW6(self):
 
-    for aᵢ,bᵢ in A:
-        with pytest.raises(Exception):
-            assert valid_number(Complex(aᵢ, bᵢ))
-        with pytest.raises(ZeroDivisionError):
-            assert valid_number(Complex(aᵢ, bᵢ))
-        with pytest.raises(TypeError):
-            assert between(Complex(aᵢ, bᵢ), -10, 10)
-        with pytest.raises(Exception):
-            assert between(Complex(aᵢ, bᵢ), 1, 2)
-        assert valid_number(Complex(aᵢ, bᵢ))
-        assert valid_complex(Complex(aᵢ, bᵢ))
-        assert property_additive_identity(Complex(aᵢ, bᵢ))
-        assert property_multiplicative_identity(Complex(aᵢ, bᵢ))
-        assert property_additive_identity(Complex(aᵢ, bᵢ))
-
-C1 = ComplexDomain()
-C2 = ComplexDomain()
-
-# start test -----------------
-def test___Igc17():
-
-    # Test the properties of Complex numbers
-
-    for c1ᵢ, c2ᵢ in zip(C1, C2):
-        assert property_closure_add(c1ᵢ, c2ᵢ)
-        assert property_closure_multiply(c1ᵢ, c2ᵢ)
-        assert property_commutative_add(c1ᵢ, c2ᵢ)
-        assert property_commutative_multiply(c1ᵢ, c2ᵢ)
-        assert property_multiplicative_inverse(c1ᵢ, c2ᵢ)
+        for xᵢ, yᵢ in zip(X, Y):
+            assert is_integer(fn(xᵢ, yᵢ))
+            assert is_float(fn(xᵢ, yᵢ))
 
 
-# start test -----------------
-def test___GLdr():
+    def test_fn_assertions_h7TpH(self):
 
-    # Test the mathematical properties
+        # This is a test of some random stuff
+        assert fn(1, 2, 3) > 4
+        assert is_float(fn(1, [2.0], three=3.0))
+        assert fn(1, 2, three=3, four=4) != 5
 
-    for c1, c2 in zip(C1, C2):
-        assert complex_add(c1, c2)
-        assert complex_sub(c1, c2)
-        assert complex_mult(c1, c2)
-        assert complex_radd(c1, c2)
-        assert complex_rsub(c1, c2)
-        assert complex_rmul(c1, c2)
-        c = c1 + c2
-        assert valid_number(c)
-        assert valid_complex(c)
+    def test_add(self):
 
-CT = ComplexTestDomain()
+        # please work and have a suffix
+        for a_i, b_i, c_i in all_triplets(X, Y):
+            assert is_integer(add(a_i, b_i, c_i))
+            assert between(add(a_i, b_i, c_i), -1500, 1500)
 
-def test_Complex_FH():
 
-    oracles = defaultdict(list)
+def test_groupby_fna():
 
-    for aᵢ,bᵢ in CT:
+    for xᵢ, yᵢ in zip(X, Y):
 
         try:
-            result = Complex(aᵢ, bᵢ)
-        except Exception as error:
-            result = error
+            result = fna(xᵢ, yᵢ)
+        except Exception as e:
+            result = e
+                
+        try:
+            group = fn_to_b(result)
+        except Exception as e:
+            raise FalconError('Failed to properly partition the function')
+    
+        if group == 'A':
+            assert is_float(result)
+            assert is_integer(result)
+        elif group == 'B':
+            assert between(result, 0, 1)
+            assert between(result, -10, 10)
+        elif group == 'Error':
+            assert catch_error(result, ZeroDivisionError)
+        else:
+            raise FalconError("Failed to meet at least one group") 		# TODO…
 
-        count = 0
-
-        if valid_number(result):
-            count += 1
-            oracles['valid-complex?'].append(((aᵢ, bᵢ), repr(result)))
-        if valid_complex(result):
-            count += 1
-            oracles['complex-number?'].append(((aᵢ, bᵢ), repr(result)))
-
-        if count == 0:
-            oracles["random-test"].append(((aᵢ, bᵢ), repr(result)))
-
-        assert count >= 1, f"The minimum number of predicates has not been met - met: {count}, min: 1"
-
-    write_to_log("./FalconTestLog.txt", {"name": Complex, "predicates": oracles})
+# Satisfy here…
