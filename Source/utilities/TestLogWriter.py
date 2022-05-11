@@ -6,8 +6,6 @@ import json
 def write_to_log(file_path, values, json_encoder=None):
     """Writes a dict to a file."""
 
-    print('values: ', values)
-
     with open(file_path, 'a', encoding='utf-8') as file:
 
         if json_encoder is None:

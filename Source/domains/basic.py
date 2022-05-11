@@ -33,7 +33,7 @@ def Reals(lower=None, upper=None, nrandom=None, by=None):
         n = 0
         while True:
             yield count(lower, by)
-            n  += 1
+            n += 1
             if n >= upper: break
 
     return

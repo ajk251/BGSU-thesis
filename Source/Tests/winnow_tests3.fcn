@@ -1,5 +1,5 @@
 
-:import test_funcs -from [follow_up_func, fn, gb]
+//:import test_funcs -from [follow_up_func, fn, gb]
 
 Domain X Integers 0 100
 Domain Y Integers 0 100

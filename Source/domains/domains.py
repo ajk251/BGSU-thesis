@@ -1,5 +1,6 @@
 
-
+from abc import ABC
+from typing import Any, Dict, Tuple
 
 DOMAINS = {}
 
@@ -19,3 +20,14 @@ def domain(_fn=None, *, alias=None):
         return fn
 
     return func if _fn is None else func(_fn)
+
+# ---------------------------------------------------------
+# An abstract base class for class-based domains
+
+class DomainBase(ABC):
+
+    def __iter__(self):
+        raise NotImplementedError('__iter__ must be implemented')
+
+    def __call__(self, test_case: Tuple[Any, ...], **kwargs: Dict[Any, Any]):
+        raise NotImplementedError('__call__ must be implemented')

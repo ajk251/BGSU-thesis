@@ -55,11 +55,4 @@ def cardnality_within(sequence, lb: int, ub: int) -> bool:
 
 # these are useful!? --------------------------------------
 
-@predicate(alias=['not-empty?'])
-def empty(sequence) -> bool:
-    return len(sequence) == 0
 
-
-@predicate(alias=['not-empty?'])
-def not_empty(sequence) -> bool:
-    return len(sequence) >= 1

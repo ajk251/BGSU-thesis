@@ -169,8 +169,9 @@ def make_unittest(entry, indent=0):
     return '\n'.join(lines)
 
 
-def make_global(entry, indent=0) -> str:
+def make_global(entry) -> str:
 
+    indent: int = 0
     lines = []
 
     # directives -----
@@ -190,22 +191,22 @@ def make_global(entry, indent=0) -> str:
             line = basic_Assert(entry['tests'][value])
             lines.append(line)
         elif kind == 'domain':
-            line = make_domain(value, indent)
+            line = make_domain(value)
             lines.append(line)
         elif kind == 'test':
             if entry['tests'][value]['kind'] == 'test-basic':
-                line = basic_Test(entry['tests'][value], indent)
+                line = basic_Test(entry['tests'][value])
                 lines.append(line)
             # elif entry['tests'][value]['kind'] == 'winnow-test':
             elif entry['tests'][value]['kind'] == 'groupby-test':
                 # line = basic_Winnow(entry['tests'][value], indent)
-                line = basic_Groupby(entry['tests'][value], indent)
+                line = basic_Groupby(entry['tests'][value])
                 lines.append(line)
             elif entry['tests'][value]['kind'] == 'winnow-test':
-                line = basic_Winnow(entry['tests'][value], indent)
+                line = basic_Winnow(entry['tests'][value])
                 lines.append(line)
             elif entry['tests'][value]['kind'] == 'satisfy-test':
-                line = basic_Satisfy2(entry['tests'][value], indent)
+                line = basic_Satisfy2(entry['tests'][value])
                 lines.append(line)
 
     return '\n'.join(lines)
@@ -265,6 +266,8 @@ def falcon_intro(source=None):
 # testers --------------
 def basic_Test(entry, indent=0) -> str:
 
+    # Test - a for-loop over some domain with n predicates
+
     directives = get_directives(entry)
 
     message = directives['message']
@@ -274,6 +277,7 @@ def basic_Test(entry, indent=0) -> str:
     algo = directives['algo']
     params = directives['params']
     fn_name = directives['fn_name']
+    obj_update = directives['object-update']
 
     # write tests ------
     lines = ['\n# start test -----------------', pyfunc, '']
@@ -285,7 +289,7 @@ def basic_Test(entry, indent=0) -> str:
 
     # build the for loop, naked/with custom iterator/generic & no parameters
     if len(dvars) == 1:
-        # note dvars is the number of domains, labels can be user-defined number to unpac
+        # note dvars is the number of domains, labels can be user-defined number to unpack
         template = indent * TAB + "for {} in {}:".format(','.join(labels), dvars[0])
     elif len(params) > 0:
         template = indent * TAB + 'for {} in {}({}, {}):'.format(', '.join(labels), algo, ', '.join(dvars), ', '.join(params))
@@ -300,17 +304,25 @@ def basic_Test(entry, indent=0) -> str:
     indent += 1
 
     for stub in entry['stubs']:
-        stmt = make_assert_stmt(stub, fn_name, args, indent)
+        stmt = make_assert_stmt(stub, fn_name, args)
         lines.append((indent * TAB) + stmt)
 
     lines.append('')
 
-    indent -= 1
+    if obj_update:
+        # test_case = ', '.join(str(arg) for arg in args)
+        for domain in entry['domain']:
+            line = indent * TAB + domain + "()"
+            lines.append(line)
+
+    # indent -= 1
 
     return '\n'.join(lines)
 
 
 def basic_Assert(entry, indent=0) -> str:
+
+    # n predicates
 
     # TODO:
     #   add directive for value = … \ assert predicate(value, args)...
@@ -396,6 +408,8 @@ def basic_Assert(entry, indent=0) -> str:
 
 
 def basic_Groupby(entry, indent=0) -> str:
+
+    # groupby - predicates must hold for every group member, n groups, m predicates
 
     lines = ['']
 
@@ -620,6 +634,9 @@ except Exception as e:
 
 def basic_Winnow(entry, indent=0) -> str:
 
+    # winnow - predicates must hold for every group member, n groups, m predicates
+    #        - predicates must hold for each group
+
     lines = ['']
 
     directives = get_directives(entry)
@@ -720,6 +737,8 @@ except Exception as e:
 
 
 def basic_Satisfy2(entry, indent=0):
+
+    # at least 1 or more predicates must be true
 
     directives = get_directives(entry)
 
@@ -944,7 +963,9 @@ def unit_Assert(entry):
     return '\n'.join(lines)
 
 
-def unit_Test(entry, indent=1):
+def unit_Test(entry):
+
+    indent: int = 1
 
     directives = get_directives(entry)
 
@@ -1117,7 +1138,7 @@ def unit_Test(entry, indent=1):
 #     return '\n'.join(lines)
 
 
-def  unit_Groupby(entry):
+def unit_Groupby(entry):
 
     indent = 0
     lines = ['']
@@ -1220,9 +1241,10 @@ except Exception as e:
 
     return '\n'.join(lines)
 
-def unit_Satisfy(entry, indent=1) -> str:
+def unit_Satisfy(entry) -> str:
 
     lines = []
+    indent: int = 0
 
     return '# Satisfy here…'
 
@@ -1371,53 +1393,60 @@ def code_block(entry) -> str:
     return code
 
 
-def make_domains(entry, indent=0) -> str:
+# def make_domains(entry, indent=0) -> str:
+#
+#     # TODO: if name fails raise error
+#     #       add :annotate to add/or not "# domains"
+#
+#     lines = [nl, '# domains -------------------\n']
+#
+#     f1 = (indent * TAB) + '{} = {}()'              # x = Reals()
+#     f2 = (indent * TAB) + '{} = {}({})'            # x = Reals(lb, ub)
+#     f3 = (indent * TAB) + '{} = {}({}, {})'        # x = Reals(lb, ub, nrandom=10)
+#     #                                               # x = Reals(nrandom=10) ???
+#
+#     for name, info in entry.items():
+#
+#         print(f'name: {name} entry: {entry}')
+#
+#         if info['kind'] == 'domain':
+#             var = info['var-name']
+#             name = domains.DOMAINS[info['domain']]
+#             line = f1.format(var, name)
+#         elif info['kind'] == 'domain-args':
+#
+#             var = info['var-name']
+#             name = domains.DOMAINS[info['domain']]
+#
+#             args = ', '.join(info['args']) if info['args'] else ''
+#
+#             if info['kwargs']:
+#                 for k, v in info['kwargs'].items():
+#                     args += ', '
+#                     args += k.strip('-') + '='
+#                     args += v
+#
+#             line = f2.format(var, name, args)
+#
+#         lines.append(line)
+#         # lines.append(nl)
+#         text = '\n'.join(lines) + nl + nl
+#
+#     return text
+
+
+def make_domain(entry) -> str:
+
+    indent: int = 0
 
     # TODO: if name fails raise error
     #       add :annotate to add/or not "# domains"
 
-    lines = [nl, '# domains -------------------\n']
-
+    # format templates
     f1 = (indent * TAB) + '{} = {}()'              # x = Reals()
     f2 = (indent * TAB) + '{} = {}({})'            # x = Reals(lb, ub)
     f3 = (indent * TAB) + '{} = {}({}, {})'        # x = Reals(lb, ub, nrandom=10)
-
-    for name, info in entry.items():
-
-        if info['kind'] == 'domain':
-            var = info['var-name']
-            name = domains.DOMAINS[info['domain']]
-            line = f1.format(var, name)
-        elif info['kind'] == 'domain-args':
-
-            var = info['var-name']
-            name = domains.DOMAINS[info['domain']]
-
-            args = ', '.join(info['args']) if info['args'] else ''
-
-            if info['kwargs']:
-                for k, v in info['kwargs'].items():
-                    args += ', '
-                    args += k.strip('-') + '='
-                    args += v
-
-            line = f2.format(var, name, args)
-
-        lines.append(line)
-        # lines.append(nl)
-        text = '\n'.join(lines) + nl + nl
-
-    return text
-
-
-def make_domain(entry, indent=0) -> str:
-
-    # TODO: if name fails raise error
-    #       add :annotate to add/or not "# domains"
-
-    f1 = (indent * TAB) + '{} = {}()'              # x = Reals()
-    f2 = (indent * TAB) + '{} = {}({})'            # x = Reals(lb, ub)
-    f3 = (indent * TAB) + '{} = {}({}, {})'        # x = Reals(lb, ub, nrandom=10)
+                                                   # x = Reals(nrandom=10) ???
 
     if entry['kind'] == 'domain':
         var = entry['var-name']
@@ -1428,11 +1457,14 @@ def make_domain(entry, indent=0) -> str:
         var = entry['var-name']
         name = domains.DOMAINS[entry['domain']]
 
-        args = ', '.join(entry['args']) if entry['args'] else ''
+        if entry['args']:
+            args = ', '.join(entry['args']) if entry['args'] else ''
+        else:
+            args: str = ''
 
         if entry['kwargs']:
             for k, v in entry['kwargs'].items():
-                args += ', '
+                args += ', ' if args else ''
                 args += k.strip('-') + '='
                 args += v
 
@@ -1441,8 +1473,9 @@ def make_domain(entry, indent=0) -> str:
     return line
 
 
-def make_boolean(entry, fn_sig='', indent=0) -> str:
+def make_boolean(entry, fn_sig='') -> str:
 
+    indent: int = 0
     case = []
     line = []
 
@@ -1492,7 +1525,9 @@ def make_boolean(entry, fn_sig='', indent=0) -> str:
 
 
 # def make_assert_stmt(stub, fn_sig, fn_name=None, fn_args=None, indent=0):
-def make_assert_stmt(stub, fn_name, args, indent=0, just_result=False):
+def make_assert_stmt(stub, fn_name, args, just_result=False):
+
+    indent: int = 0
 
     # TODO: 2 & 3 are the same!
     f1 = 'assert {} {} {}'              # w/ symbol
@@ -1578,8 +1613,9 @@ def make_assert_stmt(stub, fn_name, args, indent=0, just_result=False):
     return line
 
 
-def make_assert_group_stmt(stub, fn_name, args, indent=0):
+def make_assert_group_stmt(stub, fn_name, args):
 
+    indent = 0
     fn_sig = '{}({})'.format(fn_name, args)
     indent += 1
     line = ''
@@ -1736,7 +1772,6 @@ def get_directives(entry):
 
     directives['algo'] = algo
 
-
     # *** logging ***
 
     if entry['directives'].get(':log', False):
@@ -1748,6 +1783,17 @@ def get_directives(entry):
         directives['log-name'] = entry['directives'][':log-name']['value']
     else:
         directives['log-name'] = None
+
+    # *** iterable object ***
+    if entry['directives'].get(':iter-object', False):
+        directives['iter-object'] = entry['directives'][':iter-object']['value']
+    else:
+        directives['iter-object'] = None
+
+    if entry['directives'].get(':object-update', False):
+        directives['object-update'] = True
+    else:
+        directives['object-update'] = False
 
     return directives
 

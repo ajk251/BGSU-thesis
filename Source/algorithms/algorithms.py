@@ -5,6 +5,7 @@ from random import choice
 
 ALGORITHMS = {}
 
+
 def algorithm(_fn=None, *, alias=None):
 
     def function(func):
@@ -26,7 +27,8 @@ def algorithm(_fn=None, *, alias=None):
 
 # ---------------------------------------------------------
 
-@algorithm(alias=['⨯', 'X', 'product', 'cartesian'])
+
+@algorithm(alias=['⨯', 'product', 'cartesian'])
 def cartesian_product(*args):
     return product(*args)
 
@@ -46,7 +48,7 @@ def all_triplets(*sequences):
 
 
 @algorithm(alias=['covering', 't-wise'])
-def twise_combination(*sequences, twise: int=3):
+def twise_combination(*sequences, tway: int=3):
     """
     Generates t-wise combinations of sequences, without unnecessary values. Like IPOG, but more clear and practical, though less efficient.
     Builds t-wise tuples, then randomly assigns missing values, ie non-deterministic. Holds intermediate values.
@@ -55,8 +57,8 @@ def twise_combination(*sequences, twise: int=3):
     take_rand = lambda i: (choice(sequences[i]), )
 
     N = len(sequences)
-    S = tuple(combinations(range(N), twise))                                    # all the orderings of the sequences
-    found = set()                                                               # collection of all the combos found
+    S = tuple(combinations(range(N), tway))                                    # all the orderings of the sequences
+    found = set()                                                              # collection of all the combos found
 
     # generated = 0
     # repeats = 0
