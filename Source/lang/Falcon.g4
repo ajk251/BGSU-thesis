@@ -42,7 +42,6 @@ test_stub: BAR predicate ('~~' STRING)?                             #stub_p
          | BAR arg_list predicate value ('~~' STRING)?              #stub_assert
          | BAR arg_list predicate ('~~' STRING)?                    #stub_assert_p
 //         | BAR arg_list test_logical ('~~' STRING)?                 #stub_assert_logical
-
          | BAR compiler*                                            #stub_directives
          | BAR test_logical ('~~' STRING)?                          #stub_logical
          | ABAR code                                                #stub_code
@@ -137,6 +136,7 @@ value_list: '[' value (',' value)* ']'                              #make_list_c
 
 name: ID                                                            // must be a safe python name
     | LABEL                                                         // valid falcon identifer
+    | code
     ;
 
 predicate: name

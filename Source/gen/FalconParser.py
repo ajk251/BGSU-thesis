@@ -10,7 +10,7 @@ else:
 
 def serializedATN():
     return [
-        4,1,40,506,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,
+        4,1,40,509,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,
         6,2,7,7,7,2,8,7,8,2,9,7,9,2,10,7,10,2,11,7,11,2,12,7,12,2,13,7,13,
         2,14,7,14,2,15,7,15,2,16,7,16,2,17,7,17,2,18,7,18,2,19,7,19,2,20,
         7,20,2,21,7,21,2,22,7,22,2,23,7,23,2,24,7,24,1,0,4,0,52,8,0,11,0,
@@ -48,17 +48,17 @@ def serializedATN():
         1,18,1,18,1,18,1,18,5,18,433,8,18,10,18,12,18,436,9,18,1,18,1,18,
         1,19,1,19,1,19,1,19,5,19,444,8,19,10,19,12,19,447,9,19,1,19,1,19,
         1,19,1,19,1,19,5,19,454,8,19,10,19,12,19,457,9,19,1,19,1,19,3,19,
-        461,8,19,1,20,1,20,1,21,1,21,1,21,1,21,1,21,1,21,1,21,3,21,472,8,
-        21,1,22,1,22,1,22,1,22,3,22,478,8,22,1,23,1,23,1,23,1,23,1,23,1,
-        23,1,23,1,23,1,23,1,23,1,23,1,23,1,23,3,23,493,8,23,1,23,1,23,1,
-        23,3,23,498,8,23,1,24,1,24,1,24,1,24,3,24,504,8,24,1,24,0,1,14,25,
-        0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,42,44,
-        46,48,0,1,2,0,27,27,32,32,580,0,60,1,0,0,0,2,62,1,0,0,0,4,81,1,0,
-        0,0,6,83,1,0,0,0,8,115,1,0,0,0,10,127,1,0,0,0,12,225,1,0,0,0,14,
+        461,8,19,1,20,1,20,1,20,3,20,466,8,20,1,21,1,21,1,21,1,21,1,21,1,
+        21,1,21,3,21,475,8,21,1,22,1,22,1,22,1,22,3,22,481,8,22,1,23,1,23,
+        1,23,1,23,1,23,1,23,1,23,1,23,1,23,1,23,1,23,1,23,1,23,3,23,496,
+        8,23,1,23,1,23,1,23,3,23,501,8,23,1,24,1,24,1,24,1,24,3,24,507,8,
+        24,1,24,0,1,14,25,0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,
+        34,36,38,40,42,44,46,48,0,0,585,0,60,1,0,0,0,2,62,1,0,0,0,4,81,1,
+        0,0,0,6,83,1,0,0,0,8,115,1,0,0,0,10,127,1,0,0,0,12,225,1,0,0,0,14,
         265,1,0,0,0,16,275,1,0,0,0,18,288,1,0,0,0,20,303,1,0,0,0,22,339,
         1,0,0,0,24,365,1,0,0,0,26,392,1,0,0,0,28,404,1,0,0,0,30,409,1,0,
         0,0,32,411,1,0,0,0,34,426,1,0,0,0,36,428,1,0,0,0,38,460,1,0,0,0,
-        40,462,1,0,0,0,42,471,1,0,0,0,44,477,1,0,0,0,46,497,1,0,0,0,48,503,
+        40,465,1,0,0,0,42,474,1,0,0,0,44,480,1,0,0,0,46,500,1,0,0,0,48,506,
         1,0,0,0,50,52,3,2,1,0,51,50,1,0,0,0,52,53,1,0,0,0,53,51,1,0,0,0,
         53,54,1,0,0,0,54,61,1,0,0,0,55,57,3,4,2,0,56,55,1,0,0,0,57,58,1,
         0,0,0,58,56,1,0,0,0,58,59,1,0,0,0,59,61,1,0,0,0,60,51,1,0,0,0,60,
@@ -182,27 +182,28 @@ def serializedATN():
         5,5,0,0,449,461,1,0,0,0,450,451,5,4,0,0,451,455,3,44,22,0,452,454,
         3,44,22,0,453,452,1,0,0,0,454,457,1,0,0,0,455,453,1,0,0,0,455,456,
         1,0,0,0,456,458,1,0,0,0,457,455,1,0,0,0,458,459,5,5,0,0,459,461,
-        1,0,0,0,460,439,1,0,0,0,460,450,1,0,0,0,461,39,1,0,0,0,462,463,7,
-        0,0,0,463,41,1,0,0,0,464,472,3,40,20,0,465,472,5,35,0,0,466,472,
-        5,24,0,0,467,472,5,29,0,0,468,472,5,30,0,0,469,472,5,36,0,0,470,
-        472,5,28,0,0,471,464,1,0,0,0,471,465,1,0,0,0,471,466,1,0,0,0,471,
-        467,1,0,0,0,471,468,1,0,0,0,471,469,1,0,0,0,471,470,1,0,0,0,472,
-        43,1,0,0,0,473,478,3,40,20,0,474,478,5,33,0,0,475,478,5,34,0,0,476,
-        478,5,35,0,0,477,473,1,0,0,0,477,474,1,0,0,0,477,475,1,0,0,0,477,
-        476,1,0,0,0,478,45,1,0,0,0,479,498,3,44,22,0,480,481,3,40,20,0,481,
-        482,5,29,0,0,482,483,3,44,22,0,483,498,1,0,0,0,484,485,3,44,22,0,
-        485,486,5,20,0,0,486,487,3,44,22,0,487,498,1,0,0,0,488,489,3,40,
-        20,0,489,492,5,29,0,0,490,493,3,40,20,0,491,493,5,35,0,0,492,490,
-        1,0,0,0,492,491,1,0,0,0,493,494,1,0,0,0,494,495,5,20,0,0,495,496,
-        3,44,22,0,496,498,1,0,0,0,497,479,1,0,0,0,497,480,1,0,0,0,497,484,
-        1,0,0,0,497,488,1,0,0,0,498,47,1,0,0,0,499,504,3,40,20,0,500,504,
-        5,33,0,0,501,504,5,34,0,0,502,504,3,38,19,0,503,499,1,0,0,0,503,
-        500,1,0,0,0,503,501,1,0,0,0,503,502,1,0,0,0,504,49,1,0,0,0,70,53,
-        58,60,67,81,89,100,111,115,120,125,127,133,140,147,151,159,166,172,
-        179,189,193,200,204,209,213,219,223,225,229,235,240,246,251,255,
-        261,265,272,284,293,299,308,314,328,336,339,347,355,362,365,378,
-        381,387,390,392,399,401,404,409,421,426,434,445,455,460,471,477,
-        492,497,503
+        1,0,0,0,460,439,1,0,0,0,460,450,1,0,0,0,461,39,1,0,0,0,462,466,5,
+        27,0,0,463,466,5,32,0,0,464,466,3,32,16,0,465,462,1,0,0,0,465,463,
+        1,0,0,0,465,464,1,0,0,0,466,41,1,0,0,0,467,475,3,40,20,0,468,475,
+        5,35,0,0,469,475,5,24,0,0,470,475,5,29,0,0,471,475,5,30,0,0,472,
+        475,5,36,0,0,473,475,5,28,0,0,474,467,1,0,0,0,474,468,1,0,0,0,474,
+        469,1,0,0,0,474,470,1,0,0,0,474,471,1,0,0,0,474,472,1,0,0,0,474,
+        473,1,0,0,0,475,43,1,0,0,0,476,481,3,40,20,0,477,481,5,33,0,0,478,
+        481,5,34,0,0,479,481,5,35,0,0,480,476,1,0,0,0,480,477,1,0,0,0,480,
+        478,1,0,0,0,480,479,1,0,0,0,481,45,1,0,0,0,482,501,3,44,22,0,483,
+        484,3,40,20,0,484,485,5,29,0,0,485,486,3,44,22,0,486,501,1,0,0,0,
+        487,488,3,44,22,0,488,489,5,20,0,0,489,490,3,44,22,0,490,501,1,0,
+        0,0,491,492,3,40,20,0,492,495,5,29,0,0,493,496,3,40,20,0,494,496,
+        5,35,0,0,495,493,1,0,0,0,495,494,1,0,0,0,496,497,1,0,0,0,497,498,
+        5,20,0,0,498,499,3,44,22,0,499,501,1,0,0,0,500,482,1,0,0,0,500,483,
+        1,0,0,0,500,487,1,0,0,0,500,491,1,0,0,0,501,47,1,0,0,0,502,507,3,
+        40,20,0,503,507,5,33,0,0,504,507,5,34,0,0,505,507,3,38,19,0,506,
+        502,1,0,0,0,506,503,1,0,0,0,506,504,1,0,0,0,506,505,1,0,0,0,507,
+        49,1,0,0,0,71,53,58,60,67,81,89,100,111,115,120,125,127,133,140,
+        147,151,159,166,172,179,189,193,200,204,209,213,219,223,225,229,
+        235,240,246,251,255,261,265,272,284,293,299,308,314,328,336,339,
+        347,355,362,365,378,381,387,390,392,399,401,404,409,421,426,434,
+        445,455,460,465,474,480,495,500,506
     ]
 
 class FalconParser ( Parser ):
@@ -377,7 +378,7 @@ class FalconParser ( Parser ):
                     self.state = 53 
                     self._errHandler.sync(self)
                     _la = self._input.LA(1)
-                    if not (_la==FalconParser.ID or _la==FalconParser.LABEL):
+                    if not ((((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << FalconParser.ID) | (1 << FalconParser.LABEL) | (1 << FalconParser.CODESMNT))) != 0)):
                         break
 
                 pass
@@ -849,7 +850,7 @@ class FalconParser ( Parser ):
                 self.state = 102
                 self.match(FalconParser.T__0)
                 pass
-            elif token in [FalconParser.ID, FalconParser.LABEL]:
+            elif token in [FalconParser.ID, FalconParser.LABEL, FalconParser.CODESMNT]:
                 localctx = FalconParser.Macro_basicContext(self, localctx)
                 self.enterOuterAlt(localctx, 2)
                 self.state = 104
@@ -1001,7 +1002,7 @@ class FalconParser ( Parser ):
                     self.state = 125 
                     self._errHandler.sync(self)
                     _la = self._input.LA(1)
-                    if not ((((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << FalconParser.COMMA) | (1 << FalconParser.ID) | (1 << FalconParser.LABEL))) != 0)):
+                    if not ((((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << FalconParser.COMMA) | (1 << FalconParser.ID) | (1 << FalconParser.LABEL) | (1 << FalconParser.CODESMNT))) != 0)):
                         break
 
                 pass
@@ -3244,17 +3245,17 @@ class FalconParser ( Parser ):
                 self.match(FalconParser.ASSIGN)
                 self.state = 421
                 self._errHandler.sync(self)
-                token = self._input.LA(1)
-                if token in [FalconParser.ID, FalconParser.LABEL]:
+                la_ = self._interp.adaptivePredict(self._input,59,self._ctx)
+                if la_ == 1:
                     self.state = 419
                     self.name()
                     pass
-                elif token in [FalconParser.CODESMNT]:
+
+                elif la_ == 2:
                     self.state = 420
                     self.match(FalconParser.CODESMNT)
                     pass
-                else:
-                    raise NoViableAltException(self)
+
 
                 self.state = 423
                 self.match(FalconParser.COLON)
@@ -3517,6 +3518,10 @@ class FalconParser ( Parser ):
         def LABEL(self):
             return self.getToken(FalconParser.LABEL, 0)
 
+        def code(self):
+            return self.getTypedRuleContext(FalconParser.CodeContext,0)
+
+
         def getRuleIndex(self):
             return FalconParser.RULE_name
 
@@ -3541,16 +3546,28 @@ class FalconParser ( Parser ):
 
         localctx = FalconParser.NameContext(self, self._ctx, self.state)
         self.enterRule(localctx, 40, self.RULE_name)
-        self._la = 0 # Token type
         try:
-            self.enterOuterAlt(localctx, 1)
-            self.state = 462
-            _la = self._input.LA(1)
-            if not(_la==FalconParser.ID or _la==FalconParser.LABEL):
-                self._errHandler.recoverInline(self)
+            self.state = 465
+            self._errHandler.sync(self)
+            token = self._input.LA(1)
+            if token in [FalconParser.ID]:
+                self.enterOuterAlt(localctx, 1)
+                self.state = 462
+                self.match(FalconParser.ID)
+                pass
+            elif token in [FalconParser.LABEL]:
+                self.enterOuterAlt(localctx, 2)
+                self.state = 463
+                self.match(FalconParser.LABEL)
+                pass
+            elif token in [FalconParser.CODESMNT]:
+                self.enterOuterAlt(localctx, 3)
+                self.state = 464
+                self.code()
+                pass
             else:
-                self._errHandler.reportMatch(self)
-                self.consume()
+                raise NoViableAltException(self)
+
         except RecognitionException as re:
             localctx.exception = re
             self._errHandler.reportError(self, re)
@@ -3614,46 +3631,51 @@ class FalconParser ( Parser ):
         localctx = FalconParser.PredicateContext(self, self._ctx, self.state)
         self.enterRule(localctx, 42, self.RULE_predicate)
         try:
-            self.state = 471
+            self.state = 474
             self._errHandler.sync(self)
-            token = self._input.LA(1)
-            if token in [FalconParser.ID, FalconParser.LABEL]:
+            la_ = self._interp.adaptivePredict(self._input,66,self._ctx)
+            if la_ == 1:
                 self.enterOuterAlt(localctx, 1)
-                self.state = 464
+                self.state = 467
                 self.name()
                 pass
-            elif token in [FalconParser.CODESMNT]:
+
+            elif la_ == 2:
                 self.enterOuterAlt(localctx, 2)
-                self.state = 465
+                self.state = 468
                 self.match(FalconParser.CODESMNT)
                 pass
-            elif token in [FalconParser.OP_NOT]:
+
+            elif la_ == 3:
                 self.enterOuterAlt(localctx, 3)
-                self.state = 466
+                self.state = 469
                 self.match(FalconParser.OP_NOT)
                 pass
-            elif token in [FalconParser.OP_EQ]:
+
+            elif la_ == 4:
                 self.enterOuterAlt(localctx, 4)
-                self.state = 467
+                self.state = 470
                 self.match(FalconParser.OP_EQ)
                 pass
-            elif token in [FalconParser.OP_NE]:
+
+            elif la_ == 5:
                 self.enterOuterAlt(localctx, 5)
-                self.state = 468
+                self.state = 471
                 self.match(FalconParser.OP_NE)
                 pass
-            elif token in [FalconParser.UMATH]:
+
+            elif la_ == 6:
                 self.enterOuterAlt(localctx, 6)
-                self.state = 469
+                self.state = 472
                 self.match(FalconParser.UMATH)
                 pass
-            elif token in [FalconParser.OPERATORS]:
+
+            elif la_ == 7:
                 self.enterOuterAlt(localctx, 7)
-                self.state = 470
+                self.state = 473
                 self.match(FalconParser.OPERATORS)
                 pass
-            else:
-                raise NoViableAltException(self)
+
 
         except RecognitionException as re:
             localctx.exception = re
@@ -3709,31 +3731,33 @@ class FalconParser ( Parser ):
         localctx = FalconParser.ValueContext(self, self._ctx, self.state)
         self.enterRule(localctx, 44, self.RULE_value)
         try:
-            self.state = 477
+            self.state = 480
             self._errHandler.sync(self)
-            token = self._input.LA(1)
-            if token in [FalconParser.ID, FalconParser.LABEL]:
+            la_ = self._interp.adaptivePredict(self._input,67,self._ctx)
+            if la_ == 1:
                 self.enterOuterAlt(localctx, 1)
-                self.state = 473
+                self.state = 476
                 self.name()
                 pass
-            elif token in [FalconParser.NUMBER]:
+
+            elif la_ == 2:
                 self.enterOuterAlt(localctx, 2)
-                self.state = 474
+                self.state = 477
                 self.match(FalconParser.NUMBER)
                 pass
-            elif token in [FalconParser.STRING]:
+
+            elif la_ == 3:
                 self.enterOuterAlt(localctx, 3)
-                self.state = 475
+                self.state = 478
                 self.match(FalconParser.STRING)
                 pass
-            elif token in [FalconParser.CODESMNT]:
+
+            elif la_ == 4:
                 self.enterOuterAlt(localctx, 4)
-                self.state = 476
+                self.state = 479
                 self.match(FalconParser.CODESMNT)
                 pass
-            else:
-                raise NoViableAltException(self)
+
 
         except RecognitionException as re:
             localctx.exception = re
@@ -3889,62 +3913,62 @@ class FalconParser ( Parser ):
         localctx = FalconParser.Named_valueContext(self, self._ctx, self.state)
         self.enterRule(localctx, 46, self.RULE_named_value)
         try:
-            self.state = 497
+            self.state = 500
             self._errHandler.sync(self)
-            la_ = self._interp.adaptivePredict(self._input,68,self._ctx)
+            la_ = self._interp.adaptivePredict(self._input,69,self._ctx)
             if la_ == 1:
                 localctx = FalconParser.Make_valueContext(self, localctx)
                 self.enterOuterAlt(localctx, 1)
-                self.state = 479
+                self.state = 482
                 self.value()
                 pass
 
             elif la_ == 2:
                 localctx = FalconParser.Make_name_valueContext(self, localctx)
                 self.enterOuterAlt(localctx, 2)
-                self.state = 480
+                self.state = 483
                 self.name()
-                self.state = 481
+                self.state = 484
                 self.match(FalconParser.OP_EQ)
-                self.state = 482
+                self.state = 485
                 self.value()
                 pass
 
             elif la_ == 3:
                 localctx = FalconParser.Make_value_typeContext(self, localctx)
                 self.enterOuterAlt(localctx, 3)
-                self.state = 484
+                self.state = 487
                 self.value()
-                self.state = 485
+                self.state = 488
                 self.match(FalconParser.COLON)
-                self.state = 486
+                self.state = 489
                 self.value()
                 pass
 
             elif la_ == 4:
                 localctx = FalconParser.Make_name_type_valueContext(self, localctx)
                 self.enterOuterAlt(localctx, 4)
-                self.state = 488
+                self.state = 491
                 self.name()
-                self.state = 489
-                self.match(FalconParser.OP_EQ)
                 self.state = 492
+                self.match(FalconParser.OP_EQ)
+                self.state = 495
                 self._errHandler.sync(self)
-                token = self._input.LA(1)
-                if token in [FalconParser.ID, FalconParser.LABEL]:
-                    self.state = 490
+                la_ = self._interp.adaptivePredict(self._input,68,self._ctx)
+                if la_ == 1:
+                    self.state = 493
                     self.name()
                     pass
-                elif token in [FalconParser.CODESMNT]:
-                    self.state = 491
+
+                elif la_ == 2:
+                    self.state = 494
                     self.match(FalconParser.CODESMNT)
                     pass
-                else:
-                    raise NoViableAltException(self)
 
-                self.state = 494
+
+                self.state = 497
                 self.match(FalconParser.COLON)
-                self.state = 495
+                self.state = 498
                 self.value()
                 pass
 
@@ -4004,27 +4028,27 @@ class FalconParser ( Parser ):
         localctx = FalconParser.DictateContext(self, self._ctx, self.state)
         self.enterRule(localctx, 48, self.RULE_dictate)
         try:
-            self.state = 503
+            self.state = 506
             self._errHandler.sync(self)
             token = self._input.LA(1)
-            if token in [FalconParser.ID, FalconParser.LABEL]:
+            if token in [FalconParser.ID, FalconParser.LABEL, FalconParser.CODESMNT]:
                 self.enterOuterAlt(localctx, 1)
-                self.state = 499
+                self.state = 502
                 self.name()
                 pass
             elif token in [FalconParser.NUMBER]:
                 self.enterOuterAlt(localctx, 2)
-                self.state = 500
+                self.state = 503
                 self.match(FalconParser.NUMBER)
                 pass
             elif token in [FalconParser.STRING]:
                 self.enterOuterAlt(localctx, 3)
-                self.state = 501
+                self.state = 504
                 self.match(FalconParser.STRING)
                 pass
             elif token in [FalconParser.T__3]:
                 self.enterOuterAlt(localctx, 4)
-                self.state = 502
+                self.state = 505
                 self.value_list()
                 pass
             else:

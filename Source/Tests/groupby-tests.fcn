@@ -1,8 +1,6 @@
 
-
-
-
-Groupby addg Xvalues:
+Groupby addg X:
+  | :follow-up plot_results
   | 'a' is-float?
   | 'b' is-int?
   | 'c' positive?
