@@ -35,7 +35,7 @@ Test add Xvalues Yvalues:
   | raises? ZeroDivisionError
   ;
 
-Test add Xvalues Zvalues A_arg B_arg:
+Test add Xvalues Zvalues:
   | is-int? ∨ is-float?
   | ≥ 0.0 ∨ ≤ 1.0
   | between? 0 1 ∧ is-float?
