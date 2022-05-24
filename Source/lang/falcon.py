@@ -198,7 +198,7 @@ class Falcon(FalconVisitor):
         else:
             return {'directive': directive, 'value': value, 'params': params}
 
-    def visitSet_single_directive(self, ctx:FalconParser.Set_single_directiveContext):
+    def visitSet_single_directive(self, ctx: FalconParser.Set_single_directiveContext):
 
         directive = str(ctx.DIRECTIVE())
 
@@ -325,7 +325,9 @@ class Falcon(FalconVisitor):
                       FalconParser.Stub_side_effectContext,
                       FalconParser.Stub_side_effect_manyContext,
                       FalconParser.Stub_fail_side_effectContext,
-                      FalconParser.Stub_fail_side_effect_manyContext)
+                      FalconParser.Stub_fail_side_effect_manyContext,
+                      FalconParser.Winnow_stub_many_manyContext,
+                      FalconParser.Winnow_stub_directivesContext)
 
         for stub in ctx.children:
 
@@ -386,6 +388,7 @@ class Falcon(FalconVisitor):
         test['id'] = self.get_id()
         test['directives'] = {}
         test['stubs'] = []
+        test['using-bin-fn'] = None
         # test['group-predicates'] = []                # this is useful later on
 
         # there has to be a better way…  _ == Falcon.ARROW?
@@ -413,10 +416,13 @@ class Falcon(FalconVisitor):
                 ds = self.visit(child)
                 for d in ds:
                     test['directives'][d['directive']] = {'value': d['value'], 'params': d['params']}
+            elif isinstance(child, FalconParser.Groupby_stub_many_manyContext):
+                ds = self.visit(child)
+                test['stubs'].append(ds)
             else:
                 # print(self.visit(child), type(child))
                 # TODO: return error
-                # raise FalconError('')
+                # raise FalconError(f'Test stub not found.')
                 continue
 
         self.ns[self.current_ns]['tests'][test['id']] = test
@@ -558,8 +564,43 @@ class Falcon(FalconVisitor):
             if isinstance(child, FalconParser.Set_directiveContext):
                 d = self.visitSet_directive(child, False)
                 directives.append(d)
+            elif isinstance(child, FalconParser.Set_single_directiveContext):
+                d = self.visitSet_single_directive(child)
+                directives.append(d)
 
         return directives
+
+    def visitGroupby_stub_many_many(self, ctx: FalconParser.Groupby_stub_many_manyContext):
+
+        # there are 2 things to get - the predicate & values for the result,
+        #                             the predicate & values for the group
+
+        stub = {'kind': 'groupby-many-with-group'}
+        stub['group'] = self.visit(ctx.value(0))
+        stub['predicate'] = self.visit(ctx.predicate(0))
+        stub['values'] = []
+        stub['group-values'] = []
+        stub['using-bin-fn'] = None
+
+        i = 2
+
+        # get the first predicate values, if any
+        for child in ctx.children[i+1:]:
+            value = self.visit(child)
+            if value is None:
+                i += 1
+                break                     # this is the ':' separator
+            stub['values'].append(value)
+            i += 1
+
+        child = ctx.children[i+1]
+        stub['group-predicate'] = self.visit(child)
+
+        for child in ctx.children[i+2:]:
+            # print('group-values ￫ ', self.visit(child))
+            stub['group-values'].append(self.visit(child))
+
+        return stub
 
     # Winnow stubs ------------------------------
 
@@ -706,7 +747,7 @@ class Falcon(FalconVisitor):
         n = 3 if has_error else 2
         stub['value'] = tuple(self.visit(child) for child in ctx.children[n:])
 
-        print(f'{has_error} ', stub['error'], ' children ', stub['value'])
+        # print(f'{has_error} ', stub['error'], ' children ', stub['value'])
 
         if ctx.STRING():
             stub['error-message'] = str(ctx.STRING())

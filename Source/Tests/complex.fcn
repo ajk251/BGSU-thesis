@@ -5,6 +5,10 @@
 Domain A Reals2
 Domain B Reals2
 
+Matches fn Question Answer:
+  | matches?
+  ;
+
 Test Complex A:
   | :message "Test the unary properties blah blah blah"
   | :labels [a b]
@@ -17,10 +21,6 @@ Test Complex A:
   | additive-id?
   | multiplicative-id?
   | additive-id?
-  ;
-
-Hypothesis fn X Y:
-  | is-int?
   ;
 
 Domain C1 ComplexDomain
@@ -40,7 +40,7 @@ Test _ C1 C2:
   | complex+?
   | complex-?
   | complex*?
-  //| complex÷?
+  //|! NotImplementedError complex÷?
   | complex+=?
   | complex-=?
   | complex*=?

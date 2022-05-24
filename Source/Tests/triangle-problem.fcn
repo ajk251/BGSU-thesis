@@ -1,0 +1,15 @@
+
+:import Examples.Triangle_problem -all
+
+Domain values Triangle-values
+
+Groupby classify values:
+ | :method all-triplets-of -n 3
+ | :no-suffix :labels [s1 s2 s3]
+ | 'Not-a-Triangle' not-positive-ints?  : not-triangle?
+ | 'Not-a-Triangle' no-triangle-theorem?
+ | 'Equilateral'    all-equal?          : is-equilateral?
+ | 'Scalene'        all-diff?           : is-scalene?
+ | 'Isosceles'      two-equal?          : is-isosceles?
+ ;
+

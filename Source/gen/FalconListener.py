@@ -260,6 +260,15 @@ class FalconListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by FalconParser#groupby_stub_many_many.
+    def enterGroupby_stub_many_many(self, ctx:FalconParser.Groupby_stub_many_manyContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#groupby_stub_many_many.
+    def exitGroupby_stub_many_many(self, ctx:FalconParser.Groupby_stub_many_manyContext):
+        pass
+
+
     # Enter a parse tree produced by FalconParser#groupby_code.
     def enterGroupby_code(self, ctx:FalconParser.Groupby_codeContext):
         pass

@@ -74,14 +74,14 @@ def distance(a, b):
 
 # ---------------------------------------------------------
 
-f = './test-file.csv'
-
-d  = {'name': 'some-func', 'a': 1, 'b': 2, 'c': 3}
-d1 = {'name': 'some-func2', 'a': 1, 'c': 3, 'rt': 0}
-d2 = {'name': 'test', 'z': [('a', 'b', 'c'), ('d', 'e', 'f')]}
-
-write_to_log(f, d)
-write_to_log(f, d1)
-write_to_log(f, d2)
-
-print(load_from_log(f))
+# f = './test-file.csv'
+#
+# d  = {'name': 'some-func', 'a': 1, 'b': 2, 'c': 3}
+# d1 = {'name': 'some-func2', 'a': 1, 'c': 3, 'rt': 0}
+# d2 = {'name': 'test', 'z': [('a', 'b', 'c'), ('d', 'e', 'f')]}
+#
+# write_to_log(f, d)
+# write_to_log(f, d1)
+# write_to_log(f, d2)
+#
+# print(load_from_log(f))

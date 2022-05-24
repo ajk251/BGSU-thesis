@@ -149,6 +149,11 @@ class FalconVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by FalconParser#groupby_stub_many_many.
+    def visitGroupby_stub_many_many(self, ctx:FalconParser.Groupby_stub_many_manyContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by FalconParser#groupby_code.
     def visitGroupby_code(self, ctx:FalconParser.Groupby_codeContext):
         return self.visitChildren(ctx)

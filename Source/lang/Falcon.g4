@@ -17,6 +17,7 @@ stmt: test
     | groupby_test
     | winnow_test
     | satisfy_test
+    | macro
     | domain
     | compiler
     | code
@@ -29,8 +30,11 @@ assertion: ASSERT name ':' test_stub+ ';'                           #assert_test
          ;
 
 test: TEST name domain_names ':' test_stub+ ';'                     #test_basic
-    | name name domain_names ':' test_stub+ ';'                     #macro_basic
+//    | name name domain_names ':' test_stub+ ';'                     #macro_basic
     ;
+
+macro: name name domain_names ':' (test_stub | winnow_stub)+  ';'   #macro_basic
+     ;
 
 domain_names: name                                                  #get_domain_name
             | name (COMMA? name)+                                   #get_domain_names
@@ -58,35 +62,18 @@ test_logical: OP_NOT? predicate value* (OP_LOGICAL OP_NOT? predicate value*)* #s
 
 // more complex tests ------------
 
-// the old stuff
-//winnow_test: WINNOW name domain_names (ARROW name)? ':' bin_stub+ ';'   #test_winnow
-//           ;
-//
-//satisfy_test: SATISFY name domain_names (ARROW name)? ':' bin_stub+ ';' #test_satisfy
-//            ;
-//
-//bin_stub: BAR value predicate                                       #winnow_stub
-//        | BAR value predicate value+                                #winnow_stub_many
-//        | BAR CODESMNT                                              #winnow_code
-//        | BAR compiler*                                             #winnow_directives
-//        //        | BAR test_logical                                          #winnow_logical
-//        ;
-
-
 winnow_test: WINNOW name domain_names ARROW name ':' winnow_stub+ ';'    #test_winnow
            ;
 
 groupby_test: GROUPBY name domain_names (ARROW name)? ':' bin_stub+ ';'  #test_groupby
            ;
 
-//satisfy_test: SATISFY name domain_names (ARROW name)? ':' bin_stub+ ';'  #test_satisfy
-//            ;
-
 satisfy_test: SATISFY name domain_names (ARROW name)? ':' test_stub+ ';'  #test_satisfy
             ;
 
 bin_stub: BAR value predicate                                       #groupby_stub
         | BAR value predicate value+                                #groupby_stub_many
+        | BAR value predicate value* ':' predicate value*           #groupby_stub_many_many
         | BAR CODESMNT                                              #groupby_code
         | BAR compiler*                                             #groupby_directives
         //        | BAR test_logical                                          #winnow_logical
@@ -94,8 +81,6 @@ bin_stub: BAR value predicate                                       #groupby_stu
 
 winnow_stub: BAR value predicate value* ':' predicate value*        #winnow_stub_many_many
            | BAR compiler*                                          #winnow_stub_directives
-
-
            ;
 
 // Domain stuff -------------------------------------------
@@ -185,6 +170,7 @@ RPAREN: ')';
 LBRAC:  '{';
 RBRAC:  '}';
 COMMA: ',';
+SEMICOLON: ';';
 
 ASSIGN: ':=' | '≔';
 BAR: '|';

@@ -7,7 +7,7 @@ from collections import namedtuple
 from enum import Enum
 from operator import itemgetter
 
-DomainType= Enum('DomainType', 'dict, namedtuple, tuple')
+DomainType = Enum('DomainType', 'dict, namedtuple, tuple')
 
 
 def CSVDomain(file, columns=None, read_as=DomainType.dict, newline='\n'):

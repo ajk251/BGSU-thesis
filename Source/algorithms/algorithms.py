@@ -1,5 +1,4 @@
 
-
 from itertools import chain, combinations, product, tee
 from random import choice
 
@@ -48,7 +47,7 @@ def all_triplets(*sequences):
 
 
 @algorithm(alias=['covering', 't-wise'])
-def twise_combination(*sequences, tway: int=3):
+def twise_combination(*sequences, tway: int = 3):
     """
     Generates t-wise combinations of sequences, without unnecessary values. Like IPOG, but more clear and practical, though less efficient.
     Builds t-wise tuples, then randomly assigns missing values, ie non-deterministic. Holds intermediate values.
@@ -97,13 +96,13 @@ def twise_combination(*sequences, tway: int=3):
 # these take one list, then build the combinations --------
 
 @algorithm(alias=['all-pairs-of', 'all_pairs_of'])
-def all_pairs_of(sequence, n=3):
+def all_pairs_of(sequence, n: int = 3):
     """Build n-copies of a sequence and generate all pairs."""
     return all_pairs(*(sequence for _ in range(n)))
 
 
 @algorithm(alias=['all-triplets-of', 'all_triplets_of'])
-def all_triplets_of(sequence, n=3):
+def all_triplets_of(sequence, n: int = 3):
     """Builds n-copies of a sequence and generates all triplets"""
     return all_triplets(*(sequence for _ in range(n)))
 
