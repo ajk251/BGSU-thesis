@@ -374,6 +374,7 @@ def basic_Assert(entry) -> str:
     elif entry['directives'].get(':name', None):
         t_name = entry['directives'][':name']['value']
         pyfunc = f'def {t_name}():' if t_name.startswith('test') else f'def test_{t_name}():'
+
     else:
         rand_name = ''.join((choices(ascii_letters+digits, k=randint(2, 5))))
         pyfunc = f'def test_{fn_name}_assertions_{rand_name}():' #.format(fn_name, rand_name)
@@ -400,12 +401,22 @@ def basic_Assert(entry) -> str:
             continue
 
         # this is kind of a special case/after-thought
-        if stub['kind'] == 'assert-logical':
+        if stub.get('predicate', False) and PREDICATES[stub['predicate']][2]:
+            # these must raise an error, ie catches(fn, args, Exception)
+            pd_name = PREDICATES[stub['predicate']][0]
+            args = make_args(stub['argument'])
+            line = f"{indent * TAB}assert {pd_name}({fn_name}, {args}"
+            line += f", {', '.join(stub['value'][1:])})" if len(stub['value']) > 1 else ')'
+            lines.append(line)
+            continue
+        elif stub['kind'] == 'assert-logical':
+            # logical conditions
             args = make_args(stub['argument']).strip('(').strip(')')
             line = (indent * TAB) + make_assert_stmt(stub, fn_name, args)
             lines.append(line)
             continue
         elif stub['kind'] == 'assert-error':
+            # error stubs
             if len(stub['value']) > 2:
                 stub['kind'] = 'assert-error+'
             args = make_args(stub['argument']).strip('(').strip(')')
@@ -1466,8 +1477,16 @@ def make_assert_stmt(stub, fn_name, args, just_result=False):
         raise FalconError(f'Predicate "{stub["predicate"]}" not found')
 
     use_symbolic = False
+    error_type = False
 
     # get the name of the predicate if it knows it's a predicate (or should be, ie OOPS)
+    # if stub.get('predicate', False) and PREDICATES[stub['predicate']][2] is True:
+    # if stub.get('predicate', ''):
+    #     print('!!!', PREDICATES[stub['predicate']])
+    #     error_type = True
+
+    # print(stub.get('predicate', '.'), stub['kind'])
+
     if stub['kind'].startswith('predicate') and stub['predicate'] in PREDICATES:
         # get the symbolic name if there is one, otherwise the function name
 
@@ -1483,7 +1502,6 @@ def make_assert_stmt(stub, fn_name, args, just_result=False):
     elif stub.get('predicate', False):
         # TODO: Does not handle symbolic tests!!!
         pd_name = PREDICATES[stub['predicate']][0]
-        print(stub['kind'])
     elif stub['kind'] in ('code', 'logical', 'assert-logical'):
         # These are the exception to the rule...
         pd_name = ''

@@ -8,34 +8,85 @@ from predicates.predicates import predicate
 
 # simple list, comes from:  https://docs.python.org/3/library/exceptions.html
 
+# must be of the form catches(fn, (args), ...)
+
 @predicate(alias=['error?', 'raises?'], is_error=True)
-def catch_error(error, error_kind) -> bool:
-    return isinstance(error, error_kind)
+def catch_error(fn, args, exception) -> bool:
+    result = False
+
+    try:
+        fn(*args)
+    except Exception as error:
+        result = isinstance(error, exception)
+    finally:
+        return result
 
 
 @predicate(alias=['error-message?', 'error-says?', 'raises-with-message?', 'raises-message?'], is_error=True)
-def catch_error_message(error, error_kind, message):
-    return isinstance(error, error_kind) and message in error.args[0]
+def catch_error_message(fn, args, exception, message):
+
+    result = False
+
+    try:
+        fn(*args)
+    except Exception as error:
+        result = isinstance(error, exception)
+    finally:
+        result = message in error.args[0]
+
+    return result
 
 
 @predicate(alias='zero-error?', is_error=True)
-def catch_zero_div(error) -> bool:
-    return isinstance(error, ZeroDivisionError)
+def catch_zero_div(fn, args) -> bool:
+
+    result = False
+
+    try:
+        fn(*args)
+    except Exception as error:
+        result = isinstance(error, ZeroDivisionError)
+    finally:
+        return result
 
 
 @predicate(alias=['asserts?', 'is-assertion?'], is_error=True)
-def catch_assertion(error) -> bool:
-    return isinstance(error, AssertionError)
+def catch_assertion(fn, args) -> bool:
+
+    result = False
+
+    try:
+        fn(*args)
+    except Exception as error:
+        result = isinstance(error, AssertionError)
+    finally:
+        return result
 
 
 @predicate(alias='math-error?', is_error=True)
-def catch_arithmetic(error) -> bool:
-    return isinstance(error, ArithmeticError)
+def catch_arithmetic(fn, args) -> bool:
+
+    result = False
+
+    try:
+        fn(*args)
+    except Exception as error:
+        result = isinstance(error, ArithmeticError)
+    finally:
+        return result
 
 
 @predicate(alias='lookup-error?', is_error=True)
-def catch_lookup(error) -> bool:
-    return isinstance(error, LookupError)
+def catch_lookup(fn, args) -> bool:
+
+    result = False
+
+    try:
+        fn(*args)
+    except Exception as error:
+        result = isinstance(error, LookupError)
+    finally:
+        return result
 
 
 # @predicate(alias=['raises?'], is_error=True)
