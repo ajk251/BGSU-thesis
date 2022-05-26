@@ -391,14 +391,26 @@ def basic_Assert(entry) -> str:
     if message:
         lines.append((TAB * indent) + '# ' + message.strip('"'))
 
-    fn_name = entry['function']
+    # fn_name = entry['function']
 
     for stub in entry['stubs']:
 
-        # if not stub['argument']['kind'] == 'assertion': raise "WTF"
-
         if stub['kind'] == 'code':
             lines.append((TAB * indent) + stub['value'])
+            continue
+
+        # this is kind of a special case/after-thought
+        if stub['kind'] == 'assert-logical':
+            args = make_args(stub['argument']).strip('(').strip(')')
+            line = (indent * TAB) + make_assert_stmt(stub, fn_name, args)
+            lines.append(line)
+            continue
+        elif stub['kind'] == 'assert-error':
+            if len(stub['value']) > 2:
+                stub['kind'] = 'assert-error+'
+            args = make_args(stub['argument']).strip('(').strip(')')
+            line = (indent * TAB) + make_assert_stmt(stub, fn_name, args)
+            lines.append(line)
             continue
 
         args = make_args(stub['argument'])
@@ -406,6 +418,7 @@ def basic_Assert(entry) -> str:
         value = stub['value']
 
         if PREDICATES[stub['predicate']][1]:
+            # the symbolic representation
             pd_name = PREDICATES[stub['predicate']][1]
             line = a1.format(fn, pd_name, value)
         else:
@@ -413,6 +426,16 @@ def basic_Assert(entry) -> str:
 
             if ignore_true and value == 'True':
                 line = a3.format(pd_name, fn)
+            elif stub['kind'] == 'logical':
+                # make_assert_stmt(stub, fn_name, args, just_result=False)
+                print(stub)
+                # stmt = make_assert_stmt(stub, fn_name, args)
+                # print(stmt)
+            elif len(value) > 2:
+                # more than 1 value in predicate args
+                v = ', '.join(v for v in value[1:])
+                line = f"assert {pd_name}({fn_name}{args}, {v})"
+                # line = a2.format(pd_name, fn_name, ', '.join((v for v in value[1:])))
             else:
                 line = a2.format(pd_name, fn, value)
 
@@ -1442,6 +1465,8 @@ def make_assert_stmt(stub, fn_name, args, just_result=False):
     if (stub['kind'].startswith('predicate')) and (stub.get('predicate', '') not in PREDICATES):
         raise FalconError(f'Predicate "{stub["predicate"]}" not found')
 
+    use_symbolic = False
+
     # get the name of the predicate if it knows it's a predicate (or should be, ie OOPS)
     if stub['kind'].startswith('predicate') and stub['predicate'] in PREDICATES:
         # get the symbolic name if there is one, otherwise the function name
@@ -1453,12 +1478,17 @@ def make_assert_stmt(stub, fn_name, args, just_result=False):
             pd_name = PREDICATES[stub['predicate']][0]
             use_symbolic = False
     elif stub['kind'].startswith('predicate'):
-        pd_name = stub['predicate']
-        use_symbolic = False
-    # else:
-    # #     # TODO: raise error
-    #     print('Predicate Not Found!', fn_sig, stub)
-    # #     pd_name = "OOPS!"
+        # pd_name = stub['predicate']
+        pd_name = PREDICATES[stub['predicate']][0]
+    elif stub.get('predicate', False):
+        # TODO: Does not handle symbolic tests!!!
+        pd_name = PREDICATES[stub['predicate']][0]
+        print(stub['kind'])
+    elif stub['kind'] in ('code', 'logical', 'assert-logical'):
+        # These are the exception to the rule...
+        pd_name = ''
+    else:
+        raise FalconError(f"Predicate {stub['predicate']} not found")
 
     if stub['kind'] == 'predicate-value':
         # raises is a special case
@@ -1484,7 +1514,7 @@ def make_assert_stmt(stub, fn_name, args, just_result=False):
     # elif stub['kind'] == 'predicate-values':
     #     # this is redundant and should be predicate-value+, it is for the groupby
     #     line = f2.format(pd_name, fn_sig, ', '.join(stub['values']))
-    elif stub['kind'] == 'logical':
+    elif stub['kind'] == 'logical' or stub['kind'] == 'assert-logical':
         line = 'assert ' + make_boolean(stub['values'], fn_sig)
     elif stub['kind'] == 'code':
         line = stub['value']
@@ -1499,6 +1529,12 @@ def make_assert_stmt(stub, fn_name, args, just_result=False):
     elif stub['kind'] == 'predicate-fail-side-effect':
         e = 'Exception' if stub["error"] is None else stub['error']
         line = f'with pytest.raises({e}):\n' + ((indent + 2) * TAB) + f4.format(pd_name, fn_sig)
+    elif stub['kind'] == 'assert-error+':
+        e = 'Exception' if stub["error"] is None else stub['error']
+        line = f'with pytest.raises({e}):\n' + ((indent + 1) * TAB) + f2.format(pd_name, fn_sig, ', '.join(stub['value'][1:]))
+    elif stub['kind'] == 'assert-error':
+        e = 'Exception' if stub["error"] is None else stub['error']
+        line = f'with pytest.raises({e}):\n' + ((indent + 1) * TAB) + f4.format(pd_name, fn_sig)
 
     # TODO: 'message' should be in all the stubs, eventually
     if 'error-message' in stub and stub['error-message'] is not None:

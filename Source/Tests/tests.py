@@ -15,18 +15,40 @@ from Tests.ComplexPredicates import *
 
 # This file was generated automatically by falcon.
 # from: Tests/complex.fcn
-# on 2022 May 23 Mon 20:29:22
+# on 2022 May 26 Thu 15:09:47
 
 A = Reals2()
 B = Reals2()
 # not implemented yet
+lower = Integers(lower=0, upper=100)
+upper = Integers(lower=-100, upper=100)
+critical = CSVDomain('./tests/special-case.txt')
+
+def test_Complex_assertions_Py5Y():
+
+    assert Complex(1.0, 1.0) == ('=', 'Complex(1.0, 1.0)')
+    assert Complex(1, 1) == ('=', 'Complex(1.0, 1.0)', None, None), "This should never fail"
+    assert Complex(10.0, 10.0) < ('<', 'Complex(20.0, 20.0)')
+    assert catch_error(Complex(nan, 1.0), ('raises?', 'AssertionError'))
+    assert between(Complex(1.0, 1.0), -1.0, 1.0)
+    assert catch_error_message(Complex(inf, inf), Exception, "Value must be a float")
+    assert is_complex(Complex(1.0, 0.0)) or is_float(Complex(1.0, 0.0))
+    with pytest.raises(TypeError):
+        assert is_a(Complex(inf, inf))
+    with pytest.raises(Exception):
+        assert is_a(Complex(nan, nan))
+    with pytest.raises(Exception):
+        assert between(Complex(nan, inf), -1, 1)
+    with pytest.raises(TypeError):
+        assert between(Complex(nan, inf), -1, 1)
 
 # start test -----------------
-def test_Complex_pv():
+def test_Complex_EISde():
 
     # Test the unary properties blah blah blah
 
     for aᵢ,bᵢ in A:
+        assert not (is_none(Complex(aᵢ, bᵢ)))
         with pytest.raises(Exception):
             assert valid_number(Complex(aᵢ, bᵢ))
         with pytest.raises(ZeroDivisionError):
@@ -45,7 +67,7 @@ C1 = ComplexDomain()
 C2 = ComplexDomain()
 
 # start test -----------------
-def test___eTY():
+def test___KXgq():
 
     # Test the properties of Complex numbers
 
@@ -55,10 +77,14 @@ def test___eTY():
         assert property_commutative_add(c1, c2)
         assert property_commutative_multiply(c1, c2)
         assert property_multiplicative_inverse(c1, c2)
+        with pytest.raises(Exception):
+            assert property_closure_add(c1, c2)
+        with pytest.raises(TypeError):
+            assert property_closure_add(c1, c2)
 
 
 # start test -----------------
-def test___BzxS():
+def test___LW():
 
     # Test the mathematical properties
 
@@ -75,7 +101,7 @@ def test___BzxS():
 
 CT = ComplexTestDomain()
 
-def test_Complex_BK4b():
+def test_Complex_sCnX():
 
     oracles = defaultdict(list)
 

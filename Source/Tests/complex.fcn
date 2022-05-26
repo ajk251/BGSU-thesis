@@ -9,9 +9,28 @@ Matches fn Question Answer:
   | matches?
   ;
 
+Domain lower Integers -lower 0 -upper 100
+Domain upper Integers -lower -100 -upper 100
+Domain critical CSVDomain './tests/special-case.txt'
+
+Assert Complex:
+  | (1.0, 1.0) = `Complex(1.0, 1.0)`
+  | (1, 1) = `Complex(1.0, 1.0)` ~~ "This should never fail"
+  | (10.0, 10.0) < `Complex(20.0, 20.0)`
+  | (nan, 1.0) raises? AssertionError
+  | (1.0, 1.0) between? `-1.0` `1.0`
+  | (inf,inf) raises-message? Exception "Value must be a float"
+  | (1.0, 0.0) is-complex? || is-float?
+  |! TypeError (inf, inf) is-a? Complex
+  |! (nan, nan) is-a? Complex
+  |! (nan, inf) between? -1 1
+  |! TypeError (nan, inf) between? -1 1
+  ;
+
 Test Complex A:
   | :message "Test the unary properties blah blah blah"
   | :labels [a b]
+  | !(is-None?)
   |! valid-complex?
   |! ZeroDivisionError valid-complex?
   |! TypeError between? -10 10
@@ -33,6 +52,8 @@ Test _ C1 C2:
   | commutative+?
   | commutative*?
   | multiplicative-inverse?
+  |! closure+?
+  |! TypeError closure+?
   ;
 
 Test _ C1 C2:

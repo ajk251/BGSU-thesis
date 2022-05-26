@@ -125,6 +125,24 @@ class FalconListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by FalconParser#stub_assert_logical.
+    def enterStub_assert_logical(self, ctx:FalconParser.Stub_assert_logicalContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#stub_assert_logical.
+    def exitStub_assert_logical(self, ctx:FalconParser.Stub_assert_logicalContext):
+        pass
+
+
+    # Enter a parse tree produced by FalconParser#stub_assert_error.
+    def enterStub_assert_error(self, ctx:FalconParser.Stub_assert_errorContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#stub_assert_error.
+    def exitStub_assert_error(self, ctx:FalconParser.Stub_assert_errorContext):
+        pass
+
+
     # Enter a parse tree produced by FalconParser#stub_directives.
     def enterStub_directives(self, ctx:FalconParser.Stub_directivesContext):
         pass

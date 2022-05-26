@@ -1,4 +1,5 @@
 
+from domains.domains import domain
 
 import csv
 import os
@@ -9,7 +10,7 @@ from operator import itemgetter
 
 DomainType = Enum('DomainType', 'dict, namedtuple, tuple')
 
-
+@domain(alias=['CSVDomain'])
 def CSVDomain(file, columns=None, read_as=DomainType.dict, newline='\n'):
 
     # TODO: This isn't robust and assumes all arguments are well formed & valid

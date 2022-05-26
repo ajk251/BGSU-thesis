@@ -356,7 +356,10 @@ class Falcon(FalconVisitor):
         test['stubs'] = []
         test['directives'] = {}
 
-        okay_stubs = (FalconParser.Stub_assertContext, FalconParser.Stub_assert_pContext)
+        okay_stubs = (FalconParser.Stub_assertContext,
+                      FalconParser.Stub_assert_pContext,
+                      FalconParser.Stub_assert_logicalContext,
+                      FalconParser.Stub_assert_errorContext)
 
         for stub in ctx.children:
 
@@ -774,7 +777,8 @@ class Falcon(FalconVisitor):
         stub['kind'] = 'assertion'
         stub['argument'] = self.visit(ctx.arg_list())
         stub['predicate'] = self.visit(ctx.predicate())
-        stub['value'] = self.visit(ctx.value())
+        # stub['value'] = self.visit(ctx.value())
+        stub['value'] = tuple(self.visit(child) for child in ctx.children[2:])
 
         if ctx.STRING():
             stub['error-message'] = str(ctx.STRING())
@@ -793,6 +797,48 @@ class Falcon(FalconVisitor):
             stub['error-message'] = str(ctx.STRING())
 
         return stub
+
+    def visitStub_assert_logical(self, ctx: FalconParser.Stub_assert_logicalContext):
+
+        stub = {'kind': 'assert-logical', 'error-message': None}
+
+        # stub['value'] = tuple(self.visit(child) for child in ctx.children[2:])
+
+        stub['argument'] = self.visit(ctx.arg_list())
+
+        okay_logicals = (FalconParser.Stub_logicContext,
+                         FalconParser.Stub_logic_multiContext,
+                         FalconParser.Stub_parenContext)
+
+        for child in ctx.children:
+            if isinstance(child, okay_logicals):
+                # values.append(self.visit(child))
+                values = self.visit(child)
+
+        if ctx.STRING():
+            stub['error-message'] = str(ctx.STRING())
+
+        stub['values'] = values
+
+        return stub
+
+    def visitStub_assert_error(self, ctx: FalconParser.Stub_assert_errorContext):
+
+        stub = {'kind': 'assert-error', 'values': [], 'error-message': None}
+        stub['predicate'] = self.visit(ctx.predicate())
+        stub['argument'] = self.visit(ctx.arg_list())
+
+        has_error = isinstance(ctx.children[1], FalconParser.ValueContext) and isinstance(ctx.children[2], FalconParser.Arg_listContext)
+        stub['error'] = self.visit(ctx.value(0)) if has_error else None
+
+        n = 3 if has_error else 2
+        stub['value'] = tuple(self.visit(child) for child in ctx.children[n:])
+
+        # if ctx.STRING():
+        #     stub['error-message'] = str(ctx.STRING())
+
+        return stub
+
 
     def visitStub_logical(self, ctx: FalconParser.Stub_logicalContext):
 

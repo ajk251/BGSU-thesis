@@ -74,6 +74,16 @@ class FalconVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by FalconParser#stub_assert_logical.
+    def visitStub_assert_logical(self, ctx:FalconParser.Stub_assert_logicalContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#stub_assert_error.
+    def visitStub_assert_error(self, ctx:FalconParser.Stub_assert_errorContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by FalconParser#stub_directives.
     def visitStub_directives(self, ctx:FalconParser.Stub_directivesContext):
         return self.visitChildren(ctx)

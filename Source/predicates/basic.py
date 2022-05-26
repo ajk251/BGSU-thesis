@@ -13,7 +13,7 @@ def catch_error(error, error_kind) -> bool:
     return isinstance(error, error_kind)
 
 
-@predicate(alias=['error-message?', 'error-says?'], is_error=True)
+@predicate(alias=['error-message?', 'error-says?', 'raises-with-message?', 'raises-message?'], is_error=True)
 def catch_error_message(error, error_kind, message):
     return isinstance(error, error_kind) and message in error.args[0]
 
