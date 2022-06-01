@@ -111,3 +111,8 @@ def all_triplets_of(sequence, n: int = 3):
 def combinations_of(sequence, n=3):
     """Builds the cartesian product of n copies of a sequence"""
     return product(*(sequence for _ in range(n)))
+
+
+@algorithm(alias=['all-perms-of', 'all-permutations-of'])
+def all_permutations_of(sequence, repeat: int = 2):
+    return (s for s in product(sequence, repeat=repeat))

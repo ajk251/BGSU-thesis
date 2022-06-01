@@ -6,6 +6,8 @@ from domains.domains import domain, DomainBase
 from random import uniform
 
 
+# TODO: Depreciate - ART is better
+
 @domain(alias=['Art'])
 class ARTR2(DomainBase):
 

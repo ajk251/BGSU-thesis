@@ -15,15 +15,15 @@ from Tests.ComplexPredicates import *
 
 # This file was generated automatically by falcon.
 # from: Tests/assert2.fcn
-# on 2022 May 26 Thu 16:12:13
+# on 2022 May 27 Fri 15:05:08
 
 
-def test_Complex_assertions_RMJd():
+def test_Complex_assertions_4U0hB():
 
     assert catch_error(Complex, (nan, 1.0), AssertionError)
     assert catch_error_message(Complex, (inf, inf), Exception, "Value must be a float")
 
-def test_Complex_assertions_HtofJ():
+def test_Complex_assertions_Ps():
 
     assert Complex(1.0, 1.0) == ('=', 'Complex(1.0, 1.0)')
     assert Complex(1, 1) == ('=', 'Complex(1.0, 1.0)', None, None), "This should never fail"
@@ -40,3 +40,10 @@ def test_Complex_assertions_HtofJ():
         assert between(Complex(nan, inf), -1, 1)
     with pytest.raises(TypeError):
         assert between(Complex(nan, inf), -1, 1)
+vals = ART()
+
+# start test -----------------
+def test_Complex_Vx():
+
+    for valsᵢ in vals:
+        assert is_integer(Complex(valsᵢ))

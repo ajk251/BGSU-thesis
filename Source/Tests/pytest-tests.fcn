@@ -1,8 +1,8 @@
 
 :import test_functions -from [add, add2, sub]
 
-Domain Xvalues Integers -10 10 -nrandom 100
-Domain Yvalues Integers -10 10 -nrandom 100
+Domain Xvalues Integers -10 10 -n 100
+Domain Yvalues Integers -10 10 -n 100
 Domain Zvalues Numbers -1000 1000
 Domain Avalues Boundary -10 10
 

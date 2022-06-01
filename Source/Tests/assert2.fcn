@@ -7,7 +7,6 @@ Assert Complex:
   | (inf,inf) raises-message? Exception "Value must be a float"
   ;
 
-
 Assert Complex:
   | (1.0, 1.0) = `Complex(1.0, 1.0)`
   | (1, 1) = `Complex(1.0, 1.0)` ~~ "This should never fail"
@@ -21,3 +20,9 @@ Assert Complex:
   |! (nan, inf) between? -1 1
   |! TypeError (nan, inf) between? -1 1
   ;
+
+Domain vals ART
+
+Test Complex vals:
+ | is-int?
+ ;
