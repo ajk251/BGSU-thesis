@@ -88,7 +88,7 @@ def numbers(lower: Number = -1, upper: Number = 1, pct_floats: float = 0.5, nran
         n += 1
 
 
-# special
+# special --------------
 
 @domain(alias=['IntegerBoundary', 'IntBoundary'])
 def int_boundary(lower: int = -1, upper: int = 1, epsilon: int = 5, bdry_values: int = 10, n: int = 100) -> Iterator[int]:
@@ -137,25 +137,25 @@ def boundary(lower: float = -1.0, upper: float = 1.0, epsilon: float = 5.0, bdry
 # combinatorial -------------------------------------------
 
 @domain(alias=['Cartesian', 'CartesianProduct'])
-def cartesian(sequences) -> Iterator[Tuple[Any, ...]]:
-    return product(*sequences)
+def cartesian(values) -> Iterator[Tuple[Any, ...]]:
+    return product(*values)
 
 
 @domain(alias=['PermutationsOf', 'PermsOf'])
-def permutations_of(sequence, repeat: int = 2) -> Iterator[Tuple[Any, ...]]:
-    return (s for s in product(sequence, repeat=repeat))
+def permutations_of(values, repeat: int = 2) -> Iterator[Tuple[Any, ...]]:
+    return (s for s in product(values, repeat=repeat))
 
 
-@domain(alias=['TwiseCombinationsOf', 'TwiseCombsOf'])
-def twise_combination(sequences, tway: int = 3) -> Iterator[Tuple[Any, ...]]:
+@domain(alias=['TwiseCombinations', 'TwiseCombs'])
+def twise_combination(values, tway: int = 3) -> Iterator[Tuple[Any, ...]]:
     """
     Generates t-wise combinations of sequences, without unnecessary values. Like IPOG, but more clear and practical, though less efficient.
     Builds t-wise tuples, then randomly assigns missing values, ie non-deterministic. Holds intermediate values.
     """
 
-    take_rand = lambda i: (choice(sequences[i]), )
+    take_rand = lambda i: (choice(values[i]),)
 
-    N: int = len(sequences)
+    N: int = len(values)
     S = tuple(combinations(range(N), tway))                                    # all the orderings of the sequences
     found = set()                                                              # collection of all the combos found
 
@@ -165,7 +165,55 @@ def twise_combination(sequences, tway: int = 3) -> Iterator[Tuple[Any, ...]]:
     for s in S:
 
         missing = set(range(N)).difference(set(s))
-        solutions = product(*(sequences[i_] for i_ in s))                       # product of the particular ordering
+        solutions = product(*(values[i_] for i_ in s))                       # product of the particular ordering
+
+        for solution in solutions:
+
+            solution = list(solution)
+            solution.reverse()
+
+            answer: Tuple = tuple()
+
+            for j in range(N):                                                  # the solution only contains the t-wise ordering,
+                                                                                # not the full answer. Put it together, in order.
+                if j in missing:
+                    answer += take_rand(j)
+                else:
+                    answer += (solution.pop(),)
+
+            # generated += 1
+
+            # there is a chance to try different combinations here...
+            if answer in found:
+                #repeats += 1
+                continue                                                        # has it already been found?
+            else:
+                found.add(answer)
+
+            yield answer
+
+
+@domain(alias=['TwiseCombinationsOf', 'TwiseCombsOf'])
+def twise_combinations_of(values, tway: int = 3, repeat: int = 2) -> Iterator[Tuple[Any, ...]]:
+    """
+    Generates t-wise combinations of values repeated 'repeat' times, without unnecessary values. Like IPOG, but more clear and practical, though less efficient.
+    Builds t-wise tuples, then randomly assigns missing values, ie non-deterministic. Holds intermediate values.
+    """
+
+    values = [values for _ in range(repeat)]
+    take_rand = lambda i: (choice(values[i]),)
+
+    N: int = len(values)
+    S = tuple(combinations(range(N), tway))                                    # all the orderings of the sequences
+    found = set()                                                              # collection of all the combos found
+
+    # generated = 0
+    # repeats = 0
+
+    for s in S:
+
+        missing = set(range(N)).difference(set(s))
+        solutions = product(*(values[i_] for i_ in s))                       # product of the particular ordering
 
         for solution in solutions:
 

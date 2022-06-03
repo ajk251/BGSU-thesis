@@ -205,7 +205,6 @@ def property_distributive(a: Complex, b: Complex, c: Complex):
 
 # properties ------------------------------------
 
-
 @predicate(alias=['ℂ?', 'complex-num?', 'complex-number?'])
 def valid_complex(complex_number: Complex):
     return isinstance(complex_number, Number) and \

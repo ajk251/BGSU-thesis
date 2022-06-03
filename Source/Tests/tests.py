@@ -10,40 +10,78 @@ from collections import defaultdict
 import unittest
 
 import pytest
-from Tests.ComplexNumber import Complex
-from Tests.ComplexPredicates import *
 
 # This file was generated automatically by falcon.
-# from: Tests/assert2.fcn
-# on 2022 May 27 Fri 15:05:08
+# from: Tests/groupby-tests.fcn
+# on 2022 Jun 03 Fri 01:01:29
+
+X = integers()
+
+def test_groupby_addg():
+
+    groups = defaultdict(list)
+    results = defaultdict(list)
+
+    for xᵢ in X:
+
+        try:
+            result = addg(xᵢ)
+        except Exception as e:
+            result = e
+
+        if is_float(xᵢ):
+            assert is_a(result)
+            groups['a'].append((xᵢ,))
+            results['a'].append(result)
+        elif is_integer(xᵢ):
+            groups['b'].append((xᵢ,))
+            results['b'].append(result)
+        elif is_positive(xᵢ):
+            assert is_odd(result)
+            groups['c'].append((xᵢ,))
+            results['c'].append(result)
+        elif >(xᵢ):
+            assert is_inf(result)
+            groups['d'].append((xᵢ,))
+            results['d'].append(result)
+        else:
+            FalconError('Failed to meet at least one group')
+
+        assert is_any(results['b'], int)
+
+    plot_results(groups, results)
 
 
-def test_Complex_assertions_4U0hB():
+def test_groupby_addf():
 
-    assert catch_error(Complex, (nan, 1.0), AssertionError)
-    assert catch_error_message(Complex, (inf, inf), Exception, "Value must be a float")
+    groups = defaultdict(list)
+    results = defaultdict(list)
 
-def test_Complex_assertions_Ps():
+    for xvaluesᵢ in Xvalues:
 
-    assert Complex(1.0, 1.0) == ('=', 'Complex(1.0, 1.0)')
-    assert Complex(1, 1) == ('=', 'Complex(1.0, 1.0)', None, None), "This should never fail"
-    assert Complex(10.0, 10.0) < ('<', 'Complex(20.0, 20.0)')
-    assert catch_error(Complex, (nan, 1.0), AssertionError)
-    assert between(Complex(1.0, 1.0), -1.0, 1.0)
-    assert catch_error_message(Complex, (inf, inf), Exception, "Value must be a float")
-    assert is_complex(Complex(1.0, 0.0)) or is_float(Complex(1.0, 0.0))
-    with pytest.raises(TypeError):
-        assert is_a(Complex(inf, inf))
-    with pytest.raises(Exception):
-        assert is_a(Complex(nan, nan))
-    with pytest.raises(Exception):
-        assert between(Complex(nan, inf), -1, 1)
-    with pytest.raises(TypeError):
-        assert between(Complex(nan, inf), -1, 1)
-vals = ART()
+        try:
+            result = addf(xvaluesᵢ)
+        except Exception as e:
+            result = e
 
-# start test -----------------
-def test_Complex_Vx():
+        if is_float(xvaluesᵢ) or is_integer(xvaluesᵢ):
+            groups['a'].append((xvaluesᵢ,))
+            results['a'].append(result)
+        elif is_integer(xvaluesᵢ):
+            groups['b'].append((xvaluesᵢ,))
+            results['b'].append(result)
+        elif is_positive(xvaluesᵢ):
+            groups['c'].append((xvaluesᵢ,))
+            results['c'].append(result)
+        elif between(result, 0, 1):
+            groups['d'].append((xvaluesᵢ,))
+            results['d'].append(result)
+        elif xvaluesᵢ >= 1:
+            groups['e'].append((xvaluesᵢ,))
+            results['e'].append(result)
+        elif catch_error(result, InvalidInputError):
+            groups['error'].append((xvaluesᵢ,))
+            results['error'].append(result)
+        else:
+            FalconError('Failed to meet at least one group')
 
-    for valsᵢ in vals:
-        assert is_integer(Complex(valsᵢ))

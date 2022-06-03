@@ -209,3 +209,8 @@ def descending(sequence) -> bool:
 def ascending(sequence) -> bool:
     """Tests for ascending order, ie 1, 2, 3 …, where i < j"""
     return all((i < j for i, j in zip(sequence, sequence[1:])))
+
+@predicate(alias=['all-unique?'])
+def all_unique(sequence) -> bool:
+    """Tests that a sequence only contains unique values"""
+    return len(frozenset(sequence)) == len(sequence)

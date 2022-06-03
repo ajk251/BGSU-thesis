@@ -506,7 +506,9 @@ except Exception as e:
 
     indent += 1
 
-    line = (indent * TAB) + 'groups = defaultdict(list)\n'
+    line = (indent * TAB) + 'groups = defaultdict(list)'
+    lines.append(line)
+    line = (indent * TAB) + 'results = defaultdict(list)\n'
     lines.append(line)
 
     # build the for loop, naked/with custom iterator/generic & no parameters
@@ -527,18 +529,26 @@ except Exception as e:
     # deal with the groups
     groups = defaultdict(list)
     gb_groups = {} #defaultdict(list)  # -> can only hold 1 statement
+    group_predictes = {}
 
     # TODO: This needs work... need a separate function for all the cases & error handling...
 
+    # TODO: - The commented out code is for the group assert? Is it necessary?
+    #       -> fix it with a directive
+
     for stub in entry['stubs']:
+
         stub['using-bin-fn'] = using_bin_fn
         stmt = make_if_group_stmt(stub, fn_name, args)
         groups[stub['group']].append(stmt)
 
         if stub['kind'] == 'groupby-many-with-group':
-            # gb_groups[stub['group']].append((stub['group-predicate'], stub['group-values']))
-            # if stub.get('group-predicate', False): continue
             gb_groups[stub['group']] = (stub['group-predicate'], stub['group-values'])
+
+        if stub.get('group-predicate', False):
+            group_predictes[stub['group']] = (stub['group-predicate'], stub['group-values'])
+        else:
+            group_predictes[stub['group']] = (None, None)
 
     # assert len(groups) > 1, "the number of groups must be greater than 1"
 
@@ -550,33 +560,68 @@ except Exception as e:
     case = '(' + ', '.join((lbl for lbl in labels)) + ')' if len(labels) > 1 else f'({labels[0]},)'
     line = f'{indent * TAB}if {cond}:'
 
+    # TODO: check that the first one is not a group predicate!!!
+
     if stub['kind'] == 'groupby-many-with-group':
         group = groups[0][0]
         pd_name = PREDICATES.get(gb_groups[group][0], (None, None))
         line += f'\n{(indent + 1) * TAB}assert {pd_name[0]}(result)'
 
-    line += f'\n{(indent + 1) * TAB}groups[{groups[0][0]}].append((result, {case}))'
+    # line += f'\n{(indent + 1) * TAB}groups[{groups[0][0]}].append((result, {case}))'
+    line +=  f'\n{(indent + 1) * TAB}groups[{groups[0][0]}].append({case})'
+    line += f'\n{(indent + 1) * TAB}results[{groups[0][0]}].append(result)'
+
     lines.append(line)
 
     for group, stmts in groups[1:]:
 
         cond = ' or '.join((predicate for predicate in stmts)) if len(stmts) > 1 else stmts[0]
         line = f'{indent * TAB}elif {cond}:'
+        # lines.append(line)
 
         if stub['kind'] == 'groupby-many-with-group':
             pd_name = PREDICATES.get(gb_groups[group][0], (None, None))
-            line += f'\n{(indent + 1) * TAB}assert {pd_name[0]}(result)'
 
-        line += f'\n{(indent + 1) * TAB}groups[{group}].append((result, {case}))'
+            # if it is a group predicate, skip it
+            if not PREDICATES.get(gb_groups[group][0], False)[3]:
+                line += f'\n{(indent + 1) * TAB}assert {pd_name[0]}(result)'
+
+        # line += f'\n{(indent + 1) * TAB}groups[{group}].append((result, {case}))'
+        # line +=  f'\n{(indent + 1) * TAB}groups[{groups}].append({case})'
+        line += f'\n{(indent + 1) * TAB}groups[{group}].append({case})'
+        line += f'\n{(indent + 1) * TAB}results[{group}].append(result)'
         lines.append(line)
 
     line = f"{indent * TAB}else:\n{(indent + 1) * TAB}FalconError('Failed to meet at least one group')"
     lines.append(line)
 
+    # this might need to be optional
+    lines.append('')
+
+    # # add group assert statements
+    for group, pd in group_predictes.items():
+
+        if pd[0] is None: continue
+
+        if grp_pd := PREDICATES.get(pd[0], False):
+            pd_name = grp_pd[0]
+        else:
+            raise FalconError(f"Predicate {pd[0]} not found")
+
+        # write the group assert statement, if it is a group-predicate
+        if not grp_pd[3]:
+            continue
+        if pd[1] == []:
+            line = f'{indent * TAB}assert {pd_name}(results[{group}])'
+        else:
+            line = f"{indent * TAB}assert {pd_name}(results[{group}], {', '.join(pd[1])})"
+
+        lines.append(line)
+
     indent -= 1
 
     if followup:
-        line = f'\n{indent * TAB}{followup}(groups)'
+        line = f'\n{indent * TAB}{followup}(groups, results)'
         lines.append(line)
 
     lines.append('')
@@ -1108,7 +1153,6 @@ def unit_Test(entry):
     indent -= 1
 
     return '\n'.join(lines)
-
 
 
 def unit_Groupby(entry):
