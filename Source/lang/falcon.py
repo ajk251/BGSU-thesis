@@ -470,6 +470,8 @@ class Falcon(FalconVisitor):
                       FalconParser.Stub_many_pvContext,
                       FalconParser.Stub_codeContext,
                       FalconParser.Stub_logicalContext,
+                      # FalconParser.Stub_fail_side_effectContext,                  # these use the with/context block
+                      # FalconParser.Stub_fail_side_effect_manyContext,             # how to manage that!?
                       FalconParser.Stub_side_effectContext,
                       FalconParser.Stub_side_effect_manyContext)
 

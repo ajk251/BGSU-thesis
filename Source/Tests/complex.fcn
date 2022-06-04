@@ -5,9 +5,6 @@
 Domain A Reals2
 Domain B Reals2
 
-Matches fn Question Answer:
-  | matches?
-  ;
 
 Domain lower Integers -lower 0 -upper 100
 Domain upper Integers -lower -100 -upper 100
@@ -65,15 +62,17 @@ Test _ C1 C2:
   | complex+=?
   | complex-=?
   | complex*=?
-  |> `c = c1 + c2`
-  |> c valid-complex?
-  |> c complex-num?
   ;
 
 Domain CT ComplexTest
 
 Satisfy Complex CT:
-  | :labels [a, b] :log
+  | :labels [r, i]
   | valid-complex?
   | complex-number?
+  | valid-complex?
+  | additive-id?
+  | multiplicative-id?
+  |! ComplexError valid-complex?
+  |! ComplexError complex-number?
   ;

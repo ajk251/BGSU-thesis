@@ -3,6 +3,7 @@ import re
 import runpy
 import textwrap
 import sys
+import warnings
 
 from collections import defaultdict
 from datetime import datetime
@@ -438,8 +439,7 @@ def basic_Assert(entry) -> str:
             if ignore_true and value == 'True':
                 line = a3.format(pd_name, fn)
             elif stub['kind'] == 'logical':
-                # make_assert_stmt(stub, fn_name, args, just_result=False)
-                print(stub)
+                make_assert_stmt(stub, fn_name, args, just_result=False)
                 # stmt = make_assert_stmt(stub, fn_name, args)
                 # print(stmt)
             elif len(value) > 2:
@@ -470,7 +470,7 @@ def basic_Groupby2(entry) -> str:
     directives = get_directives(entry)
 
     # message = directives['message']
-    # pyfunc = directives['pyfunc']
+    pyfunc = directives['pyfunc']
     dvars = entry['domain']                                         # the domain names
     labels = directives['labels']
     algo = directives['algo']
@@ -478,11 +478,14 @@ def basic_Groupby2(entry) -> str:
     fn_name = directives['fn_name']
     followup = directives['follow-up']
 
+    save_results = True if entry.get(':no-results', True) else False
+    save_groups = True if entry.get(':no-cases', True) else False
+
     args = ', '.join(labels)
     fn_sig = '{}({})'.format(fn_name, args)
 
     # the def name
-    lines.extend((f'def test_groupby_{fn_name}():', ''))
+    lines.extend((f'{pyfunc}', ''))
 
 #     # w1 has a separate bin function defined
 #     w1 = '''
@@ -506,10 +509,12 @@ except Exception as e:
 
     indent += 1
 
-    line = (indent * TAB) + 'groups = defaultdict(list)'
-    lines.append(line)
-    line = (indent * TAB) + 'results = defaultdict(list)\n'
-    lines.append(line)
+    if save_groups:
+        line = (indent * TAB) + 'groups = defaultdict(list)'
+        lines.append(line)
+    if save_results:
+        line = (indent * TAB) + 'results = defaultdict(list)\n'
+        lines.append(line)
 
     # build the for loop, naked/with custom iterator/generic & no parameters
     if len(labels) == 1:
@@ -526,97 +531,181 @@ except Exception as e:
     lines.append(line)
     using_bin_fn = False
 
-    # deal with the groups
+    # =========================================
+
+    # collected all the groups {name: stub...}
     groups = defaultdict(list)
-    gb_groups = {} #defaultdict(list)  # -> can only hold 1 statement
-    group_predictes = {}
-
-    # TODO: This needs work... need a separate function for all the cases & error handling...
-
-    # TODO: - The commented out code is for the group assert? Is it necessary?
-    #       -> fix it with a directive
 
     for stub in entry['stubs']:
+        groups[stub['group']].append(stub)
 
-        stub['using-bin-fn'] = using_bin_fn
-        stmt = make_if_group_stmt(stub, fn_name, args)
-        groups[stub['group']].append(stmt)
+    groups = tuple(groups.items())      # flatten
+    agg_groups = []                     # the groups that have aggregated ops on them
+    labels = ', '.join(labels)
 
-        if stub['kind'] == 'groupby-many-with-group':
-            gb_groups[stub['group']] = (stub['group-predicate'], stub['group-values'])
+    cond = 'if'         # rather than have if if, if elif, ...
 
-        if stub.get('group-predicate', False):
-            group_predictes[stub['group']] = (stub['group-predicate'], stub['group-values'])
+    for group, stub in groups:
+
+        # the if statement
+        if len(stub) > 1:
+            names = []
+            for s in stub:
+                # just the predicates, no values
+                predicate, _ = get_predicate(s, by_group=False)
+                text = f"{predicate.name}({labels})"
+                names.append(text)
+            line = f"{indent * TAB}{cond} {' or '.join(names)}:\n"
         else:
-            group_predictes[stub['group']] = (None, None)
+            predicate, values = get_predicate(stub[0], by_group=False)
+            line = f"{indent * TAB}{cond} {predicate.name}({labels}):\n"
 
-    # assert len(groups) > 1, "the number of groups must be greater than 1"
+        cond = 'elif'
 
-    indent += 1
-    groups = tuple(groups.items())
+        # the sub-parts is there a group-predicate test & by-value/by-all
+        gpredicate, gvalues = get_predicate(stub[0], by_group=True)
+        indent += 1
 
-    # the first statement is an 'if'
-    cond = ' or '.join((predicate for predicate in groups[0][1])) if len(groups[0][1]) > 1 else groups[0][1][0]
-    case = '(' + ', '.join((lbl for lbl in labels)) + ')' if len(labels) > 1 else f'({labels[0]},)'
-    line = f'{indent * TAB}if {cond}:'
+        # the first two go at the end
+        if gpredicate.is_group and gvalues is not None:
+            gline = f"{indent * TAB}assert {gpredicate.name}(results[{group}], {', '.join(gvalues)})"
+            agg_groups.append(gline)
+        elif gpredicate.is_group:
+            gline = f"{indent * TAB}assert {gpredicate.name}(results[{group}])"
+            agg_groups.append(gline)
+        if gpredicate.is_group or gpredicate is None:
+            line += ''
+        elif gvalues is not None:
+            line += f"{indent * TAB}assert {gpredicate.name}(result, {', '.join(gvalues)})"
+        else:
+            line += f"{indent * TAB}assert {gpredicate.name}(result)"
 
-    # TODO: check that the first one is not a group predicate!!!
+        #
 
-    if stub['kind'] == 'groupby-many-with-group':
-        group = groups[0][0]
-        pd_name = PREDICATES.get(gb_groups[group][0], (None, None))
-        line += f'\n{(indent + 1) * TAB}assert {pd_name[0]}(result)'
+        # save if necessary
+        if save_groups:
+            line +=  f'\n{indent * TAB}groups[{groups[0][0]}].append({labels})'
+        if save_results:
+            line += f'\n{indent * TAB}results[{groups[0][0]}].append(result)'
 
-    # line += f'\n{(indent + 1) * TAB}groups[{groups[0][0]}].append((result, {case}))'
-    line +=  f'\n{(indent + 1) * TAB}groups[{groups[0][0]}].append({case})'
-    line += f'\n{(indent + 1) * TAB}results[{groups[0][0]}].append(result)'
-
-    lines.append(line)
-
-    for group, stmts in groups[1:]:
-
-        cond = ' or '.join((predicate for predicate in stmts)) if len(stmts) > 1 else stmts[0]
-        line = f'{indent * TAB}elif {cond}:'
-        # lines.append(line)
-
-        if stub['kind'] == 'groupby-many-with-group':
-            pd_name = PREDICATES.get(gb_groups[group][0], (None, None))
-
-            # if it is a group predicate, skip it
-            if not PREDICATES.get(gb_groups[group][0], False)[3]:
-                line += f'\n{(indent + 1) * TAB}assert {pd_name[0]}(result)'
-
-        # line += f'\n{(indent + 1) * TAB}groups[{group}].append((result, {case}))'
-        # line +=  f'\n{(indent + 1) * TAB}groups[{groups}].append({case})'
-        line += f'\n{(indent + 1) * TAB}groups[{group}].append({case})'
-        line += f'\n{(indent + 1) * TAB}results[{group}].append(result)'
         lines.append(line)
+        indent -= 1
 
-    line = f"{indent * TAB}else:\n{(indent + 1) * TAB}FalconError('Failed to meet at least one group')"
+    # add the last group
+    line = f"{indent * TAB}else:\n{(indent + 1) * TAB}raise FalconError('Failed to meet at least one group')"
     lines.append(line)
-
-    # this might need to be optional
     lines.append('')
 
-    # # add group assert statements
-    for group, pd in group_predictes.items():
+    # add the aggregate group operations
+    lines.extend(agg_groups)
 
-        if pd[0] is None: continue
+    # ==========================================
 
-        if grp_pd := PREDICATES.get(pd[0], False):
-            pd_name = grp_pd[0]
-        else:
-            raise FalconError(f"Predicate {pd[0]} not found")
+    # # deal with the groups
+    # groups = defaultdict(list)
+    # gb_groups = {}
+    # group_predictes = {}
+    #
+    # # TODO: This needs work... need a separate function for all the cases & error handling...
+    # # TODO: - The commented out code is for the group assert? Is it necessary?
+    # #       -> fix it with a directive
+    #
+    # for stub in entry['stubs']:
+    #
+    #     stub['using-bin-fn'] = using_bin_fn
+    #     stmt = make_if_group_stmt(stub, fn_name, args)
+    #     groups[stub['group']].append(stmt)
+    #
+    #     if stub['kind'] == 'groupby-many-with-group':
+    #         gb_groups[stub['group']] = (stub['group-predicate'], stub['group-values'])
+    #
+    #     if stub.get('group-predicate', False):
+    #         group_predictes[stub['group']] = (stub['group-predicate'], stub['group-values'])
+    #     else:
+    #         group_predictes[stub['group']] = (None, None)
+    #
+    # # assert len(groups) > 1, "the number of groups must be greater than 1"
+    #
+    # indent += 1
+    # groups = tuple(groups.items())
+    #
+    # # the first statement is an 'if'
+    # cond = ' or '.join((predicate for predicate in groups[0][1])) if len(groups[0][1]) > 1 else groups[0][1][0]
+    # case = '(' + ', '.join((lbl for lbl in labels)) + ')' if len(labels) > 1 else f'({labels[0]},)'
+    # line = f'{indent * TAB}if {cond}:'
+    #
+    # # TODO: check that the first one is not a group predicate!!!
+    #
+    # if stub['kind'] == 'groupby-many-with-group':
+    #     group = groups[0][0]
+    #     pd = PREDICATES.get(gb_groups[group][0], (None, None, None, None))
+    #     line += f'\n{(indent + 1) * TAB}assert {pd[0]}(result)'
+    #
+    # # line += f'\n{(indent + 1) * TAB}groups[{groups[0][0]}].append((result, {case}))'
+    # line +=  f'\n{(indent + 1) * TAB}groups[{groups[0][0]}].append({case})'
+    # line += f'\n{(indent + 1) * TAB}results[{groups[0][0]}].append(result)'
+    #
+    # lines.append(line)
+    #
+    # for group, stmts in groups[1:]:
+    #
+    #     # note: group is (name, args ∨ [])
+    #
+    #     cond = ' or '.join((predicate for predicate in stmts)) if len(stmts) > 1 else stmts[0]
+    #     line = f'{indent * TAB}elif {cond}:'
+    #
+    #     # check what kind of predicate should be applied & valid & stuff
+    #     if stub['kind'] == 'groupby-many-with-group':
+    #
+    #         pd = PREDICATES.get(gb_groups[group][0], (None, None, None, None))
+    #
+    #         if len(stub['group-values']) > 0:
+    #             # print(stub['group-values'], len(stub['group-values']))
+    #             args = ', '.join(stub['group-values'])
+    #         else:
+    #             args = None
+    #
+    #         # print('args ', args, group, group_predictes[group])
+    #
+    #         # if it is a group predicate or has no name, skip it
+    #         if pd.is_group or pd[0] is None:
+    #             line += ''                      # do nothing...
+    #         elif args is not None:
+    #             # print('has args ', args, type(args))
+    #             line += f'\n{(indent + 1) * TAB}assert {pd.name}(result, {args})'
+    #         else: # elif PREDICATES.get(pd.name, False):
+    #             line += f'\n{(indent + 1) * TAB}assert {pd.name}(result)'
+    #
+    #     line += f'\n{(indent + 1) * TAB}groups[{group}].append({case})'
+    #     line += f'\n{(indent + 1) * TAB}results[{group}].append(result)'
+    #     lines.append(line)
 
-        # write the group assert statement, if it is a group-predicate
-        if not grp_pd[3]:
-            continue
-        if pd[1] == []:
-            line = f'{indent * TAB}assert {pd_name}(results[{group}])'
-        else:
-            line = f"{indent * TAB}assert {pd_name}(results[{group}], {', '.join(pd[1])})"
-
-        lines.append(line)
+    # line = f"{indent * TAB}else:\n{(indent + 1) * TAB}FalconError('Failed to meet at least one group')"
+    # lines.append(line)
+    #
+    # # this might need to be optional
+    # lines.append('')
+    #
+    # # # add group assert statements
+    # for group, pd in group_predictes.items():
+    #
+    #     if pd[0] is None: continue
+    #
+    #     if grp_pd := PREDICATES.get(pd[0], False):
+    #         pd_name = grp_pd[0]
+    #     else:
+    #         # raise FalconError(f"Predicate {pd[0]} not found"
+    #         warnings.warn(f"Predicate {pd[0]} not found")
+    #
+    #     # write the group assert statement, if it is a group-predicate
+    #     if not grp_pd[3]:
+    #         continue
+    #     if pd[1] == []:
+    #         line = f'{indent * TAB}assert {pd_name}(results[{group}])'
+    #     else:
+    #         line = f"{indent * TAB}assert {pd_name}(results[{group}], {', '.join(pd[1])})"
+    #
+    #     lines.append(line)
 
     indent -= 1
 
@@ -950,8 +1039,9 @@ count = 0
     indent += 1
 
     for stub in entry['stubs']:
+
         # the actual test assertion
-        stmt = make_assert_stmt(stub, 'result', '')
+        stmt = make_assert_stmt(stub, 'result', None, True)
 
         if stub['kind'].startswith('predicate'):
 
@@ -990,7 +1080,7 @@ count = 0
 
     lines.append('')
 
-    line = (indent * TAB) + f'assert count <= {minimum}, f"The minimum number of predicates has not been met - met: {{count}}, min: {minimum}"'
+    line = (indent * TAB) + f'assert count >= {minimum}, f"The minimum number of predicates has not been met - met: {{count}}, min: {minimum}  [with {{result}}]"'
     lines.append(line)
 
     if maximum is not None:
@@ -1496,8 +1586,7 @@ def make_boolean(entry, fn_sig='') -> str:
     return ''.join(line)
 
 
-# def make_assert_stmt(stub, fn_sig, fn_name=None, fn_args=None, indent=0):
-def make_assert_stmt(stub, fn_name, args, just_result=False):
+def make_assert_stmt(stub, fn_name, args=None, just_result=False):
 
     indent: int = 0
 
@@ -1518,18 +1607,15 @@ def make_assert_stmt(stub, fn_name, args, just_result=False):
 
     # find
     if (stub['kind'].startswith('predicate')) and (stub.get('predicate', '') not in PREDICATES):
-        raise FalconError(f'Predicate "{stub["predicate"]}" not found')
+        # raise FalconError(f'Predicate "{stub["predicate"]}" not found. Treating a "raw" predicate.')
+        warnings.warn(f'Predicate "{stub["predicate"]}" not found. Treating a "raw" predicate.')
 
     use_symbolic = False
     error_type = False
 
-    # get the name of the predicate if it knows it's a predicate (or should be, ie OOPS)
-    # if stub.get('predicate', False) and PREDICATES[stub['predicate']][2] is True:
-    # if stub.get('predicate', ''):
-    #     print('!!!', PREDICATES[stub['predicate']])
-    #     error_type = True
-
-    # print(stub.get('predicate', '.'), stub['kind'])
+    # TODO: refactor to this. Returns a namedtuple -> name, symbol, is_error, is_group
+    # predicate = PREDICATES[stub['predicate']]
+    # has_values = ...
 
     if stub['kind'].startswith('predicate') and stub['predicate'] in PREDICATES:
         # get the symbolic name if there is one, otherwise the function name
@@ -1541,7 +1627,6 @@ def make_assert_stmt(stub, fn_name, args, just_result=False):
             pd_name = PREDICATES[stub['predicate']][0]
             use_symbolic = False
     elif stub['kind'].startswith('predicate'):
-        # pd_name = stub['predicate']
         pd_name = PREDICATES[stub['predicate']][0]
     elif stub.get('predicate', False):
         # TODO: Does not handle symbolic tests!!!
@@ -1550,18 +1635,17 @@ def make_assert_stmt(stub, fn_name, args, just_result=False):
         # These are the exception to the rule...
         pd_name = ''
     else:
-        raise FalconError(f"Predicate {stub['predicate']} not found")
+        # raise FalconError(f"Predicate {stub['predicate']} not found")
+        warnings.warn(f"Predicate {stub['predicate']} not found.")
+        pd_name = stub['predicate']
 
     if stub['kind'] == 'predicate-value':
-        # raises is a special case
-        # if pd_name == 'raises':
-        #     line = f'assert {pd_name}({fn_name}, {args}, {stub["value"]})'
-        if PREDICATES[stub['predicate']][2] and not just_result:
+        if PREDICATES[stub['predicate']].is_error and not just_result:
             # it's an error
-            line = f'assert {pd_name}(call({fn_name}, {args}, {stub["value"]}))'
-        elif PREDICATES[stub['predicate']][2] and isinstance(stub["value"], tuple):
+            line = f'assert {pd_name}({fn_name}, {args}, {stub["value"]})'
+        elif PREDICATES[stub['predicate']].is_error and isinstance(stub["value"], tuple):
             line = f2.format(pd_name, 'result', ','.join(stub["value"]))
-        elif PREDICATES[stub['predicate']][2]:
+        elif PREDICATES[stub['predicate']].is_error:
             line = f4.format(pd_name, 'result')
         elif use_symbolic and stub['value'] == 'True':
             line = f4.format(pd_name, fn_sig)
@@ -1573,9 +1657,6 @@ def make_assert_stmt(stub, fn_name, args, just_result=False):
         line = f4.format(pd_name, fn_sig)
     elif stub['kind'] == 'predicate-value+':
         line = f2.format(pd_name, fn_sig, ', '.join(stub['value']))
-    # elif stub['kind'] == 'predicate-values':
-    #     # this is redundant and should be predicate-value+, it is for the groupby
-    #     line = f2.format(pd_name, fn_sig, ', '.join(stub['values']))
     elif stub['kind'] == 'logical' or stub['kind'] == 'assert-logical':
         line = 'assert ' + make_boolean(stub['values'], fn_sig)
     elif stub['kind'] == 'code':
@@ -1756,20 +1837,20 @@ def get_directives(entry):
 
     # *** get function name ***
     # this is mostly for use with pytest
-    # fn_name = entry['function']
+    fn_name = entry['function']
     directives['fn_name'] = entry['function']
 
-    if entry['directives'].get(':test-name', None):
+    if entry['directives'].get(':test-name', False):
         # TODO: raise warning if it does not start with test
         t_name = entry['directives'][':test-name']['value']
         directives['pyfunc'] = f'def {t_name}():'
-    elif entry['directives'].get(':name', None):
+    elif entry['directives'].get(':name', False):
         t_name = entry['directives'][':name']['value']
         directives['pyfunc'] = f'def {t_name}():' if t_name.startswith('test') else f'def test_{t_name}():'
     else:
         rand_name = ''.join((choices(ascii_letters+digits, k=randint(2, 5))))
-        directives['pyfunc'] = 'def test_{}_{}():'.format(directives['fn_name'], rand_name)
-
+        # fname = entry['directives'][':name']['value'] if entry['directives'].get(':name', False) else ''
+        directives['pyfunc'] = f"def test_{fn_name}_{rand_name}():"
     # *** get suffix ***
     # looks for :no-suffix or :suffix <blank> or :suffix '' or :suffix '_i'
     if entry['directives'].get(':no-suffix', False):
@@ -1850,4 +1931,39 @@ def get_directives(entry):
         directives['object-update'] = False
 
     return directives
+
+# groupby tools ---------------------------------
+
+# need:
+#   make_test_assert, make_groupby_assert, make_satisfy_assert, make_assert_assert
+
+def make_satisfy_assert(kind, predicate , error=None):
+    pass
+
+def get_predicate(stub, by_group=False):
+
+    predicate, values = None, None
+
+    # name
+    if not by_group:
+        if name := stub.get('predicate', False):
+            predicate = PREDICATES.get(name, None)
+    elif by_group:
+        if name := stub.get('group-predicate', False):
+            predicate = PREDICATES.get(name, None)
+
+    # values
+    if not by_group:
+        if stub.get('value', False):
+            values = stub['value']
+        elif stub.get('values', False):
+            values = stub['values']
+    elif by_group:
+        if stub.get('group-values', False):
+            values = stub['group-values']
+        elif stub.get('groupby-many-with-group', False):
+            values = stub['groupby-many-with-group']
+
+    return predicate, values
+
 

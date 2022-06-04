@@ -1,12 +1,23 @@
 
+from math import isinf, isnan
 from numbers import Number
+
+
+class ComplexError(Exception):
+    pass
 
 
 class Complex(Number):
 
     __slots__ = ('n', 'j')
 
-    def __init__(self, real: float, imaginary: float=0.0):
+    def __init__(self, real: float, imaginary: float = 0.0):
+
+        if isnan(real) or isinf(real):
+            raise ComplexError('Real component cannot be nan or inf')
+        if isnan(imaginary) or isinf(imaginary):
+            raise ComplexError('Imaginary component cannot be nan or inf')
+
         self.n = real
         self.j = imaginary
 
@@ -65,47 +76,3 @@ class Complex(Number):
 
     def __rdiv__(self, other):
         raise NotImplementedError('"rdiv" is not yet implemented')
-
-
-# print('-' * 25)
-
-# from random import uniform
-
-# for _ in range(100):
-
-#     c1 = (uniform(-100., 100), uniform(-100.0, 100))
-#     c2 = (uniform(-100., 100), uniform(-100.0, 100))
-
-#     print('\nMath')
-#     print('+ ', complex_add(c1, c2))
-#     print('- ', complex_sub(c1, c2))
-#     print('⨯ ', complex_mult(c1, c2))
-    
-#     a = Complex(uniform(-100., 100), uniform(-100., 100))
-#     b = Complex(uniform(-100., 100), uniform(-100., 100))
-#     c = Complex(uniform(-100., 100), uniform(-100., 100))
-    
-#     print('\n', a, b, c)
-#     print('Valid?  ', valid_complex(a), valid_complex(b), valid_complex(c))
-#     print('Number? ', valid_number(a), valid_number(b), valid_number(c))
-
-#     print('-= ', complex_rsub(a, b))
-
-#     print('\nUnary')
-#     print(property_additive_identity(a))
-#     print(property_multiplicative_identity(a))
-#     print(property_additive_inverse(a))
-#     print(property_multiplicative_inverse(a))
-
-#     print('\nBinary')
-#     print(property_closure_add(a, b))
-#     print(property_closure_multiply(a, b))
-#     print(property_commutative_add(a, b))
-#     print(property_commutative_multiply(a, b))
-    
-#     print('\nDistributative')
-#     print(property_distributive(a, b, c))
-
-#     print('\n', '*' * 10, '\n')
-#     print(a, -a, a + -a, a + -a == Complex(0.0, 0.0))
-

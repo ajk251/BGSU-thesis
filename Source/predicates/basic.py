@@ -1,92 +1,132 @@
 
 import operator as op
 
-from predicates.predicates import predicate
+from predicates.predicates import predicate, onfail_false
 
 
 # useful -----------------------------------------
 
 # simple list, comes from:  https://docs.python.org/3/library/exceptions.html
 
-# must be of the form catches(fn, (args), ...)
 
-@predicate(alias=['error?', 'raises?'], is_error=True)
-def catch_error(fn, args, exception) -> bool:
-    result = False
-
-    try:
-        fn(*args)
-    except Exception as error:
-        result = isinstance(error, exception)
-    finally:
-        return result
+@predicate(alias=['error?'])
+@onfail_false
+def is_error(error) -> bool:
+    """Tests that the error is an Exception"""
+    return isinstance(error, Exception)
 
 
-@predicate(alias=['error-message?', 'error-says?', 'raises-with-message?', 'raises-message?'], is_error=True)
-def catch_error_message(fn, args, exception, message):
+@predicate(alias=['is-error?'])
+@onfail_false
+def raises_error(error, error_type) -> bool:
+    """Tests that the error is an instance of the specified type"""
+    return isinstance(error, Exception) or isinstance(error, error_type)
 
-    result = False
 
-    try:
-        fn(*args)
-    except Exception as error:
-        result = isinstance(error, exception)
-    finally:
-        result = message in error.args[0]
+@predicate(alias=['error-and-says?'])
+@onfail_false
+def is_error_and_says(error, error_type, message) -> bool:
+    """
+    Tests that the error is of the specific type and the error message is the same or
+    contained in the error message.
+    """
+    result =  isinstance(error, error_type) or isinstance(error, error_type)
+    result &= error.args[0] == message or message in error.args[0]
 
     return result
 
 
-@predicate(alias='zero-error?', is_error=True)
-def catch_zero_div(fn, args) -> bool:
-
-    result = False
-
-    try:
-        fn(*args)
-    except Exception as error:
-        result = isinstance(error, ZeroDivisionError)
-    finally:
-        return result
+@predicate(alias=['error-says?'])
+@onfail_false
+def is_error_and_contains(error, message) -> bool:
+    """
+    Tests that the error is an Exception and the message is the error message or the message
+    is contained in the error message.
+    """
+    return (isinstance(error, Exception) or isinstance(error, Exception)) \
+           (error.args[0] == message or message in error.args[0])
 
 
-@predicate(alias=['asserts?', 'is-assertion?'], is_error=True)
-def catch_assertion(fn, args) -> bool:
+# must be of the form catches(fn, (args), ...)
 
-    result = False
-
-    try:
-        fn(*args)
-    except Exception as error:
-        result = isinstance(error, AssertionError)
-    finally:
-        return result
-
-
-@predicate(alias='math-error?', is_error=True)
-def catch_arithmetic(fn, args) -> bool:
-
-    result = False
-
-    try:
-        fn(*args)
-    except Exception as error:
-        result = isinstance(error, ArithmeticError)
-    finally:
-        return result
-
-
-@predicate(alias='lookup-error?', is_error=True)
-def catch_lookup(fn, args) -> bool:
-
-    result = False
-
-    try:
-        fn(*args)
-    except Exception as error:
-        result = isinstance(error, LookupError)
-    finally:
-        return result
+# @predicate(alias=['error?', 'raises?'], is_error=True)
+# def catch_error(fn, args, exception) -> bool:
+#
+#     result = False
+#
+#     try:
+#         fn(*args)
+#     except Exception as error:
+#         result = isinstance(error, exception)
+#     finally:
+#         return result
+#
+#
+# @predicate(alias=['error-message?', 'error-says?', 'raises-with-message?', 'raises-message?'], is_error=True)
+# def catch_error_message(fn, args, exception, message):
+#
+#     result = False
+#
+#     try:
+#         fn(*args)
+#     except Exception as error:
+#         result = isinstance(error, exception)
+#     finally:
+#         result = message in error.args[0]
+#
+#     return result
+#
+#
+# @predicate(alias='zero-error?', is_error=True)
+# def catch_zero_div(fn, args) -> bool:
+#
+#     result = False
+#
+#     try:
+#         fn(*args)
+#     except Exception as error:
+#         result = isinstance(error, ZeroDivisionError)
+#     finally:
+#         return result
+#
+#
+# @predicate(alias=['asserts?', 'is-assertion?'], is_error=True)
+# def catch_assertion(fn, args) -> bool:
+#
+#     result = False
+#
+#     try:
+#         fn(*args)
+#     except Exception as error:
+#         result = isinstance(error, AssertionError)
+#     finally:
+#         return result
+#
+#
+# @predicate(alias='math-error?', is_error=True)
+# def catch_arithmetic(fn, args) -> bool:
+#
+#     result = False
+#
+#     try:
+#         fn(*args)
+#     except Exception as error:
+#         result = isinstance(error, ArithmeticError)
+#     finally:
+#         return result
+#
+#
+# @predicate(alias='lookup-error?', is_error=True)
+# def catch_lookup(fn, args) -> bool:
+#
+#     result = False
+#
+#     try:
+#         fn(*args)
+#     except Exception as error:
+#         result = isinstance(error, LookupError)
+#     finally:
+#         return result
 
 
 # @predicate(alias=['raises?'], is_error=True)
@@ -119,6 +159,12 @@ def catch_lookup(fn, args) -> bool:
 @predicate(alias=['is-None?', 'is-none?', 'None?', 'none?'])
 def is_none(value) -> bool:
     return value is None
+
+
+@predicate(alias=['instance?'])
+def is_instance(value, result) -> bool:
+    # this was done for the triangle example
+    return isinstance(result, value)
 
 
 @predicate(alias=['is-a?'])

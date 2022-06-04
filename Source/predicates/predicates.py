@@ -6,7 +6,7 @@ from typing import Union
 PREDICATES = dict()
 
 # use this instead!
-Value = namedtuple('Value', 'name,symbol,is_error')
+Value = namedtuple('Value', 'name,symbol,is_error,is_group')
 
 #help from: https://realpython.com/primer-on-python-decorators/
 
@@ -27,7 +27,8 @@ def predicate(_fn=None, *, alias=None, symbol: NullString = None, is_error: bool
     def function(func):
 
         # don't really need the function itself...
-        values = (func.__name__, symbol, is_error, is_group)
+        # values = (func.__name__, symbol, is_error, is_group)
+        values = Value(func.__name__, symbol, is_error, is_group)
 
         if isinstance(alias, (list, tuple)):
             for name in alias:
