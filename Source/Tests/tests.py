@@ -10,109 +10,113 @@ from collections import defaultdict
 import unittest
 
 import pytest
-from Examples.Triangle_problem import *
+from Tests.ComplexNumber import Complex
+from Tests.ComplexPredicates import *
 
 # This file was generated automatically by falcon.
-# from: Tests/triangle-problem.fcn
-# on 2022 Jun 03 Fri 23:46:51
+# from: Tests/complex.fcn
+# on 2022 Jun 03 Fri 23:53:14
 
-values = permutations_of(values=[-1, 0, 1, 2, 3, 4, 5], repeat=3)
-values2 = critical_values()
+A = Reals2()
+B = Reals2()
+lower = integers(lower=0, upper=100)
+upper = integers(lower=-100, upper=100)
+critical = CSVDomain('./tests/special-case.txt')
 
-def test_classify_k2():
+def test_Complex_assertions_d092P():
 
-    groups = defaultdict(list)
-    results = defaultdict(list)
+    assert Complex(1.0, 1.0) == ('=', 'Complex(1.0, 1.0)')
+    assert Complex(1, 1) == ('=', 'Complex(1.0, 1.0)', None, None), "This should never fail"
+    assert Complex(10.0, 10.0) < ('<', 'Complex(20.0, 20.0)')
+    assert is_error(Complex(nan, 1.0), ('error?', 'AssertionError'))
+    assert between(Complex(1.0, 1.0), -1.0, 1.0)
+    assert is_error_and_contains(Complex(inf, inf), Exception, "Value must be a float")
+    assert is_complex(Complex(1.0, 0.0), False) or is_float(Complex(1.0, 0.0), False)
+    with pytest.raises(TypeError):
+        assert is_a(Complex(inf, inf))
+    with pytest.raises(Exception):
+        assert is_a(Complex(nan, nan))
+    with pytest.raises(Exception):
+        assert between(Complex(nan, inf), -1, 1)
+    with pytest.raises(TypeError):
+        assert between(Complex(nan, inf), -1, 1)
 
-    for side1ᵢ, side2ᵢ, side3ᵢ in all_triplets_of(values, n=3):
+# start test -----------------
+def test_Complex_DX():
+
+    # Test the unary properties blah blah blah
+
+    for aᵢ,bᵢ in A:
+        assert not (is_none(Complex(aᵢ, bᵢ), False))
+        with pytest.raises(Exception):
+            assert valid_number(Complex(aᵢ, bᵢ))
+        with pytest.raises(ZeroDivisionError):
+            assert valid_number(Complex(aᵢ, bᵢ))
+        with pytest.raises(TypeError):
+            assert between(Complex(aᵢ, bᵢ), -10, 10)
+        with pytest.raises(Exception):
+            assert between(Complex(aᵢ, bᵢ), 1, 2)
+        assert valid_number(Complex(aᵢ, bᵢ))
+        assert valid_complex(Complex(aᵢ, bᵢ))
+        assert property_additive_identity(Complex(aᵢ, bᵢ))
+        assert property_multiplicative_identity(Complex(aᵢ, bᵢ))
+        assert property_additive_identity(Complex(aᵢ, bᵢ))
+
+C1 = ComplexDomain()
+C2 = ComplexDomain()
+
+# start test -----------------
+def test___5v3oT():
+
+    # Test the properties of Complex numbers
+
+    for c1, c2 in zip(C1, C2):
+        assert property_closure_add(c1, c2)
+        assert property_closure_multiply(c1, c2)
+        assert property_commutative_add(c1, c2)
+        assert property_commutative_multiply(c1, c2)
+        assert property_multiplicative_inverse(c1, c2)
+        with pytest.raises(Exception):
+            assert property_closure_add(c1, c2)
+        with pytest.raises(TypeError):
+            assert property_closure_add(c1, c2)
+
+
+# start test -----------------
+def test___ViRoo():
+
+    # Test the mathematical properties
+
+    for c1, c2 in zip(C1, C2):
+        assert complex_add(c1, c2)
+        assert complex_sub(c1, c2)
+        assert complex_mult(c1, c2)
+        assert complex_radd(c1, c2)
+        assert complex_rsub(c1, c2)
+        assert complex_rmul(c1, c2)
+
+CT = ComplexTestDomain()
+
+def test_Complex_PRr():
+
+    for rᵢ,iᵢ in CT:
 
         try:
-            result = classify(side1ᵢ, side2ᵢ, side3ᵢ)
-        except Exception as e:
-            result = e
+            result = Complex(rᵢ, iᵢ)
+        except Exception as error:
+            result = error
 
-    if not_triangle(side1ᵢ, side2ᵢ, side3ᵢ):
-        assert is_instance(result, Triangle.not_triangle)
-        groups['Not-a-Triangle'].append(side1ᵢ, side2ᵢ, side3ᵢ)
-        results['Not-a-Triangle'].append(result)
-    elif all_equal(side1ᵢ, side2ᵢ, side3ᵢ):
-        assert is_instance(result, Triangle.equilateral)
-        groups['Not-a-Triangle'].append(side1ᵢ, side2ᵢ, side3ᵢ)
-        results['Not-a-Triangle'].append(result)
-    elif all_different(side1ᵢ, side2ᵢ, side3ᵢ):
-        assert is_instance(result, Triangle.scalene)
-        groups['Not-a-Triangle'].append(side1ᵢ, side2ᵢ, side3ᵢ)
-        results['Not-a-Triangle'].append(result)
-    elif two_equal(side1ᵢ, side2ᵢ, side3ᵢ):
-        assert is_instance(result, Triangle.isosceles)
-        groups['Not-a-Triangle'].append(side1ᵢ, side2ᵢ, side3ᵢ)
-        results['Not-a-Triangle'].append(result)
-    else:
-        raise FalconError('Failed to meet at least one group')
+        count = 0
 
+        if valid_number(result):
+            count += 1
+        if valid_complex(result):
+            count += 1
+        if valid_number(result):
+            count += 1
+        if property_additive_identity(result):
+            count += 1
+        if property_multiplicative_identity(result):
+            count += 1
 
-
-def test_classify_1OUcU():
-
-    groups = defaultdict(list)
-    results = defaultdict(list)
-
-    for side1ᵢ, side2ᵢ, side3ᵢ in all_triplets_of(values, n=3):
-
-        try:
-            result = classify(side1ᵢ, side2ᵢ, side3ᵢ)
-        except Exception as e:
-            result = e
-
-    if not_triangle(side1ᵢ, side2ᵢ, side3ᵢ):
-        assert is_instance(result, Triangle.not_triangle)
-        groups['Not-a-Triangle'].append(side1ᵢ, side2ᵢ, side3ᵢ)
-        results['Not-a-Triangle'].append(result)
-    elif all_equal(side1ᵢ, side2ᵢ, side3ᵢ):
-        assert is_equilateral(result)
-        groups['Not-a-Triangle'].append(side1ᵢ, side2ᵢ, side3ᵢ)
-        results['Not-a-Triangle'].append(result)
-    elif all_different(side1ᵢ, side2ᵢ, side3ᵢ):
-        assert is_scalene(result)
-        groups['Not-a-Triangle'].append(side1ᵢ, side2ᵢ, side3ᵢ)
-        results['Not-a-Triangle'].append(result)
-    elif two_equal(side1ᵢ, side2ᵢ, side3ᵢ):
-        assert is_isosceles(result)
-        groups['Not-a-Triangle'].append(side1ᵢ, side2ᵢ, side3ᵢ)
-        results['Not-a-Triangle'].append(result)
-    else:
-        raise FalconError('Failed to meet at least one group')
-
-
-
-def test_classify_l6():
-
-    groups = defaultdict(list)
-    results = defaultdict(list)
-
-    for s1, s2, s3 in all_triplets_of(values2, n=3):
-
-        try:
-            result = classify(s1, s2, s3)
-        except Exception as e:
-            result = e
-
-    if not_positive_integers(s1, s2, s3) or not_satisfy_triangle_theorem(s1, s2, s3):
-        assert not_triangle(result)
-        groups['Not-a-Triangle'].append(s1, s2, s3)
-        results['Not-a-Triangle'].append(result)
-    elif all_equal(s1, s2, s3):
-        assert is_equilateral(result)
-        groups['Not-a-Triangle'].append(s1, s2, s3)
-        results['Not-a-Triangle'].append(result)
-    elif all_different(s1, s2, s3):
-        assert is_scalene(result)
-        groups['Not-a-Triangle'].append(s1, s2, s3)
-        results['Not-a-Triangle'].append(result)
-    elif two_equal(s1, s2, s3):
-        assert is_isosceles(result)
-        groups['Not-a-Triangle'].append(s1, s2, s3)
-        results['Not-a-Triangle'].append(result)
-    else:
-        raise FalconError('Failed to meet at least one group')
-
+        assert count >= 1, f"The minimum number of predicates has not been met - met: {count}, min: 1  [with {result}]"

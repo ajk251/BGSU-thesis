@@ -14,9 +14,9 @@ Assert Complex:
   | (1.0, 1.0) = `Complex(1.0, 1.0)`
   | (1, 1) = `Complex(1.0, 1.0)` ~~ "This should never fail"
   | (10.0, 10.0) < `Complex(20.0, 20.0)`
-  | (nan, 1.0) raises? AssertionError
+  | (nan, 1.0) error? AssertionError
   | (1.0, 1.0) between? `-1.0` `1.0`
-  | (inf,inf) raises-message? Exception "Value must be a float"
+  | (inf,inf) error-says? Exception "Value must be a float"
   | (1.0, 0.0) is-complex? || is-float?
   |! TypeError (inf, inf) is-a? Complex
   |! (nan, nan) is-a? Complex

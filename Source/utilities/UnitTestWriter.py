@@ -478,8 +478,8 @@ def basic_Groupby2(entry) -> str:
     fn_name = directives['fn_name']
     followup = directives['follow-up']
 
-    save_results = True if entry.get(':no-results', True) else False
-    save_groups = True if entry.get(':no-cases', True) else False
+    save_results = True if entry.get(':save-results', False) else False
+    save_groups = True if entry.get(':save-cases', False) else False
 
     args = ', '.join(labels)
     fn_sig = '{}({})'.format(fn_name, args)
@@ -544,6 +544,8 @@ except Exception as e:
     labels = ', '.join(labels)
 
     cond = 'if'         # rather than have if if, if elif, ...
+
+    indent += 1
 
     for group, stub in groups:
 
@@ -709,7 +711,13 @@ except Exception as e:
 
     indent -= 1
 
-    if followup:
+    if followup and save_results:
+        line = f'\n{indent * TAB}{followup}(results)'
+        lines.append(line)
+    elif followup and save_groups:
+        line = f'\n{indent * TAB}{followup}(groups)'
+        lines.append(line)
+    elif followup and save_groups and save_results:
         line = f'\n{indent * TAB}{followup}(groups, results)'
         lines.append(line)
 
