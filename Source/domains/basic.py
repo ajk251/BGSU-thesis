@@ -2,6 +2,7 @@
 from itertools import combinations, count, product
 from random import choice, randrange, randint, random, uniform
 from typing import Any, Iterator, Tuple, Union
+from sys import float_info, maxsize
 
 from domains.domains import domain
 
@@ -47,11 +48,11 @@ def integer_range(lower: int = 1, upper: int = 1_000_000, step: int = 1) -> Iter
 # randomized ----------------------------------------------
 
 @domain(alias=['Reals', 'Floats'])
-def reals(lower: float = 0.0, upper: float = 100.00, n: int = 100) -> Iterator[float]:
-    """Produces n random floats"""
+def reals(lower: float = None, upper: float = None, n: int = 100) -> Iterator[float]:
+    """Produces n random floats. Note: if lower/upper is None, then the system min/max are used."""
 
-    lower = float(lower)
-    upper = float(upper)
+    lower = float(lower) if lower is not None else float_info.min
+    upper = float(upper) if upper is not None else float_info.max
 
     i = 0
 
@@ -61,11 +62,11 @@ def reals(lower: float = 0.0, upper: float = 100.00, n: int = 100) -> Iterator[f
 
 
 @domain(alias=['Integers', 'Ints'])
-def integers(lower: int = 0, upper: int = 100, n: int = 100) -> Iterator[int]:
-    """Produces n random integers"""
+def integers(lower: int = None, upper: int = None, n: int = 100) -> Iterator[int]:
+    """Produces n random integers. Note: if lower/upper are not specified, sys.maxsize is used"""
 
-    lower = int(lower)
-    upper = int(upper)
+    lower = int(lower) if lower is not None else -maxsize - 1
+    upper = int(upper) if upper is not None else maxsize
 
     i = 0
 
