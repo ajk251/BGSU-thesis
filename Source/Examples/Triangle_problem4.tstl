@@ -1,0 +1,7 @@
+
+@import Triangle_problem4
+
+pool: <int> 3
+<int> := <[-1..100]>
+
+property: Triangle_problem4.test_classify(<int>, <int>, <int>)

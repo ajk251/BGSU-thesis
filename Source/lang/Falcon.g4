@@ -54,6 +54,7 @@ test_stub: BAR predicate ('~~' STRING)?                             #stub_p
          | ABAR value predicate ('~~' STRING)?                      #stub_side_effect
          | EBAR value? predicate ('~~' STRING)?                     #stub_fail_side_effect
          | EBAR value? predicate (value)+ ('~~' STRING)?            #stub_fail_side_effect_many
+//         | MBAR predicate value* ('~~' STRING)?                     #stub_value_bar               # change predicate instead
          ;
 
 test_logical: OP_NOT? predicate value* (OP_LOGICAL OP_NOT? predicate value*)* #stub_logic
@@ -177,6 +178,7 @@ ASSIGN: ':=' | '≔';
 BAR: '|';
 ABAR: '|>';
 EBAR: '|!';
+MBAR: '|%';         // to call with just values
 COLON: ':';
 
 // others?

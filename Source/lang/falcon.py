@@ -655,6 +655,7 @@ class Falcon(FalconVisitor):
         return directives
 
     # test/assert ------
+
     def visitStub_p(self, ctx: FalconParser.Stub_pContext):
 
         stub = {'kind': 'predicate', 'value': 'True', 'error-message': None}
@@ -840,7 +841,6 @@ class Falcon(FalconVisitor):
         #     stub['error-message'] = str(ctx.STRING())
 
         return stub
-
 
     def visitStub_logical(self, ctx: FalconParser.Stub_logicalContext):
 

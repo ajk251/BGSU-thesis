@@ -1975,3 +1975,34 @@ def get_predicate(stub, by_group=False):
     return predicate, values
 
 
+# def make_assert(stub, fn_name, args=None, just_result=False):
+#
+#     indent: int = 1
+#     line = ''
+#
+#     f1 = 'assert {} {} {}'              # w/ symbol             result < 4
+#     f2 = 'assert {}({}, {})'            # pd( fn(arg), value)
+#     f3 = 'assert {}({}, {})'            # w/ function
+#     f4 = 'assert {}({})'                # ignoring True
+#
+#      # find
+#     if (stub['kind'].startswith('predicate')) and (stub.get('predicate', '') not in PREDICATES):
+#         warnings.warn(f'Predicate "{stub["predicate"]}" not found. Treating as a "raw" predicate.')
+#         predicate = stub['predicate']
+#     else:
+#         #           name, symbol, is-error, is-group, only-values
+#         predicate = (stub['predicate']['name'], None, False, False, False)
+#
+#     kind = stub['kind']
+#     has_values = True if stub['predicate'].get('value', False) or stub['predicate'].get('values', False) else False
+#
+#     if kind == 'code':
+#         line = stub['value']
+#     elif kind == 'predicate':
+#
+#         match predicate:
+#             case (_, None, False, False, False):
+#                 pass
+#             case (_, _, _, _, _):
+#                 pass
+

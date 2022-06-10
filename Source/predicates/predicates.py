@@ -6,7 +6,7 @@ from typing import Union
 PREDICATES = dict()
 
 # use this instead!
-Value = namedtuple('Value', 'name,symbol,is_error,is_group')
+Value = namedtuple('Value', 'name,symbol,is_error,is_group,only_values')
 
 #help from: https://realpython.com/primer-on-python-decorators/
 
@@ -21,14 +21,14 @@ NullString = Union[None, str]
 # note: is_error implies calls should be expanded, ie fn(f, args)
 #       is_group implies tests should be in the aggregate
 
-def predicate(_fn=None, *, alias=None, symbol: NullString = None, is_error: bool = False, is_group: bool = False):
+def predicate(_fn=None, *, alias=None, symbol: NullString = None, is_error: bool = False, is_group: bool = False, only_values=False):
     """Function decorator to define predicates for Falcon."""
 
     def function(func):
 
         # don't really need the function itself...
         # values = (func.__name__, symbol, is_error, is_group)
-        values = Value(func.__name__, symbol, is_error, is_group)
+        values = Value(func.__name__, symbol, is_error, is_group, only_values)
 
         if isinstance(alias, (list, tuple)):
             for name in alias:
