@@ -15,15 +15,25 @@ import types
 
 # system ----------------------------------------
 
+@predicate(alias=['none?', 'is-none?'])
+def is_none(a) -> bool:
+    return a is None
+
+
+@predicate(alias=['not-none?', 'is-not-none?'])
+def is_not_none(a) -> bool:
+    return a is not None
+
+
 @predicate(alias='same?')
 def is_same(a, b) -> bool:
-    '''Tests whether two objects are the same based on memory location'''
+    """Tests whether two objects are the same based on memory location"""
     return id(a) == id(b)
 
 
 @predicate(alias='unique?')
 def is_unique(a, b) -> bool:
-    '''Tests whether two objects are unique based on memory location'''
+    """Tests whether two objects are unique based on memory location"""
     return id(a) != id(b)
 
 # object ----------------------------------------
@@ -76,7 +86,7 @@ def is_float(n) -> bool:
     return isinstance(n, numbers.Real) and isinstance(n, float)
 
 
-@predicate(alias=['floating-int?', 'real-int?'])
+@predicate(alias=['floating-int?', 'real-int?', 'real-or-int?'])
 def is_float_int(n) -> bool:
     return float.is_integer(n)
 

@@ -1,6 +1,8 @@
 
 from predicates import predicate
 
+# NOTE: This is experimental. I'm not sure if it makes sense.
+
 # help from:
 #   https://rszalski.github.io/magicmethods/
 

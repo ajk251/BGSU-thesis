@@ -40,11 +40,17 @@ if __name__ == '__main__':
         # file = 'Tests/initial-tests.fcn'
         # file = 'Tests/winnow_test.fcn'
         # file = 'Tests/unit-tests.fcn'
+        # file = 'Tests/unit-test2.fcn'
         # file = 'Tests/pytest-tests.fcn'
         # file = 'Tests/winnow_test2.fcn'
         # file = 'Tests/winnow_tests3.fcn'
         # file = 'Tests/satisfy-tests.fcn'
-        file = 'Tests/complex.fcn'
+        # file = 'Tests/complex.fcn'
+        # file = 'Tests/groupby-tests.fcn'
+        # file = 'Tests/triangle-problem.fcn'
+        # file = 'Tests/assert2.fcn'
+        # file = 'Tests/complex-satisfy.fcn'
+        file = 'Tests/agreement.fcn'
 
     input_stream = FileStream(file, encoding='utf-8')
     lexer = FalconLexer(input_stream)
@@ -53,12 +59,21 @@ if __name__ == '__main__':
 
     parser = FalconParser(token_stream)
 
-    tree = parser.program()
+    # tree = parser.program()
+    # falcon = Falcon()
+    # falcon.visit(tree)
+    #
+    # tests = falcon.intermediate_tests()
+    # write_basic_unittest(tests, file)
+
+    tree = parser.block()
     falcon = Falcon()
     falcon.visit(tree)
 
     tests = falcon.intermediate_tests()
     write_basic_unittest(tests, file)
+
+    # -------------------------------------------
 
     print('-'*45)
     print('tests:')

@@ -3,7 +3,7 @@ from copy import deepcopy
 from itertools import product
 from math import isinf, isnan, isclose, inf, nan, pi
 from numbers import Number
-from random import uniform
+from random import choices, uniform
 
 import domains
 import predicates
@@ -99,6 +99,23 @@ def ComplexTestDomain():
 
     for a, b in product(values, values):
         yield a, b
+
+def ComplexTestValues(n: int = 100):
+    """Takes a set of values, returning two tuple of values, upto n values"""
+
+    values = [1.0, 0.0,
+              349581234123900987620918723404.0,
+              23452352345981029487612837649182376419827364912837.1,
+              -2352346245323651468435164131685464316846.1,
+              1, 0, inf, nan, pi]
+
+    i = 0
+
+    while i < n:
+        c1 = choices(values, k=2)
+        c2 = choices(values, k=2)
+        yield c1, c2
+        i += 1
 
 # -----------------------------------------------
 # for special tests
@@ -204,7 +221,6 @@ def property_distributive(a: Complex, b: Complex, c: Complex):
            isclose(c3.real, c4.real) and isclose(c3.imaginary, c4.imaginary) 
 
 # properties ------------------------------------
-
 
 @predicate(alias=['ℂ?', 'complex-num?', 'complex-number?'])
 def valid_complex(complex_number: Complex):

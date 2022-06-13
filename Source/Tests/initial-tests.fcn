@@ -1,13 +1,23 @@
 
-:import Tests.test_functions -from add
+//:import Tests.test_functions -from add
+
+Domain art1 Art -max_candidates 100
+Domain art2 Art -max_candidates 200
 
 Domain X Integers -1000 1000 -nrandom 10
 Domain Y Integers -500  500  -nrandom 10
+Domain Z Integers
 
-Test add X Y:
+Test add art1, art2:
   | :message "please work"
   | :test-name test_add
-  | :method art
+  | :object-update
+  //| :method art
   | int?
   | between -1500 1500
+  ;
+
+Test add X,Z:
+  | int?
+  | between -100 100
   ;

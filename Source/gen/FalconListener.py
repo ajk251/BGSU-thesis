@@ -1,4 +1,4 @@
-# Generated from /media/aaron/Shared2/School/BGSU-thesis/Source/lang/Falcon.g4 by ANTLR 4.9.1
+# Generated from /media/aaron/Shared2/School/BGSU-thesis/Source/lang/Falcon.g4 by ANTLR 4.10.1
 from antlr4 import *
 if __name__ is not None and "." in __name__:
     from .FalconParser import FalconParser
@@ -7,15 +7,6 @@ else:
 
 # This class defines a complete listener for a parse tree produced by FalconParser.
 class FalconListener(ParseTreeListener):
-
-    # Enter a parse tree produced by FalconParser#program.
-    def enterProgram(self, ctx:FalconParser.ProgramContext):
-        pass
-
-    # Exit a parse tree produced by FalconParser#program.
-    def exitProgram(self, ctx:FalconParser.ProgramContext):
-        pass
-
 
     # Enter a parse tree produced by FalconParser#block.
     def enterBlock(self, ctx:FalconParser.BlockContext):
@@ -59,6 +50,15 @@ class FalconListener(ParseTreeListener):
 
     # Exit a parse tree produced by FalconParser#test_basic.
     def exitTest_basic(self, ctx:FalconParser.Test_basicContext):
+        pass
+
+
+    # Enter a parse tree produced by FalconParser#macro_basic.
+    def enterMacro_basic(self, ctx:FalconParser.Macro_basicContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#macro_basic.
+    def exitMacro_basic(self, ctx:FalconParser.Macro_basicContext):
         pass
 
 
@@ -125,6 +125,24 @@ class FalconListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by FalconParser#stub_assert_logical.
+    def enterStub_assert_logical(self, ctx:FalconParser.Stub_assert_logicalContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#stub_assert_logical.
+    def exitStub_assert_logical(self, ctx:FalconParser.Stub_assert_logicalContext):
+        pass
+
+
+    # Enter a parse tree produced by FalconParser#stub_assert_error.
+    def enterStub_assert_error(self, ctx:FalconParser.Stub_assert_errorContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#stub_assert_error.
+    def exitStub_assert_error(self, ctx:FalconParser.Stub_assert_errorContext):
+        pass
+
+
     # Enter a parse tree produced by FalconParser#stub_directives.
     def enterStub_directives(self, ctx:FalconParser.Stub_directivesContext):
         pass
@@ -167,6 +185,24 @@ class FalconListener(ParseTreeListener):
 
     # Exit a parse tree produced by FalconParser#stub_side_effect.
     def exitStub_side_effect(self, ctx:FalconParser.Stub_side_effectContext):
+        pass
+
+
+    # Enter a parse tree produced by FalconParser#stub_fail_side_effect.
+    def enterStub_fail_side_effect(self, ctx:FalconParser.Stub_fail_side_effectContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#stub_fail_side_effect.
+    def exitStub_fail_side_effect(self, ctx:FalconParser.Stub_fail_side_effectContext):
+        pass
+
+
+    # Enter a parse tree produced by FalconParser#stub_fail_side_effect_many.
+    def enterStub_fail_side_effect_many(self, ctx:FalconParser.Stub_fail_side_effect_manyContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#stub_fail_side_effect_many.
+    def exitStub_fail_side_effect_many(self, ctx:FalconParser.Stub_fail_side_effect_manyContext):
         pass
 
 
@@ -239,6 +275,15 @@ class FalconListener(ParseTreeListener):
 
     # Exit a parse tree produced by FalconParser#groupby_stub_many.
     def exitGroupby_stub_many(self, ctx:FalconParser.Groupby_stub_manyContext):
+        pass
+
+
+    # Enter a parse tree produced by FalconParser#groupby_stub_many_many.
+    def enterGroupby_stub_many_many(self, ctx:FalconParser.Groupby_stub_many_manyContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#groupby_stub_many_many.
+    def exitGroupby_stub_many_many(self, ctx:FalconParser.Groupby_stub_many_manyContext):
         pass
 
 

@@ -1,0 +1,18 @@
+
+:import Tests.ComplexNumber -from [Complex, ComplexError]
+:import Tests.ComplexPredicates -all
+
+Domain CT ComplexTest
+
+Satisfy Complex CT:
+  | :labels [r, i]
+  | error-and-says? ComplexError 'Real'
+  | error-and-says? ComplexError 'Imaginary'
+  | valid-complex?
+  | complex-number?
+  | valid-complex?
+  | additive-id?
+  | multiplicative-id?
+  ;
+
+Satisfy

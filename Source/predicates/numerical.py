@@ -21,7 +21,7 @@ def is_even(n) -> bool:
     return n % 2 == 0
 
 
-@predicate(alias=['is-odd', 'odd?'])
+@predicate(alias=['is-odd?', 'odd?'])
 def is_odd(n) -> bool:
     '''Tests if a given number is odd'''
     return n % 2 != 0

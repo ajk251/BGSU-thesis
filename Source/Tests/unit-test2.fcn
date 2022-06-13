@@ -1,0 +1,49 @@
+
+t2 {
+
+ Domain X Integers
+ Domain Y Integers
+
+ Test fn X Y:
+   | is-int?
+   | is-float?
+   ;
+
+Domain Z Integers
+
+Assert fn:
+  | :ignore-True yes  :message "This is a test of some random stuff"
+  | (1,2,3) > 4
+  | (1, `[2.0]`, three=3.0) float?
+  | (1, 2, three=3, four=4) ≠ 5
+  ;
+
+ Test add X Y:
+   | :message "please work and have a suffix"
+   | :test-name test_add
+   | :labels ['a' 'b' 'c']
+   | :method all-triplets :suffix _i
+   | int?
+   | between? -1500 1500
+   ;
+
+ Groupby fna X Y -> fn_to_b:
+   | :message "Let's hope this works"
+   | 'A' float?
+   | 'A' int?
+   | 'B' between? 0 1
+   | 'B' between? -10 10
+   | 'Error' raises? ZeroDivisionError
+   ;
+
+ Satisfy add X Y:
+   | :min 1 :max 2
+   | is-int?
+   | is-float?
+   | < 4
+   //|> `x = 1 + 2`
+   | is-none? ~~ "This should be rare"
+   | error-says? ZeroDivisionError "0"
+   ;
+
+}

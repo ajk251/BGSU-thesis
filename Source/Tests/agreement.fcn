@@ -1,0 +1,18 @@
+
+:import Examples.max_agreement -all
+:import Examples.agreement_test -all
+
+Domain examples Agreement
+
+
+Test _ examples:
+ | :labels [l1, l2, depth]
+ |! agree2?
+  ;
+
+Domain values RandomAgreement
+
+Test _ values:
+  | :labels [l1, l2, depth]
+  | agree?
+  ;

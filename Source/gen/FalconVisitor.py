@@ -1,4 +1,4 @@
-# Generated from /media/aaron/Shared2/School/BGSU-thesis/Source/lang/Falcon.g4 by ANTLR 4.9.1
+# Generated from /media/aaron/Shared2/School/BGSU-thesis/Source/lang/Falcon.g4 by ANTLR 4.10.1
 from antlr4 import *
 if __name__ is not None and "." in __name__:
     from .FalconParser import FalconParser
@@ -8,11 +8,6 @@ else:
 # This class defines a complete generic visitor for a parse tree produced by FalconParser.
 
 class FalconVisitor(ParseTreeVisitor):
-
-    # Visit a parse tree produced by FalconParser#program.
-    def visitProgram(self, ctx:FalconParser.ProgramContext):
-        return self.visitChildren(ctx)
-
 
     # Visit a parse tree produced by FalconParser#block.
     def visitBlock(self, ctx:FalconParser.BlockContext):
@@ -36,6 +31,11 @@ class FalconVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by FalconParser#test_basic.
     def visitTest_basic(self, ctx:FalconParser.Test_basicContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#macro_basic.
+    def visitMacro_basic(self, ctx:FalconParser.Macro_basicContext):
         return self.visitChildren(ctx)
 
 
@@ -74,6 +74,16 @@ class FalconVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by FalconParser#stub_assert_logical.
+    def visitStub_assert_logical(self, ctx:FalconParser.Stub_assert_logicalContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#stub_assert_error.
+    def visitStub_assert_error(self, ctx:FalconParser.Stub_assert_errorContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by FalconParser#stub_directives.
     def visitStub_directives(self, ctx:FalconParser.Stub_directivesContext):
         return self.visitChildren(ctx)
@@ -96,6 +106,16 @@ class FalconVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by FalconParser#stub_side_effect.
     def visitStub_side_effect(self, ctx:FalconParser.Stub_side_effectContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#stub_fail_side_effect.
+    def visitStub_fail_side_effect(self, ctx:FalconParser.Stub_fail_side_effectContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#stub_fail_side_effect_many.
+    def visitStub_fail_side_effect_many(self, ctx:FalconParser.Stub_fail_side_effect_manyContext):
         return self.visitChildren(ctx)
 
 
@@ -136,6 +156,11 @@ class FalconVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by FalconParser#groupby_stub_many.
     def visitGroupby_stub_many(self, ctx:FalconParser.Groupby_stub_manyContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#groupby_stub_many_many.
+    def visitGroupby_stub_many_many(self, ctx:FalconParser.Groupby_stub_many_manyContext):
         return self.visitChildren(ctx)
 
 

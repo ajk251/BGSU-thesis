@@ -36,7 +36,7 @@ def cardnality_plus_minus_n(sequence, n: int, pm: int) -> bool:
     return (n - pm) <= len(sequence) <= (n + pm)
 
 
-@predicate(alias=['#!=', '#≠0', 'card-not0?'])
+@predicate(alias=['#!=', '#≠0', 'card-not-0?'])
 def cardnality_ne0(sequence) -> bool:
     return len(sequence) >= 0
 
@@ -55,11 +55,4 @@ def cardnality_within(sequence, lb: int, ub: int) -> bool:
 
 # these are useful!? --------------------------------------
 
-@predicate(alias=['not-empty?'])
-def empty(sequence) -> bool:
-    return len(sequence) == 0
 
-
-@predicate(alias=['not-empty?'])
-def not_empty(sequence) -> bool:
-    return len(sequence) >= 1
