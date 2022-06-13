@@ -35,9 +35,23 @@ def classify(a: int, b: int, c: int) -> Triangle:
     raise TriangleError(f'Could not classify input a ￫ {a}, b ￫ {b}, c ￫ {c}')
 
 
+class Classify:
+
+    def __init__(self, side1, side2, side3):
+        pass
+
+    def classify(self):
+        # return Triangle
+        pass
+
+    
+
+
+
+
 # TSTL tests -----------------------------------
 
-def test_classify(side_a: int, side_b: int, side_c: int):
+def test_classify(side_a: int, side_b: int, side_c: int) -> bool:
 
     is_triangle = lambda a,b,c: (a < b+c) and (b < a+c) and (c < a+b)
     integers    = lambda a,b,c: isinstance(a, int) and isinstance(b, int) and isinstance(c, int)
@@ -55,6 +69,15 @@ def test_classify(side_a: int, side_b: int, side_c: int):
         return kind == Triangle.not_triangle
     elif all_equal(sides):
         return kind == Triangle.equilateral
+    elif all_diff(sides):
+        return kind == Triangle.scalene
+    elif two_equal(sides):
+        return kind == Triangle.isosceles
+
+    if kind == Triangle.not_triangle:
+        return (not is_triangle(side_a, side_b, side_c)) or (not is_valid(side_a, side_b, side_c)) or (not integers(side_a, side_b, side_c)):
+    elif kind == Triangle.equilateral:
+        return all_equal(sides)
     elif all_diff(sides):
         return kind == Triangle.scalene
     elif two_equal(sides):

@@ -1,8 +1,4 @@
 from predicates import *
-from domains import *
-
-from algorithms import *
-import unittest
 
 from test_functions import add
 

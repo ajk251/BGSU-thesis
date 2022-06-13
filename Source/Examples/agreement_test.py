@@ -1,9 +1,8 @@
 
 from random import choices, randint
-from typing import Generator, List, Tuple
 
-from domains.domains import domain
-from predicates.predicates import predicate
+from Falcon.domains import domain
+from Falcon.predicates.predicates import predicate
 
 from Examples.max_agreement import average_agreement, average_agreement2
 

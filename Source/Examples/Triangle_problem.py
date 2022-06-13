@@ -3,7 +3,7 @@
 from enum import Enum
 from typing import Tuple
 
-from domains.domains import domain
+from Falcon.domains import domain
 from predicates.predicates import predicate, onfail_false
 
 Triangle = Enum('Triangle', 'equilateral, isosceles, scalene, not_triangle')

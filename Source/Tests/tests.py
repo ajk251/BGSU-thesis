@@ -15,12 +15,12 @@ from Examples.agreement_test import *
 
 # This file was generated automatically by falcon.
 # from: Tests/agreement.fcn
-# on 2022 Jun 08 Wed 16:00:42
+# on 2022 Jun 13 Mon 17:03:14
 
 examples = agreement_critical()
 
 # start test -----------------
-def test___i8LK():
+def test___cji6():
 
     for l1ᵢ,l2ᵢ,depthᵢ in examples:
         with pytest.raises(Exception):
@@ -29,7 +29,7 @@ def test___i8LK():
 values = agreement_example()
 
 # start test -----------------
-def test___KqBk():
+def test___Gt():
 
     for l1ᵢ,l2ᵢ,depthᵢ in values:
         assert agree(l1ᵢ, l2ᵢ, depthᵢ)

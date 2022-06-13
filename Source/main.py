@@ -4,12 +4,12 @@ import pprint
 
 from antlr4 import *
 
-from gen.FalconLexer import FalconLexer
-from gen.FalconParser import FalconParser
+from Falcon.gen.FalconLexer import FalconLexer
+from Falcon.gen.FalconParser import FalconParser
 
-from lang.falcon import Falcon
+from Falcon.lang.falcon import Falcon
 
-from utilities.UnitTestWriter import write_basic_unittest
+from Falcon.writers.UnitTestWriter import write_basic_unittest
 
 
 # NOTE:
