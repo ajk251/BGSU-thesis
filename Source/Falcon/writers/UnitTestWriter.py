@@ -55,7 +55,7 @@ def write_basic_unittest(intermediate, source=None, destination=None,):
     elif destination is not None:
         file = destination
     else:
-        file = 'Tests/tests.py'
+        file = 'Tests/test_falcon_unittest.py'
 
     with open(file, 'w', encoding='utf-8') as falcon:
 

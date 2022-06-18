@@ -168,7 +168,7 @@ def is_instance(value, result) -> bool:
 
 
 @predicate(alias=['is-a?'])
-def is_a(kind, value) -> bool:
+def is_a(kind, *value) -> bool:
     return isinstance(kind, value)
 
 

@@ -13,14 +13,14 @@ import pytest
 
 # This file was generated automatically by falcon.
 # from: Tests/some-tests.fcn
-# on 2022 Jun 18 Sat 18:11:46
+# on 2022 Jun 18 Sat 18:33:33
 
 X = reals()
 Y = reals(-1, 1)
 Z = integers(0, 100, n=10)
 
 # start test -----------------
-def test_fn3_NJ():
+def test_fn3_jmq():
 
     for xᵢ in X:
         assert is_modulus_of(fn3(xᵢ), 10)
@@ -32,15 +32,15 @@ def test_fn3_NJ():
 X = integers(-10, 10, n=10)
 
 # start test -----------------
-def test_fn4_qWdwS():
+def test_fn4_Ekw():
 
     for xᵢ, yᵢ, zᵢ in zip(X, Y, Z):
         assert is_modulus_of(fn4(xᵢ, yᵢ, zᵢ), 10)
-        assert is_a(fn4(xᵢ, yᵢ, zᵢ), float, int, fraction)
+        assert is_a(fn4(xᵢ, yᵢ, zᵢ), float, int, Fraction)
         assert same_instance(fn4(xᵢ, yᵢ, zᵢ), [10,10,10])
 
 
-def test_fn_assertions_Qh6a():
+def test_fn_assertions_mCe():
 
     # This is a test of some random stuff
     assert fn(1, 2, 3) > ('>', '4')

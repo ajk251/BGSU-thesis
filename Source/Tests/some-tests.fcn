@@ -29,7 +29,7 @@ Domain X Integers -10 10 -n 10
 Test fn4 X Y Z:
   | :set some-value
   | modof? 10
-  | is-a? float int fraction
+  | is-a? float int Fraction
   | same-as? `[10,10,10]`
   ;
 

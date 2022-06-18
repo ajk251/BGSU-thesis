@@ -10,7 +10,7 @@ from Falcon.gen.FalconLexer import FalconLexer
 from Falcon.gen.FalconParser import FalconParser
 from Falcon.lang.falcon import Falcon
 from Falcon.writers.UnitTestWriter import write_basic_unittest
-
+from Falcon.writers.TestWriter import write_basic_test
 
 # argument parser ----------------
 
@@ -20,13 +20,15 @@ parser = argparse.ArgumentParser(description="Generate Falcon test files")
 parser.add_argument('file', nargs=1, default=None, help='The name of Falcon file')
 
 # the output file
-parser.add_argument('output', nargs='?', default=None, help='The name of file for the generated code')
+parser.add_argument('output', nargs='*', default=None, action='append', help='The name of file for the generated code')
 
 # the output type
 parser.add_argument('--test', '-t', default=True, action='store_true',
                     required=False, help='Generate a PyTest file')
 parser.add_argument('--unit', '-u', default=False, action='store_true',
                     required=False, help='Generate a unit test file')
+parser.add_argument('--both', '-b', default=False, action='store_true',
+                    required=False, help='Generate PyTest file & unit test file')
 
 # show the tree
 parser.add_argument('--debug', '-d', default=False, action='store_true',
@@ -44,9 +46,10 @@ if __name__ == '__main__':
 
     print('The args: ', args)
 
-    file = args.file[0]
+    file = None if args.file[0] in ('-', '_') else args.file[0]
 
-    if args.file is None:
+    if file is None:
+
         # file = 'Tests/namespace-test.fcn'
         # file = 'Tests/some-tests.fcn'
         # file = 'Tests/logical-tests.fcn'
@@ -65,19 +68,14 @@ if __name__ == '__main__':
         # file = 'Tests/complex-satisfy.fcn'
         # file = 'Tests/agreement.fcn'
 
+        print(f'Using debugging file: {file}')
+
     input_stream = FileStream(file, encoding='utf-8')
     lexer = FalconLexer(input_stream)
     token_stream = CommonTokenStream(lexer)
     token_stream.fill()
 
     parser = FalconParser(token_stream)
-
-    # tree = parser.program()
-    # falcon = Falcon()
-    # falcon.visit(tree)
-    #
-    # tests = falcon.intermediate_tests()
-    # write_basic_unittest(tests, file)
 
     tree = parser.block()
     falcon = Falcon()
@@ -89,7 +87,18 @@ if __name__ == '__main__':
     # the destination file is optional
     dest_file = None if args.output is None else args.output[0]
 
-    write_basic_unittest(falcon_tree, file, dest_file)
+    if args.both:
+        # can't generate two files with the same name
+        ttest = args.output[0][0] if len(args.output[0]) == 2 else None
+        utest = args.output[0][1] if len(args.output[0]) == 2 else None
+        write_basic_test(falcon_tree, file, ttest)
+        write_basic_unittest(falcon_tree, file, utest)
+
+        print(f'Test file: "{ttest if ttest is not None else "default"}"  Unit Test file: "{utest if utest is not None else "default"}"')
+    elif args.test:
+        write_basic_test(falcon_tree, file, dest_file)
+    elif args.unit:
+        write_basic_unittest(falcon_tree, file, dest_file)
 
     # -------------------------------------------
 
