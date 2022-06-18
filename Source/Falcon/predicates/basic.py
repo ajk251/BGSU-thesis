@@ -16,7 +16,7 @@ def is_error(error) -> bool:
     return isinstance(error, Exception)
 
 
-@predicate(alias=['is-error?'])
+@predicate(alias=['is-error?', 'raises?'])
 @onfail_false
 def raises_error(error, error_type) -> bool:
     """Tests that the error is an instance of the specified type"""

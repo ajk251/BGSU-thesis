@@ -1,39 +1,52 @@
 
+import argparse
 import sys
 import pprint
 
 from antlr4 import *
+import pytest
 
 from Falcon.gen.FalconLexer import FalconLexer
 from Falcon.gen.FalconParser import FalconParser
-
 from Falcon.lang.falcon import Falcon
-
 from Falcon.writers.UnitTestWriter import write_basic_unittest
 
 
-# NOTE:
-#   How to invoke pytest
-#       https://docs.pytest.org/en/latest/how-to/usage.html
+# argument parser ----------------
 
-# TODO:
-#   Finish command line stuff
-#   add file not found error & stuff
+parser = argparse.ArgumentParser(description="Generate Falcon test files")
 
+# the input file mandatory
+parser.add_argument('file', nargs=1, default=None, help='The name of Falcon file')
 
+# the output file
+parser.add_argument('output', nargs='?', default=None, help='The name of file for the generated code')
 
-def main(argv):
+# the output type
+parser.add_argument('--test', '-t', default=True, action='store_true',
+                    required=False, help='Generate a PyTest file')
+parser.add_argument('--unit', '-u', default=False, action='store_true',
+                    required=False, help='Generate a unit test file')
 
-    if len(argv) > 1:
-        print(argv)
+# show the tree
+parser.add_argument('--debug', '-d', default=False, action='store_true',
+                    required=False, help='Show the generated tree for Falcon')
 
-    return None
+# only keyword ---------
+# invoke PyTest
+parser.add_argument('--pytest', default=False, action='store_true',
+                    required=False, help='Invoke PyTest and run on the output file')
+
+args = parser.parse_args()
+
 
 if __name__ == '__main__':
 
-    file = main(sys.argv)
+    print('The args: ', args)
 
-    if file is None:
+    file = args.file[0]
+
+    if args.file is None:
         # file = 'Tests/namespace-test.fcn'
         # file = 'Tests/some-tests.fcn'
         # file = 'Tests/logical-tests.fcn'
@@ -43,14 +56,14 @@ if __name__ == '__main__':
         # file = 'Tests/unit-test2.fcn'
         # file = 'Tests/pytest-tests.fcn'
         # file = 'Tests/winnow_test2.fcn'
-        # file = 'Tests/winnow_tests3.fcn'
+        file = 'Tests/winnow_tests3.fcn'
         # file = 'Tests/satisfy-tests.fcn'
         # file = 'Tests/complex.fcn'
         # file = 'Tests/groupby-tests.fcn'
         # file = 'Tests/triangle-problem.fcn'
         # file = 'Tests/assert2.fcn'
         # file = 'Tests/complex-satisfy.fcn'
-        file = 'Tests/agreement.fcn'
+        # file = 'Tests/agreement.fcn'
 
     input_stream = FileStream(file, encoding='utf-8')
     lexer = FalconLexer(input_stream)
@@ -70,16 +83,36 @@ if __name__ == '__main__':
     falcon = Falcon()
     falcon.visit(tree)
 
-    tests = falcon.intermediate_tests()
-    write_basic_unittest(tests, file)
+    # gets the dict/json-like tree from antlr
+    falcon_tree = falcon.intermediate_tests()
+
+    # the destination file is optional
+    dest_file = None if args.output is None else args.output[0]
+
+    write_basic_unittest(falcon_tree, file, dest_file)
 
     # -------------------------------------------
 
-    print('-'*45)
-    print('tests:')
+    # show the tree - for debugging
+    if args.debug:
 
-    pp = pprint.PrettyPrinter(2)
-    pp.pprint(tests)
+        print('-'*45)
+        print('tests:')
 
-    print('='*45)
-    print()
+        pp = pprint.PrettyPrinter(2)
+        pp.pprint(falcon_tree)
+
+        print('='*45)
+        print()
+
+
+    # invoke PyTest
+    #   https://docs.pytest.org/en/latest/how-to/usage.html
+
+    if args.pytest:
+        print('***RUNNING PyTest***')
+
+        if dest_file is None:
+            dest_file = 'Tests/tests.py'
+
+        test = pytest.main([dest_file])

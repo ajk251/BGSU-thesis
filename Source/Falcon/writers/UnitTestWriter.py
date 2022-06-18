@@ -37,15 +37,25 @@ booleans = {'∧': 'and', '&&': 'and', 'and': 'and',
 # writes the file -----------------------------------------
 
 
-def write_basic_unittest(intermediate, source=None):
+def write_basic_unittest(intermediate, source=None, destination=None,):
 
-    # print('Predicates avaliable: ', len(p.PREDICATES))
+    # intermediate is the tree, source & destination are the names of the i/o
 
     # indent: int = 0
     # nl = '\n'
 
     # file = intermediate['global']['directives'].setdefault('file', './test.py')
-    file = 'Tests/tests.py' if 'file' not in intermediate['global']['directives'] else intermediate['global']['directives']['file']
+    # file = 'Tests/tests.py' if 'file' not in intermediate['global']['directives'] else intermediate['global']['directives']['file']
+
+    # the file can be a directive, in the commandline args, or a default
+    if 'file' in intermediate['global']['directives']:
+        file = intermediate['global']['directives']
+    elif 'file' in intermediate['global']['directives']:
+        file = intermediate['global']['directives']['file']
+    elif destination is not None:
+        file = destination
+    else:
+        file = 'Tests/tests.py'
 
     with open(file, 'w', encoding='utf-8') as falcon:
 
@@ -218,13 +228,13 @@ def add_imports(entry) -> str:
 
     # TODO: Make these prettier
 
-    lines = ['from algorithms.algorithms import *',
-             'from domains import *',
-             'from macros import *',
-             'from predicates import *',
-             'from utilities.utls import call',
-             'from utilities.TestLogWriter import write_to_log',
-             'from utilities import FalconError\n',
+    lines = ['from Falcon.algorithms import *',
+             'from Falcon.domains import *',
+             'from Falcon.macros import *',
+             'from Falcon.predicates import *',
+             'from Falcon.utilities.utls import call',
+             'from Falcon.utilities.TestLogWriter import write_to_log',
+             'from Falcon.utilities import FalconError\n',
              'from collections import defaultdict',
              'import unittest\n',
              'import pytest']
@@ -1941,9 +1951,6 @@ def get_directives(entry):
 
 # need:
 #   make_test_assert, make_groupby_assert, make_satisfy_assert, make_assert_assert
-
-def make_satisfy_assert(kind, predicate , error=None):
-    pass
 
 def get_predicate(stub, by_group=False):
 

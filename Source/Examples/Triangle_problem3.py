@@ -19,9 +19,9 @@ class TriangleError(Exception):
 
 def classify(a: int, b: int, c: int) -> Triangle:
 
-    is_triangle = lambda a_,b_,c_: (a < b+c) and (b < a+c) and (c < a+b)
-    integers    = lambda a_,b_,c_: isinstance(a_, int) and isinstance(b_, int) and isinstance(c_, int)
-    is_valid    = lambda a_,b_,c_: (a_ > 0) and (b_ > 0) and (c_ > 0)
+    is_triangle = lambda a,b,c: (a < b+c) and (b < a+c) and (c < a+b)
+    integers    = lambda a,b,c: isinstance(a, int) and isinstance(b, int) and isinstance(c, int)
+    is_valid    = lambda a,b,c: (a > 0) and (b > 0) and (c > 0)
 
     assert integers(a, b, c), "All values must be integers"
 
@@ -69,6 +69,9 @@ def test_classify(side_a: int, side_b: int, side_c: int):
 
     print(side_a, side_b, side_c)
 
+# generate n triangle, then test all the properties
+if kind == '':
+    all_
 
 if __name__ == "__main__":
     test_classify()

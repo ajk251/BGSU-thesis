@@ -1,35 +1,48 @@
-from algorithms.algorithms import *
-from domains import *
-from macros import *
-from predicates import *
-from utilities.utls import call
-from utilities.TestLogWriter import write_to_log
-from utilities import FalconError
+from Falcon.algorithms import *
+from Falcon.domains import *
+from Falcon.macros import *
+from Falcon.predicates import *
+from Falcon.utilities.utls import call
+from Falcon.utilities.TestLogWriter import write_to_log
+from Falcon.utilities import FalconError
 
 from collections import defaultdict
 import unittest
 
 import pytest
-from Examples.max_agreement import *
-from Examples.agreement_test import *
 
 # This file was generated automatically by falcon.
-# from: Tests/agreement.fcn
-# on 2022 Jun 13 Mon 17:03:14
+# from: Tests/some-tests.fcn
+# on 2022 Jun 18 Sat 18:11:46
 
-examples = agreement_critical()
-
-# start test -----------------
-def test___cji6():
-
-    for l1ᵢ,l2ᵢ,depthᵢ in examples:
-        with pytest.raises(Exception):
-            assert agree2(l1ᵢ, l2ᵢ, depthᵢ)
-
-values = agreement_example()
+X = reals()
+Y = reals(-1, 1)
+Z = integers(0, 100, n=10)
 
 # start test -----------------
-def test___Gt():
+def test_fn3_NJ():
 
-    for l1ᵢ,l2ᵢ,depthᵢ in values:
-        assert agree(l1ᵢ, l2ᵢ, depthᵢ)
+    for xᵢ in X:
+        assert is_modulus_of(fn3(xᵢ), 10)
+        assert is_a(fn3(xᵢ), float)
+        assert same_instance(fn3(xᵢ), [10,10,10])
+        assert fn3(xᵢ) > 10
+        assert raises_error(fn3(xᵢ), NumericalError)
+
+X = integers(-10, 10, n=10)
+
+# start test -----------------
+def test_fn4_qWdwS():
+
+    for xᵢ, yᵢ, zᵢ in zip(X, Y, Z):
+        assert is_modulus_of(fn4(xᵢ, yᵢ, zᵢ), 10)
+        assert is_a(fn4(xᵢ, yᵢ, zᵢ), float, int, fraction)
+        assert same_instance(fn4(xᵢ, yᵢ, zᵢ), [10,10,10])
+
+
+def test_fn_assertions_Qh6a():
+
+    # This is a test of some random stuff
+    assert fn(1, 2, 3) > ('>', '4')
+    assert fn(1, 2, three=3, four=4) != ('≠', '5')
+    assert is_float(fn(1, [2.0], three=3.0))
