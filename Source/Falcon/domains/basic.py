@@ -1,14 +1,12 @@
-
+import sys
 from itertools import combinations, count, product
 from random import choice, randrange, randint, random, uniform
-from typing import Any, Iterator, Tuple, Union
+from typing import Any, Generator, Iterator, Tuple, Union
 from sys import float_info, maxsize
 
 from Falcon.domains.domains import domain
 
-
 Number = Union[int, float]
-
 # Note:
 #   - numpy as linspace, geospace, logspace
 
@@ -16,7 +14,7 @@ Number = Union[int, float]
 # linear ranges -------------------------------------------
 
 @domain(alias=['ℝ', 'RealRange', 'FloatRange'])
-def real_range(lower: float = 0.0, upper: float = 100.00, step: float=1.0) -> Iterator[float]:
+def real_range(lower: float = 0.0, upper: float = 100.00, step: float = 1.0) -> Generator[float, None, None]:
     """Produce a linear sequence of floats from the lower bound to the upper bound, non-inclusive"""
 
     lower = float(lower)
@@ -31,7 +29,7 @@ def real_range(lower: float = 0.0, upper: float = 100.00, step: float=1.0) -> It
 
 
 @domain(alias=['ℤ', 'IntegerRange', 'IntRange'])
-def integer_range(lower: int = 1, upper: int = 1_000_000, step: int = 1) -> Iterator[int]:
+def integer_range(lower: int = 0, upper: int = 100, step: int = 1) -> Generator[float, None, None]:
     """Produce a linear sequence of ints from the lower bound to the upper bound, non-inclusive"""
 
     lower = int(lower)
@@ -48,7 +46,7 @@ def integer_range(lower: int = 1, upper: int = 1_000_000, step: int = 1) -> Iter
 # randomized ----------------------------------------------
 
 @domain(alias=['Reals', 'Floats'])
-def reals(lower: float = None, upper: float = None, n: int = 100) -> Iterator[float]:
+def reals(lower: float = None, upper: float = None, n: int = 100) -> Generator[float, None, None]:
     """Produces n random floats. Note: if lower/upper is None, then the system min/max are used."""
 
     lower = float(lower) if lower is not None else float_info.min
@@ -62,7 +60,7 @@ def reals(lower: float = None, upper: float = None, n: int = 100) -> Iterator[fl
 
 
 @domain(alias=['Integers', 'Ints'])
-def integers(lower: int = None, upper: int = None, n: int = 100) -> Iterator[int]:
+def integers(lower: int = None, upper: int = None, n: int = 100) -> Generator[float, None, None]:
     """Produces n random integers. Note: if lower/upper are not specified, sys.maxsize is used"""
 
     lower = int(lower) if lower is not None else -maxsize - 1
@@ -76,7 +74,7 @@ def integers(lower: int = None, upper: int = None, n: int = 100) -> Iterator[int
 
 
 @domain(alias=['Numbers', 'MixedNumbers'])
-def numbers(lower: Number = -1, upper: Number = 1, pct_floats: float = 0.5, nrandom: int = 1000) -> Iterator[Number]:
+def numbers(lower: Number = -1, upper: Number = 1, pct_floats: float = 0.5, nrandom: int = 1000) -> Generator[float, None, None]:
     """Produces n random integers or floats"""
 
     lower = -1_000_000 if lower is None else lower
@@ -92,7 +90,7 @@ def numbers(lower: Number = -1, upper: Number = 1, pct_floats: float = 0.5, nran
 # special --------------
 
 @domain(alias=['IntegerBoundary', 'IntBoundary'])
-def int_boundary(lower: int = -1, upper: int = 1, epsilon: int = 5, bdry_values: int = 10, n: int = 100) -> Iterator[int]:
+def int_boundary(lower: int = -1, upper: int = 1, epsilon: int = 5, bdry_values: int = 10, n: int = 100) -> Generator[float, None, None]:
     """Produces n values in total, bdry_values in [lower-epsilon, lower], bdry_values in [lower, upper], and bdry_values in [upper, upper+epsilon]"""
 
     assert bdry_values * 2 <= n, "The number of points at the boundary cannot be greater than the total points"
@@ -114,7 +112,7 @@ def int_boundary(lower: int = -1, upper: int = 1, epsilon: int = 5, bdry_values:
 
 
 @domain(alias=['Boundary'])
-def boundary(lower: float = -1.0, upper: float = 1.0, epsilon: float = 5.0, bdry_values: int = 10, n: int = 100) -> Iterator[float]:
+def boundary(lower: float = -1.0, upper: float = 1.0, epsilon: float = 5.0, bdry_values: int = 10, n: int = 100) -> Generator[float, None, None]:
     """Produces n values in total, bdry_values in [lower-epsilon, lower], bdry_values in [lower, upper], and bdry_values in [upper, upper+epsilon]"""
 
     assert bdry_values * 2 <= n, "The number of points at the boundary cannot be greater than the total points"
@@ -148,7 +146,7 @@ def permutations_of(values, repeat: int = 2) -> Iterator[Tuple[Any, ...]]:
 
 
 @domain(alias=['TwiseCombinations', 'TwiseCombs'])
-def twise_combination(values, tway: int = 3) -> Iterator[Tuple[Any, ...]]:
+def twise_combination(values, tway: int = 3) -> Generator[Tuple[Any, ...], None, None]:
     """
     Generates t-wise combinations of sequences, without unnecessary values. Like IPOG, but more clear and practical, though less efficient.
     Builds t-wise tuples, then randomly assigns missing values, ie non-deterministic. Holds intermediate values.
@@ -195,7 +193,7 @@ def twise_combination(values, tway: int = 3) -> Iterator[Tuple[Any, ...]]:
 
 
 @domain(alias=['TwiseCombinationsOf', 'TwiseCombsOf'])
-def twise_combinations_of(values, tway: int = 3, repeat: int = 2) -> Iterator[Tuple[Any, ...]]:
+def twise_combinations_of(values, tway: int = 3, repeat: int = 2) -> Generator[Tuple[Any, ...], None, None]:
     """
     Generates t-wise combinations of values repeated 'repeat' times, without unnecessary values. Like IPOG, but more clear and practical, though less efficient.
     Builds t-wise tuples, then randomly assigns missing values, ie non-deterministic. Holds intermediate values.
