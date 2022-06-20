@@ -5,7 +5,7 @@ from math import isinf, isnan, isclose, inf, nan, pi
 from numbers import Number
 from random import choices, uniform
 
-from predicates import predicate, onfail_false
+from Falcon.predicates import predicate, onfail_false
 from Falcon.domains import domain
 
 from Tests.ComplexNumber import Complex

@@ -262,13 +262,15 @@ def basic_Assert(entry) -> str:
             lines.append((TAB * indent) + stub['value'])
             continue
 
+        # print(get_predicate(stub, False))
+
         # this is kind of a special case/after-thought
-        if stub.get('predicate', False) and PREDICATES[stub['predicate']][2]:
+        if stub.get('predicate', False) and PREDICATES[stub['predicate']].is_symbolic:
             # these must raise an error, ie catches(fn, args, Exception)
-            pd_name = PREDICATES[stub['predicate']][0]
+            pd_name = PREDICATES[stub['predicate']].name
             args = make_args(stub['argument'])
             line = f"{indent * TAB}assert {pd_name}({fn_name}, {args}"
-            line += f", {', '.join(stub['value'][1:])})" if len(stub['value']) > 1 else ')'
+            line += f", {', '.join(s for s in stub['value'][1:] if s is not None)})" if len(stub['value']) > 1 else ')'
             lines.append(line)
             continue
         elif stub['kind'] == 'assert-logical':
@@ -288,21 +290,22 @@ def basic_Assert(entry) -> str:
 
         args = make_args(stub['argument'])
         fn = fn_name + args
-        value = stub['value']
+        value = stub['value'][1:]
 
-        print(get_predicate(stub, False))
+        # print(get_predicate(stub, False), stub['value'])
 
-        if PREDICATES[stub['predicate']][1]:
+        if PREDICATES[stub['predicate']].is_symbolic:
             # the symbolic representation
-            pd_name = PREDICATES[stub['predicate']][1]
+            pd_name = PREDICATES[stub['predicate']].symbol
             line = a1.format(fn, pd_name, value)
         else:
-            pd_name = PREDICATES[stub['predicate']][0]
+            # print(get_predicate(stub, False), stub['value'])
+            pd_name = PREDICATES[stub['predicate']].name
 
             if ignore_true and value == 'True':
                 line = a3.format(pd_name, fn)
             elif stub['kind'] == 'logical':
-                make_assert_stmt(stub, fn_name, args, just_result=False)
+                line = make_assert_stmt(stub, fn_name, args, just_result=False)
                 # stmt = make_assert_stmt(stub, fn_name, args)
                 # print(stmt)
             elif len(value) > 2:
@@ -311,13 +314,16 @@ def basic_Assert(entry) -> str:
                 line = f"assert {pd_name}({fn_name}{args}, {v})"
                 # line = a2.format(pd_name, fn_name, ', '.join((v for v in value[1:])))
             else:
-                line = a2.format(pd_name, fn, value)
+                # print(get_predicate(stub, False), stub['value'])
+                line = a2.format(pd_name, fn, ', '.join(value))
 
         if 'error-message' in stub and stub['error-message'] is not None:
             line += f", {stub['error-message']}"
 
         # line = (TAB * indent) + line
         lines.append((TAB * indent) + line)
+
+    lines.append('')        # add a blank line
 
     return '\n'.join(lines)
 

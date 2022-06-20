@@ -59,15 +59,15 @@ if __name__ == '__main__':
         # file = 'Tests/pytest-tests.fcn'
         # file = 'Tests/winnow_test2.fcn'
         # file = 'Tests/winnow_tests3.fcn'
-        file = 'Tests/satisfy-tests.fcn'
+        # file = 'Tests/satisfy-tests.fcn'
         # file = 'Tests/complex.fcn'
         # file = 'Tests/groupby-tests.fcn'
         # file = 'Tests/triangle-problem.fcn'
-        # file = 'Tests/assert2.fcn'
+        file = 'Tests/assert2.fcn'
         # file = 'Tests/complex-satisfy.fcn'
         # file = 'Tests/agreement.fcn'
 
-        print(f'Using debugging file: {file}')
+        print(f"Using debugging file: '{file}'")
 
     input_stream = FileStream(file, encoding='utf-8')
     lexer = FalconLexer(input_stream)
@@ -89,12 +89,10 @@ if __name__ == '__main__':
     print('using file: ', dest_file, args.output)
 
     # one or both
-    if args.test and args.unit:
+    if args.test:
         write_basic_test(falcon_tree, file, dest_file)
-        write_basic_unittest(falcon_tree, file, dest_file)
-    elif args.test:
-        write_basic_test(falcon_tree, file, dest_file)
-    elif args.unit:
+
+    if args.unit:
         write_basic_unittest(falcon_tree, file, dest_file)
 
     # -------------------------------------------
