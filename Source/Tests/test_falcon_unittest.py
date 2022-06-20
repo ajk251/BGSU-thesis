@@ -10,39 +10,36 @@ from collections import defaultdict
 import unittest
 
 import pytest
+from Tests.ComplexNumber import Complex
+from Tests.ComplexPredicates import *
 
 # This file was generated automatically by falcon.
-# from: Tests/winnow_tests3.fcn
-# on 2022 Jun 18 Sat 19:20:24
+# from: Tests/assert2.fcn
+# on 2022 Jun 20 Mon 18:30:21
 
-X = integers(0, 100)
-Y = integers(0, 100)
 
-def test_winnow_fn():
+class Test(unittest.TestCase):
 
-    groups = defaultdict(list)
+    def test_Complex_assertions_flu0D(self):
 
-    for xᵢ, yᵢ in zip(X, Y):
+        assert raises_error(Complex(nan, 1.0), AssertionError)
+        assert is_error_and_says(Complex(inf, inf), Exception, "Value must be a float")
 
-        try:
-            result = fn(xᵢ, yᵢ)
-        except Exception as e:
-            result = e
+    def test_Complex_assertions_Nle1U(self):
 
-        if is_integer(result):
-            groups['a'].append((result, (xᵢ, yᵢ)))
-        if between(result, 0, 1):
-            groups['b'].append((result, (xᵢ, yᵢ)))
-        if is_float(result):
-            groups['c'].append((result, (xᵢ, yᵢ)))
-        if result > 2:
-            groups['d'].append((result, (xᵢ, yᵢ)))
+        assert eq(Complex, (1.0, 1.0), Complex(1.0, 1.0))
+        assert eq(Complex, (1, 1), Complex(1.0, 1.0))
+        assert lt(Complex, (10.0, 10.0), Complex(20.0, 20.0))
+        assert raises_error(Complex(nan, 1.0), AssertionError)
+        assert between(Complex(1.0, 1.0), -1.0, 1.0)
+        assert is_error_and_says(Complex(inf, inf), Exception, "Value must be a float")
+        assert is_complex(Complex(1.0, 0.0), False, False, False) or is_float(Complex(1.0, 0.0), False, False, False)
+        with pytest.raises(TypeError):
+            assert is_error_and_says(Complex(1.0, 0.0))
+        with pytest.raises(Exception):
+            assert is_error_and_says(Complex(1.0, 0.0))
+        with pytest.raises(Exception):
+            assert is_error_and_says(Complex(1.0, 0.0), -1, 1)
+        with pytest.raises(TypeError):
+            assert is_error_and_says(Complex(1.0, 0.0), -1, 1)
 
-        assert cardnality_gt(groups['a'], 1)
-        assert cardnality_plus_minus_n(groups['b'], 100, 10)
-        assert cardnality_lt(groups['c'], 3)
-        assert cardnality_gt(groups['d'], 1)
-
-        assert count <= 1, f"The minimum number of predicates has not been met - met: {count}, min: 1"
-
-        follow_up_func(groups)

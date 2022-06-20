@@ -430,7 +430,7 @@ def make_assert_stmt(stub, fn_name, args=None, just_result=False):
     use_symbolic = False
     error_type = False
 
-    # TODO: refactor to this. Returns a namedtuple -> name, symbol, is_error, is_group
+    # TODO: refactor to this. Returns a namedtuple -> name, symbol, is_symbolic, is_error, is_group
     # predicate = PREDICATES[stub['predicate']]
     # has_values = ...
 

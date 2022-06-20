@@ -86,7 +86,7 @@ if __name__ == '__main__':
     # the destination file is optional
     dest_file = None if args.output[0] == [] else args.output[0]
 
-    print('using file: ', dest_file, args.output)
+    print('Using file: ', 'default' if dest_file is None else dest_file)
 
     # one or both
     if args.test:

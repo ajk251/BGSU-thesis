@@ -9,7 +9,6 @@ from datetime import datetime
 from random import choices, randint
 from string import ascii_letters, digits
 
-# import predicates
 from Falcon.algorithms.algorithms import ALGORITHMS
 from Falcon.macros.macros import MACROS
 from Falcon.predicates.predicates import PREDICATES
@@ -18,8 +17,6 @@ from Falcon.utilities.FalconError import FalconError
 from Falcon import domains
 
 from Falcon.writers.tools import *
-
-#   a new file for every unit test...? or directive for it?
 
 tabsize: int = 4
 TAB: str = ' ' * tabsize
@@ -51,7 +48,7 @@ def write_basic_test(intermediate, source=None, destination=None):
     elif destination is not None:
         file = destination
     else:
-        file = 'Tests/test_falcon-file.py'
+        file = 'Tests/test_falcon_file.py'
 
     with open(file, 'w', encoding='utf-8') as falcon:
 
@@ -75,6 +72,8 @@ def write_basic_test(intermediate, source=None, destination=None):
                 # falcon.write(lines)
                 lines = make_global(intermediate[value])
                 falcon.write(lines)
+            else:
+                lines = make_global(intermediate[value])
 
             falcon.write(nl)
 
