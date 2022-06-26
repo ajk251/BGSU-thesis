@@ -1,0 +1,19 @@
+
+:import ThesisExamples.Triangle_problem -all
+
+Domain values PermutationsOf -values [-1, 0, 1, 2, 3, 4, 5] -repeat 3
+
+`# this is code`
+
+```
+# This is a code block
+even = lambda n: n % 2 == 0
+```
+
+Groupby classify values:
+  | :labels [side1 side2 side3]
+  | 'Not-a-Triangle' not-triangle?  : is? Triangle.not_triangle
+  | 'Equilateral'    all-equal?     : is? Triangle.equilateral
+  | 'Scalene'        all-different? : is? Triangle.scalene
+  | 'Isosceles'      two-equal?     : is? Triangle.isosceles
+  ;

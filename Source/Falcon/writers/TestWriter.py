@@ -270,6 +270,7 @@ def basic_Assert(entry) -> str:
             args = make_args(stub['argument'])
             line = f"{indent * TAB}assert {pd_name}({fn_name}, {args}"
             line += f", {', '.join(s for s in stub['value'][1:] if s is not None)})" if len(stub['value']) > 1 else ')'
+            line += f", {stub['error-message']}" if 'error-message' in stub and stub['error-message'] is not None else ''
             lines.append(line)
             continue
         elif stub['kind'] == 'assert-logical':
@@ -317,6 +318,7 @@ def basic_Assert(entry) -> str:
                 line = a2.format(pd_name, fn, ', '.join(value))
 
         if 'error-message' in stub and stub['error-message'] is not None:
+            print('found message')
             line += f", {stub['error-message']}"
 
         # line = (TAB * indent) + line
@@ -413,6 +415,8 @@ except Exception as e:
     cond = 'if'         # rather than have if if, if elif, ...
 
     indent += 1
+
+    # TODO: fix predicate
 
     for group, stub in groups:
 

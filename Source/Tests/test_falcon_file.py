@@ -10,34 +10,36 @@ from collections import defaultdict
 import unittest
 
 import pytest
-from Tests.ComplexNumber import Complex
-from Tests.ComplexPredicates import *
+from ThesisExamples.Triangle_problem import *
 
 # This file was generated automatically by falcon.
-# from: Tests/assert2.fcn
-# on 2022 Jun 20 Mon 18:30:21
+# from: ThesisExamples/FalconMotivation.fcn
+# on 2022 Jun 26 Sun 19:32:15
 
+values = permutations_of(values=[-1, 0, 1, 2, 3, 4, 5], repeat=3)
 
-def test_Complex_assertions_MhDIM():
+# this is code
 
-    assert raises_error(Complex(nan, 1.0), AssertionError)
-    assert is_error_and_says(Complex(inf, inf), Exception, "Value must be a float")
+# This is a code block
+even = lambda n: n % 2 == 0
 
+def test_classify_hw():
 
-def test_Complex_assertions_GJ5():
+    for side1ᵢ, side2ᵢ, side3ᵢ in zip(values):
 
-    assert eq(Complex, (1.0, 1.0), Complex(1.0, 1.0))
-    assert eq(Complex, (1, 1), Complex(1.0, 1.0))
-    assert lt(Complex, (10.0, 10.0), Complex(20.0, 20.0))
-    assert raises_error(Complex(nan, 1.0), AssertionError)
-    assert between(Complex(1.0, 1.0), -1.0, 1.0)
-    assert is_error_and_says(Complex(inf, inf), Exception, "Value must be a float")
-    assert is_complex(Complex(1.0, 0.0), False, False, False) or is_float(Complex(1.0, 0.0), False, False, False)
-    with pytest.raises(TypeError):
-        assert is_a(Complex(inf, inf))
-    with pytest.raises(Exception):
-        assert is_a(Complex(nan, nan))
-    with pytest.raises(Exception):
-        assert between(Complex(nan, inf), -1, 1)
-    with pytest.raises(TypeError):
-        assert between(Complex(nan, inf), -1, 1)
+        try:
+            result = classify(side1ᵢ, side2ᵢ, side3ᵢ)
+        except Exception as e:
+            result = e
+
+        if not_triangle(side1ᵢ, side2ᵢ, side3ᵢ):
+            assert is_instance(result, Triangle.not_triangle)
+        elif all_equal(side1ᵢ, side2ᵢ, side3ᵢ):
+            assert is_instance(result, Triangle.equilateral)
+        elif all_different(side1ᵢ, side2ᵢ, side3ᵢ):
+            assert is_instance(result, Triangle.scalene)
+        elif two_equal(side1ᵢ, side2ᵢ, side3ᵢ):
+            assert is_instance(result, Triangle.isosceles)
+        else:
+            raise FalconError('Failed to meet at least one group')
+

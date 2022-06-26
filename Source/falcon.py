@@ -8,6 +8,9 @@ import pytest
 
 from Falcon.gen.FalconLexer import FalconLexer
 from Falcon.gen.FalconParser import FalconParser
+# from Falcon.gen.FalconLexer import FalconLexer
+# from Falcon.gen.FalconParser import FalconParser
+# from Falcon.lang.falcon import Falcon
 from Falcon.lang.falcon import Falcon
 from Falcon.writers.UnitTestWriter import write_basic_unittest
 from Falcon.writers.TestWriter import write_basic_test
@@ -39,7 +42,6 @@ parser.add_argument('--pytest', default=False, action='store_true',
 
 args = parser.parse_args()
 
-
 if __name__ == '__main__':
 
     file = None if args.file[0] in ('-', '_') else args.file[0]
@@ -63,9 +65,13 @@ if __name__ == '__main__':
         # file = 'Tests/complex.fcn'
         # file = 'Tests/groupby-tests.fcn'
         # file = 'Tests/triangle-problem.fcn'
-        file = 'Tests/assert2.fcn'
+        # file = 'Tests/assert2.fcn'
         # file = 'Tests/complex-satisfy.fcn'
         # file = 'Tests/agreement.fcn'
+        # file = 'Tests/commission.fcn'
+
+        # thesis examples
+        file = 'ThesisExamples/FalconMotivation.fcn'
 
         print(f"Using debugging file: '{file}'")
 
@@ -118,4 +124,4 @@ if __name__ == '__main__':
         if dest_file is None:
             dest_file = 'Tests/tests.py'
 
-        test = pytest.main([dest_file])
+        test = pytest.main([dest_file, f'--cov={dest_file}', f'--cov-report=html {dest_file}'])

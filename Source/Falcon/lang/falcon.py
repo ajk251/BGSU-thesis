@@ -3,18 +3,12 @@ from collections import defaultdict
 
 import antlr4
 
+# from Falcon.gen.FalconVisitor import FalconVisitor
+# from Falcon.gen.FalconParser import FalconParser
+# from Falcon.Falcon.FalconVisitor import FalconVisitor
+# from Falcon.Falcon.FalconParser import FalconParser
 from Falcon.gen.FalconVisitor import FalconVisitor
 from Falcon.gen.FalconParser import FalconParser
-
-# TODO:
-#   - find funcs in modules & verify
-#   - a -decorate option, for unittest
-
-# TODO:
-#   - function args
-#   - lists
-#   - validation, ie domain is a domain, name is a py-name
-
 
 class Falcon(FalconVisitor):
 
@@ -30,9 +24,10 @@ class Falcon(FalconVisitor):
         self.current_ns = 'global'
         self.ns[self.current_ns] = {'tests': {}, 'ordering': [], 'directives': {}}
 
-        self.n = -1          #tests do not have a name…they will have a number
+        self.n = -1          # tests do not have a name… they will have a number
 
     def intermediate_tests(self):
+        """Returns the generated environment as a dictionary"""
         return self.ns
 
     def get_id(self):
@@ -79,6 +74,17 @@ class Falcon(FalconVisitor):
             self.visit(stmt)
 
         self.current_ns = previous
+
+    def visitStmt(self, ctx: FalconParser.StmtContext):
+
+        for child in ctx.children:
+
+            if isinstance(child, FalconParser.CodeContext):
+                self.visitMake_codestmt(child, True)
+            # elif isinstance(child, FalconParser.CblockContext):
+            #     self.visitMake_codeblock(child)
+            else:
+                self.visit(child)
 
     # Assign-------------------------------------
 
@@ -216,6 +222,15 @@ class Falcon(FalconVisitor):
         #     self.ns[self.current_ns]['ordering'].append(('code', ctx.getText().strip('`')))
 
         return {'kind': 'code', 'value': ctx.getText().strip('`')}
+
+    def visitMake_codeblock(self, ctx: FalconParser.Make_codeblockContext):
+
+        cblock = ctx.getText().strip('`').lstrip('\n').rstrip('\n')
+
+        self.ns[self.current_ns]['ordering'].append(('code', cblock))
+
+        # treat it as just code - 'cause it is
+        # return {'kind': 'code', 'value': ctx.getText().strip('```')}
 
     def visitMake_fn_directive(self, ctx: FalconParser.Make_fn_directiveContext):
 
@@ -383,6 +398,8 @@ class Falcon(FalconVisitor):
 
     # def visitTest_winnow(self, ctx: FalconParser.Test_winnowContext):
     def visitTest_groupby(self, ctx: FalconParser.Test_groupbyContext):
+
+        print('at groupby')
 
         # test = {'kind': 'winnow-test'}
         test = {'kind': 'groupby-test'}

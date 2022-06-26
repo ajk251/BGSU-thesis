@@ -125,6 +125,3 @@ def is_isosceles(value):
 @domain(alias=['TriangleValues'])
 def critical_values() -> Tuple[int, ...]:
     return (-1, 0, 1, 2, 3, 4, 5)
-
-
-print(not_triangle(-1, -1, -1))

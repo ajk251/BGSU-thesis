@@ -20,6 +20,7 @@ stmt: test
     | macro
     | domain
     | compiler
+    | cblock
     | code
     | assign
     ;
@@ -78,7 +79,6 @@ bin_stub: BAR value predicate                                       #groupby_stu
         | BAR value predicate value* ':' predicate value*           #groupby_stub_many_many
         | BAR CODESMNT                                              #groupby_code
         | BAR compiler*                                             #groupby_directives
-        //        | BAR test_logical                                          #winnow_logical
         ;
 
 winnow_stub: BAR value predicate value* ':' predicate value*        #winnow_stub_many_many
@@ -94,17 +94,19 @@ domain: 'Domain' name name                                         #make_domain
 // set parameters -----------------------------------------
 compiler: DIRECTIVE dictate (fn_arg+)?                             #set_directive
         | DIRECTIVE                                                #set_single_directive
-//        | DIRECTIVE dictate (fn_arg*)?                              #set_directive_args
-//        | DIRECTIVE LIST
-//        | DIRECTIVE NAME OP_EQ tuple...
         ;
 
 fn_arg: FNARG dictate                                               #make_fn_directive
       | FNARG                                                       #make_fn_flag_directive
       ;
 
+// code can be anywhere, including in statements, cblock is a block of code that can
+//    only be global
 code: CODESMNT                                                      #make_codestmt
     ;
+
+cblock: CODEBLOCK                                                   #make_codeblock
+      ;
 
 // setters ------------------------------------------------
 
@@ -224,6 +226,7 @@ STRING: '"' .*? '"'
       ;
 
 CODESMNT: '`' .*? '`';
+CODEBLOCK: '```' .*? '```';
 UMATH: '\u2200'..'\u22FF';             // this should break this up…
 
 // misc ---------------------

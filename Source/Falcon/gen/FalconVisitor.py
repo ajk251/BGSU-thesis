@@ -1,4 +1,4 @@
-# Generated from /media/aaron/Shared2/School/BGSU-thesis/Source/lang/Falcon.g4 by ANTLR 4.10.1
+# Generated from /media/aaron/Shared2/School/BGSU-thesis/Source/Falcon/lang/Falcon.g4 by ANTLR 4.10.1
 from antlr4 import *
 if __name__ is not None and "." in __name__:
     from .FalconParser import FalconParser
@@ -216,6 +216,11 @@ class FalconVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by FalconParser#make_codestmt.
     def visitMake_codestmt(self, ctx:FalconParser.Make_codestmtContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#make_codeblock.
+    def visitMake_codeblock(self, ctx:FalconParser.Make_codeblockContext):
         return self.visitChildren(ctx)
 
 

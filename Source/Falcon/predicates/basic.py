@@ -1,7 +1,7 @@
 
 import operator as op
 
-from Falcon.predicates.predicates import predicate, onfail_false
+from Falcon.predicates.predicates import predicate, on_fail_false
 
 
 # useful -----------------------------------------
@@ -10,21 +10,21 @@ from Falcon.predicates.predicates import predicate, onfail_false
 
 
 @predicate(alias=['error?'])
-@onfail_false
+@on_fail_false
 def is_error(error) -> bool:
     """Tests that the error is an Exception"""
     return isinstance(error, Exception)
 
 
 @predicate(alias=['is-error?', 'raises?'])
-@onfail_false
+@on_fail_false
 def raises_error(error, error_type) -> bool:
     """Tests that the error is an instance of the specified type"""
     return isinstance(error, Exception) or isinstance(error, error_type)
 
 
 @predicate(alias=['error-and-says?'])
-@onfail_false
+@on_fail_false
 def is_error_and_says(error, error_type, message) -> bool:
     """
     Tests that the error is of the specific type and the error message is the same or
@@ -37,7 +37,7 @@ def is_error_and_says(error, error_type, message) -> bool:
 
 
 @predicate(alias=['error-says?'])
-@onfail_false
+@on_fail_false
 def is_error_and_contains(error, message) -> bool:
     """
     Tests that the error is an Exception and the message is the error message or the message
@@ -161,7 +161,7 @@ def is_none(value) -> bool:
     return value is None
 
 
-@predicate(alias=['instance?'])
+@predicate(alias=['instance?', 'is?'])
 def is_instance(value, result) -> bool:
     # this was done for the triangle example
     return isinstance(result, value)

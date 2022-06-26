@@ -19,4 +19,5 @@ Assert Complex:
   |! (nan, nan) is-a? Complex
   |! (nan, inf) between? -1 1
   |! TypeError (nan, inf) between? -1 1
+  | (2,2) = `Complex(2.0, 2.0)` ~~ "This should never fail"
   ;

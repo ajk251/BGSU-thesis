@@ -5,7 +5,7 @@ from math import isinf, isnan, isclose, inf, nan, pi
 from numbers import Number
 from random import choices, uniform
 
-from Falcon.predicates import predicate, onfail_false
+from Falcon.predicates import predicate, on_fail_false
 from Falcon.domains import domain
 
 from Tests.ComplexNumber import Complex
@@ -118,7 +118,7 @@ def ComplexTestValues(n: int = 100):
 # for special tests
 
 @predicate(alias=['agrees?'])
-@onfail_false
+@on_fail_false
 def complex_agree(a, b, C: Complex) -> bool:
     """Tests whether the values Complex(a, b) == C, for ComplexTestSolution, and assumes C is valid & well-formed"""
 
@@ -132,7 +132,7 @@ def complex_agree(a, b, C: Complex) -> bool:
 
 # unary functions
 @predicate(alias=['additive-id?'])
-@onfail_false
+@on_fail_false
 def property_additive_identity(a: Complex):
     """C + 0 == 0 + C is ℂ"""
     zero = Complex(0.0, 0.0)
@@ -140,7 +140,7 @@ def property_additive_identity(a: Complex):
 
 
 @predicate(alias=['multiplicative-id?', 'mult-id?'])
-@onfail_false
+@on_fail_false
 def property_multiplicative_identity(a: Complex):
     """C * 1 == 1 * C is ℂ"""
     one = Complex(1.0, 1.0)
@@ -148,7 +148,7 @@ def property_multiplicative_identity(a: Complex):
 
 
 @predicate(alias=['additive-inverse?'])
-@onfail_false
+@on_fail_false
 def property_additive_inverse(a: Complex):
     """⁻z + z == z + ⁻z == 0"""
     return (-a + a) == Complex(0.0, 0.0) and (a + -a) == Complex(0.0, 0.0)
@@ -156,14 +156,14 @@ def property_additive_inverse(a: Complex):
 
 # these are binary functions --------------------
 @predicate(alias=['closure-additive?', 'closure+?'])
-@onfail_false
+@on_fail_false
 def property_closure_add(a: Complex, b: Complex):
     """C₁ + C₂ == ℂ"""
     return isinstance(a + b, Complex)
 
 
 @predicate(alias=['closure-multiply?', 'closure*?'])
-@onfail_false
+@on_fail_false
 def property_closure_multiply(a: Complex, b: Complex):
     """C₁ * C₂ == ℂ"""
     return isinstance(a * b, Complex)
@@ -171,21 +171,21 @@ def property_closure_multiply(a: Complex, b: Complex):
 
 # binary predicates -----------------------------
 @predicate(alias=['commutative+?', 'comm+?'])
-@onfail_false
+@on_fail_false
 def property_commutative_add(a: Complex, b: Complex):
     """C₁ + C₂ == C₂ + C₁"""
     return a + b == b + a
 
 
 @predicate(alias=['commutative*?', 'comm*?'])
-@onfail_false
+@on_fail_false
 def property_commutative_multiply(a: Complex, b: Complex):
     """C₁ ⨯ C₂ == C₂ ⨯ C₁"""
     return a * b == b * a
 
 
 @predicate(alias=['multiplicative-inverse?', 'mult-inverse?'])
-@onfail_false
+@on_fail_false
 def property_multiplicative_inverse(a: Complex, b: Complex):
     """C + ~z == 1, where z is C¯¹"""
     return a * ~b == Complex(1.0, 1.0)
@@ -193,21 +193,21 @@ def property_multiplicative_inverse(a: Complex, b: Complex):
 # these take 3 args -----------------------------
 
 @predicate(alias=['associative+?'])
-@onfail_false
+@on_fail_false
 def property_associative_add(a: Complex, b: Complex, c: Complex):
     """(C₁ + C₂) + C₃ == C₁ + (C₂ + C₃)"""
     return ((a + b) + c) == (a + (b + c))
 
 
 @predicate(alias=['associative*?'])
-@onfail_false
+@on_fail_false
 def property_associative_multiply(a: Complex, b: Complex, c: Complex):
     """(C₁ + C₂) + C₃ == C₁ + (C₂ + C₃)"""
     return ((a * b) * c) == a * ((b * c))
 
 
 @predicate(alias=['distributive?'])
-@onfail_false
+@on_fail_false
 def property_distributive(a: Complex, b: Complex, c: Complex):
     """C₁(C₂ + C₃) == C₁C₂ + C₁C₃ ∧ (C₁ + C₂) + C₃ == C₁C₃ + C₁C₂"""
     c1 = (a + b) * c
@@ -237,38 +237,38 @@ def valid_number(complex_number: Complex):
 
 # math tests ------------------------------------
 @predicate(alias=['complex=?', 'complex-eq?'])
-@onfail_false
+@on_fail_false
 def complex_equal(a: Complex, b: Complex):
     return a.real == b.real and a.imaginary == b.imaginary
 
 
 @predicate(alias=['complex!=?', 'complex≠?', 'complex-ne?'])
-@onfail_false
+@on_fail_false
 def complex_not_equal(a: Complex, b: Complex):
     # return Complex(a[0] + a[1], b[0] + b[1]) != Complex(a[0] + a[1], b[0] + b[1])
     return a.real == b.real or a.imaginary == b.imaginary
 
 
 @predicate(alias=['complex+?'])
-@onfail_false
+@on_fail_false
 def complex_add(a: Complex, b: Complex):
     return (Complex(a[0], a[1]) + Complex(b[0], b[1])) == Complex(a[0] + b[0], a[1] + b[1])
 
 
 @predicate(alias=['complex-?'])
-@onfail_false
+@on_fail_false
 def complex_sub(a: Complex, b: Complex):
     return (Complex(a[0], a[1]) - Complex(b[0], b[1])) == Complex(a[0] - b[0], a[1] - b[1])
 
 
 @predicate(alias=['complex*?', 'complex•'])
-@onfail_false
+@on_fail_false
 def complex_mult(a: Complex, b: Complex):
     return (Complex(a[0], a[1]) * Complex(b[0], b[1])) == Complex(a[0] * b[0], a[1] * b[1])
 
 
 @predicate(alias=['complex-div?', 'complex÷?'])
-@onfail_false
+@on_fail_false
 def complex_div(a: Complex, b: Complex):
     return (Complex(a[0], a[1]) / Complex(b[0], b[1])) == Complex(a[0] / b[0], a[1] / b[1])
 
@@ -276,7 +276,7 @@ def complex_div(a: Complex, b: Complex):
 # Note: id() does not work here ￫ id() changes after operation
 
 @predicate(alias=['complex+=?', 'complex-ra?'])
-@onfail_false
+@on_fail_false
 def complex_radd(a: Complex, b: Complex):
     o = deepcopy(a)
     a += b
@@ -284,7 +284,7 @@ def complex_radd(a: Complex, b: Complex):
 
 
 @predicate(alias=['complex-=?', 'complex-rs?'])
-@onfail_false
+@on_fail_false
 def complex_rsub(a: Complex, b: Complex):
     o = deepcopy(a)
     a -= b
@@ -292,7 +292,7 @@ def complex_rsub(a: Complex, b: Complex):
 
 
 @predicate(alias=['complex*=?', 'complex-rm?'])
-@onfail_false
+@on_fail_false
 def complex_rmul(a: Complex, b: Complex):
     o = deepcopy(a)
     a *= b
