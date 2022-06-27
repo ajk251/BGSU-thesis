@@ -54,7 +54,7 @@ if __name__ == '__main__':
         # file = 'Tests/namespace-test.fcn'
         # file = 'Tests/some-tests.fcn'
         # file = 'Tests/logical-tests.fcn'
-        # file = 'Tests/initial-tests.fcn'
+        file = 'Tests/initial-tests.fcn'
         # file = 'Tests/winnow_test.fcn'
         # file = 'Tests/unit-tests.fcn'
         # file = 'Tests/unit-test2.fcn'
@@ -71,7 +71,7 @@ if __name__ == '__main__':
         # file = 'Tests/commission.fcn'
 
         # thesis examples
-        file = 'ThesisExamples/FalconMotivation.fcn'
+        # file = 'ThesisExamples/FalconMotivation.fcn'
 
         print(f"Using debugging file: '{file}'")
 

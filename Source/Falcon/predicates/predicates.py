@@ -8,7 +8,7 @@ PREDICATES = dict()
 
 # use this instead!
 Value = namedtuple('Value', 'name,symbol,is_symbolic,is_error,is_group,only_values')
-
+# PredicateFn = namedtuple('PredicateFn', 'name,symbol,is_symbolic,is_error,is_group,only_values')
 
 # help from: https://realpython.com/primer-on-python-decorators/
 # TODO: check whether the name already exists
@@ -16,6 +16,7 @@ Value = namedtuple('Value', 'name,symbol,is_symbolic,is_error,is_group,only_valu
 #       add arg analysis to predicate, ie breakdown of args
 #		if error, wrap and return ([Error|None], [True|False])
 
+# TODO: change all the names & stuff to PredicateFn
 
 NullString = Union[None, str]
 
@@ -33,7 +34,7 @@ def predicate(_fn=None, *, alias=None, symbol: NullString = None, is_error: bool
         # don't really need the function itself...
         # values = (func.__name__, symbol, is_error, is_group)
         values = Value(func.__name__, symbol, is_symbolic, is_error, is_group, only_values)
-
+        # predicate = PredicateFn(func.__name__, symbol, is_symbolic, is_error, is_group, only_values)
         if isinstance(alias, (list, tuple)):
             for name in alias:
                 PREDICATES[name] = values

@@ -1,8 +1,8 @@
 
 //:import Tests.test_functions -from add
 
-Domain art1 Art -max_candidates 100
-Domain art2 Art -max_candidates 200
+Domain art1 ART -max_candidates 100
+Domain art2 ART -max_candidates 200
 
 Domain X Integers -1000 1000 -nrandom 10
 Domain Y Integers -500  500  -nrandom 10

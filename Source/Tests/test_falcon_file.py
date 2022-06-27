@@ -10,36 +10,32 @@ from collections import defaultdict
 import unittest
 
 import pytest
-from ThesisExamples.Triangle_problem import *
 
 # This file was generated automatically by falcon.
-# from: ThesisExamples/FalconMotivation.fcn
-# on 2022 Jun 26 Sun 19:32:15
+# from: Tests/initial-tests.fcn
+# on 2022 Jun 26 Sun 20:12:20
 
-values = permutations_of(values=[-1, 0, 1, 2, 3, 4, 5], repeat=3)
+art1 = ART(max_candidates=100)
+art2 = ART(max_candidates=200)
+X = integers(-1000, 1000, nrandom=10)
+Y = integers(-500, 500, nrandom=10)
+Z = integers()
 
-# this is code
+# start test -----------------
+def test_add():
 
-# This is a code block
-even = lambda n: n % 2 == 0
+    # please work
 
-def test_classify_hw():
+    for art1ᵢ, art2ᵢ in zip(art1, art2):
+        assert is_integer(add(art1ᵢ, art2ᵢ))
+        assert between(add(art1ᵢ, art2ᵢ), -1500, 1500)
 
-    for side1ᵢ, side2ᵢ, side3ᵢ in zip(values):
+        art1()
+        art2()
 
-        try:
-            result = classify(side1ᵢ, side2ᵢ, side3ᵢ)
-        except Exception as e:
-            result = e
+# start test -----------------
+def test_add_QpcmH():
 
-        if not_triangle(side1ᵢ, side2ᵢ, side3ᵢ):
-            assert is_instance(result, Triangle.not_triangle)
-        elif all_equal(side1ᵢ, side2ᵢ, side3ᵢ):
-            assert is_instance(result, Triangle.equilateral)
-        elif all_different(side1ᵢ, side2ᵢ, side3ᵢ):
-            assert is_instance(result, Triangle.scalene)
-        elif two_equal(side1ᵢ, side2ᵢ, side3ᵢ):
-            assert is_instance(result, Triangle.isosceles)
-        else:
-            raise FalconError('Failed to meet at least one group')
-
+    for xᵢ, zᵢ in zip(X, Z):
+        assert is_integer(add(xᵢ, zᵢ))
+        assert between(add(xᵢ, zᵢ), -100, 100)

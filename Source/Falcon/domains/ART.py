@@ -5,7 +5,7 @@ from math import dist
 from random import uniform
 
 
-@domain(alias=['ART', 'ARTDomain'])
+@domain(alias=['ART', 'Art', 'ARTDomain'])
 class ART(DomainBase):
 
     def __init__(self, n_dims: int = 2, num_values: int = 100, min_distance: float = 10.0,

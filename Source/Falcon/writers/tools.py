@@ -12,9 +12,9 @@ from typing import Union
 
 from Falcon.algorithms.algorithms import ALGORITHMS
 from Falcon.macros.macros import MACROS
-from Falcon.predicates.predicates import PREDICATES
+from Falcon.predicates.predicates import PREDICATES, Value
 from Falcon.utilities.FalconError import FalconError
-from Falcon import domains
+from Falcon.domains import DOMAINS
 
 tabsize: int = 4
 TAB: str = ' ' * tabsize
@@ -161,14 +161,18 @@ def make_domain(entry) -> str:
     f3 = (indent * TAB) + '{} = {}({}, {})'        # x = Reals(lb, ub, nrandom=10)
                                                    # x = Reals(nrandom=10) ???
 
+    # get the name of the Domain
+    if DOMAINS.get(entry['domain'], False):
+        name = DOMAINS[entry['domain']]
+    else:
+        raise FalconError(f"Domain name '{entry['domain']}' not found")
+
     if entry['kind'] == 'domain':
         var = entry['var-name']
-        name = domains.DOMAINS[entry['domain']]
+        # name = DOMAINS[entry['domain']]
         line = f1.format(var, name)
     elif entry['kind'] == 'domain-args':
-
         var = entry['var-name']
-        name = domains.DOMAINS[entry['domain']]
 
         if entry['args']:
             args = ', '.join(entry['args']) if entry['args'] else ''
@@ -327,13 +331,20 @@ def get_predicate(stub, by_group=False):
 
     predicate, values = None, None
 
-    # name
-    if not by_group:
-        if name := stub.get('predicate', False):
-            predicate = PREDICATES.get(name, None)
-    elif by_group:
-        if name := stub.get('group-predicate', False):
-            predicate = PREDICATES.get(name, None)
+    # is the predicate defined?
+    if stub.get('predicate', False):
+        predicate = PREDICATES[stub['predicate']]
+    else:
+        predicate = Value(stub['predicate'], None, False, False, False)
+        warnings.warn(f"Predicate {predicate.name} was not defined.")
+
+    # # name
+    # if not by_group:
+    #     if name := stub.get('predicate', False):
+    #         predicate = PREDICATES.get(name, None)
+    # elif by_group:
+    #     if name := stub.get('group-predicate', False):
+    #         predicate = PREDICATES.get(name, None)
 
     # values
     if not by_group:

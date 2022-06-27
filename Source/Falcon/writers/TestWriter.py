@@ -11,7 +11,7 @@ from string import ascii_letters, digits
 
 from Falcon.algorithms.algorithms import ALGORITHMS
 from Falcon.macros.macros import MACROS
-from Falcon.predicates.predicates import PREDICATES
+from Falcon.predicates.predicates import PREDICATES, Value
 from Falcon.utilities.FalconError import FalconError
 
 from Falcon import domains
@@ -263,12 +263,20 @@ def basic_Assert(entry) -> str:
 
         # print(get_predicate(stub, False))
 
+        # is the predicate defined?
+        if stub.get('predicate', False):
+            predicate = PREDICATES[stub['predicate']]
+        else:
+            predicate = Value(stub['predicate'], None, False, False, False)
+            warnings.warn(f"Predicate {predicate.name} was not defined.")
+
         # this is kind of a special case/after-thought
-        if stub.get('predicate', False) and PREDICATES[stub['predicate']].is_symbolic:
+        if predicate.is_symbolic:
+        # if stub.get('predicate', False) and PREDICATES[stub['predicate']].is_symbolic:
             # these must raise an error, ie catches(fn, args, Exception)
-            pd_name = PREDICATES[stub['predicate']].name
+            # pd_name = PREDICATES[stub['predicate']].name
             args = make_args(stub['argument'])
-            line = f"{indent * TAB}assert {pd_name}({fn_name}, {args}"
+            line = f"{indent * TAB}assert {predicate.name}({fn_name}, {args}"
             line += f", {', '.join(s for s in stub['value'][1:] if s is not None)})" if len(stub['value']) > 1 else ')'
             line += f", {stub['error-message']}" if 'error-message' in stub and stub['error-message'] is not None else ''
             lines.append(line)
