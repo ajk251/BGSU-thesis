@@ -1,8 +1,8 @@
 
-from Triangle_problem import *
+from Triangle_classify import *
 
 from Falcon.domains import domain
-from Falcon.predicates.predicates import predicate, on_fail_false
+from Falcon.predicates import predicate, on_fail_false
 
 
 @predicate(alias=['no-triangle-theorem?', 'not-satisfy-triangle-theorem?'])

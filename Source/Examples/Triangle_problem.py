@@ -46,15 +46,6 @@ def not_positive_integers(a: int, b: int, c: int) -> bool:
     """Tests that all values are positive integers"""
     return any(map(lambda n: (not isinstance(n, int)) or (not n > 0), (a, b, c)))
 
-    # if (not isinstance(a, int)) or (not a >= 1):
-    #     return False
-    # elif (not isinstance(b, int)) or (not b >= 1):
-    #     return False
-    # elif (not isinstance(c, int)) or (not c >= 1):
-    #     return False
-    #
-    # return True
-
 
 @predicate(alias=['no-triangle-theorem?', 'not-satisfy-triangle-theorem?'])
 @on_fail_false
@@ -126,5 +117,3 @@ def is_isosceles(value):
 def critical_values() -> Tuple[int, ...]:
     return (-1, 0, 1, 2, 3, 4, 5)
 
-
-print(not_triangle(-1, -1, -1))
