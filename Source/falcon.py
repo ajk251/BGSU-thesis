@@ -44,6 +44,8 @@ args = parser.parse_args()
 
 if __name__ == '__main__':
 
+    # TODO: do better file handling, at least using test file...
+
     file = None if args.file[0] in ('-', '_') else args.file[0]
 
     if file is not None and not os.path.exists(file):
@@ -91,6 +93,9 @@ if __name__ == '__main__':
 
     # the destination file is optional
     dest_file = None if args.output[0] == [] else args.output[0]
+
+    if dest_file is None:
+        dest_file = os.getcwd() + '/test_falcon_file.py'
 
     print('Using file: ', 'default' if dest_file is None else dest_file)
 

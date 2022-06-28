@@ -12,8 +12,8 @@ import unittest
 import pytest
 
 # This file was generated automatically by falcon.
-# from: Tests/initial-tests.fcn
-# on 2022 Jun 26 Sun 20:12:20
+# from: ./initial-tests.fcn
+# on 2022 Jun 27 Mon 17:37:55
 
 art1 = ART(max_candidates=100)
 art2 = ART(max_candidates=200)
@@ -34,7 +34,7 @@ def test_add():
         art2()
 
 # start test -----------------
-def test_add_QpcmH():
+def test_add_lI():
 
     for xᵢ, zᵢ in zip(X, Z):
         assert is_integer(add(xᵢ, zᵢ))

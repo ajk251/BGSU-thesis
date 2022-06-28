@@ -1,4 +1,4 @@
-Metadata-Version: 1.0
+Metadata-Version: 2.1
 Name: falcon
 Version: 0.0.2
 Summary: A DSL for the creation of tests
@@ -6,5 +6,7 @@ Home-page: UNKNOWN
 Author: Aaron Kuhlman
 Author-email: kuhlmaa@bgsu.edu
 License: Apache License 2.0
-Description: UNKNOWN
 Platform: UNKNOWN
+
+UNKNOWN
+
