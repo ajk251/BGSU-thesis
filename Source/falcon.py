@@ -20,10 +20,10 @@ from Falcon.writers.TestWriter import write_basic_test
 parser = argparse.ArgumentParser(description="Generate Falcon test files")
 
 # the input file mandatory
-parser.add_argument('file', nargs=1, default=None, help='The name of Falcon file')
+parser.add_argument('file', nargs=1, default=None, action='store', help='The name of Falcon file')
 
 # the output file
-parser.add_argument('output', nargs='*', default=None, action='append', help='The name of file for the generated code')
+parser.add_argument('output', nargs='*', default=None, action='store', help='The name of file for the generated code')
 
 # the output type
 parser.add_argument('--test', '-t', default=True, action='store_true',
@@ -40,23 +40,36 @@ parser.add_argument('--debug', '-d', default=False, action='store_true',
 parser.add_argument('--pytest', default=False, action='store_true',
                     required=False, help='Invoke PyTest and run on the output file')
 
-args = parser.parse_args()
-
 if __name__ == '__main__':
 
     # TODO: do better file handling, at least using test file...
 
-    file = None if args.file[0] in ('-', '_') else args.file[0]
+    args = parser.parse_args()
 
-    if file is not None and not os.path.exists(file):
-        raise FileExistsError(f"File '{file}' was not found")
+    # the input file
+    if args.file[0] in ('.', '-', '_'):         # use the default/debug file
+        file = None
+    elif args.file[0] is None:
+        file = None
+    else:
+        file = args.file[0]
 
+    # the output file
+    if args.output == [] or args.output is None:
+        output = os.getcwd() + '/test_falcon_file.py'
+    else:
+        output = os.getcwd() + '/' + args.output[0]
+
+    # file = None if args.file[0] in ('.', '-', '_') else os.getcwd() + '/' + args.file[0]
+    # output = None if args.output[0] is None else args.output[0]
+
+    # these are defaults / for testing
     if file is None:
 
         # file = 'Tests/namespace-test.fcn'
         # file = 'Tests/some-tests.fcn'
         # file = 'Tests/logical-tests.fcn'
-        file = 'Tests/initial-tests.fcn'
+        # file = 'Tests/initial-tests.fcn'
         # file = 'Tests/winnow_test.fcn'
         # file = 'Tests/unit-tests.fcn'
         # file = 'Tests/unit-test2.fcn'
@@ -65,7 +78,7 @@ if __name__ == '__main__':
         # file = 'Tests/winnow_tests3.fcn'
         # file = 'Tests/satisfy-tests.fcn'
         # file = 'Tests/complex.fcn'
-        # file = 'Tests/groupby-tests.fcn'
+        file = 'Tests/groupby-tests.fcn'
         # file = 'Tests/triangle-problem.fcn'
         # file = 'Tests/assert2.fcn'
         # file = 'Tests/complex-satisfy.fcn'
@@ -76,6 +89,9 @@ if __name__ == '__main__':
         # file = 'ThesisExamples/FalconMotivation.fcn'
 
         print(f"Using debugging file: '{file}'")
+
+    if not os.path.exists(file):
+        raise FileExistsError(f"File '{file}' was not found")
 
     input_stream = FileStream(file, encoding='utf-8')
     lexer = FalconLexer(input_stream)
@@ -92,19 +108,20 @@ if __name__ == '__main__':
     falcon_tree = falcon.intermediate_tests()
 
     # the destination file is optional
-    dest_file = None if args.output[0] == [] else args.output[0]
+    # dest_file = None if args.output[0] == [] else args.output[0]
 
-    if dest_file is None:
-        dest_file = os.getcwd() + '/test_falcon_file.py'
+    # if output is None:
+    #     output = os.getcwd() + '/test_falcon_file.py'
 
-    print('Using file: ', 'default' if dest_file is None else dest_file)
+    print('Using file:      ', file)
+    print('Generating file: ', output)
 
     # one or both
     if args.test:
-        write_basic_test(falcon_tree, file, dest_file)
+        write_basic_test(falcon_tree, file, output)
 
     if args.unit:
-        write_basic_unittest(falcon_tree, file, dest_file)
+        write_basic_unittest(falcon_tree, file, output)
 
     # -------------------------------------------
 
@@ -126,7 +143,8 @@ if __name__ == '__main__':
     if args.pytest:
         print('***** RUNNING PyTest *****')
 
-        if dest_file is None:
+        # TODO: Change this!
+        if output is None:
             dest_file = 'Tests/tests.py'
 
         test = pytest.main([dest_file, f'--cov={dest_file}', f'--cov-report=html {dest_file}'])

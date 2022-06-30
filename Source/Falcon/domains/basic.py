@@ -135,7 +135,7 @@ def boundary(lower: float = -1.0, upper: float = 1.0, epsilon: float = 5.0, bdry
   
 # combinatorial -------------------------------------------
 
-@domain(alias=['Cartesian', 'CartesianProduct'])
+@domain(alias=['Cartesian', 'CartesianProduct', 'Product'])
 def cartesian(values) -> Iterator[Tuple[Any, ...]]:
     return product(*values)
 

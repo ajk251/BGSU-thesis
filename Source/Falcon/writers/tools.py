@@ -2,12 +2,14 @@
 import re
 import runpy
 import textwrap
+import os
 import warnings
 
 from collections import defaultdict
 from datetime import datetime
 from random import choices, randint
 from string import ascii_letters, digits
+from sys import stderr
 from typing import Union
 
 from Falcon.algorithms.algorithms import ALGORITHMS
@@ -78,8 +80,7 @@ def add_imports(entry) -> str:
              'from Falcon.utilities.utls import call',
              'from Falcon.utilities.TestLogWriter import write_to_log',
              'from Falcon.utilities import FalconError\n',
-             'from collections import defaultdict',
-             'import unittest\n',
+             'from collections import defaultdict\n',
              'import pytest']
 
     for module, args in entry:
@@ -102,7 +103,13 @@ def add_imports(entry) -> str:
 
         # has to load the module to get the predicates from predicates.PREDICATES
         # TODO: maybe force every test module to have …_predicates, to avoid imports‽
-        runpy.run_module(module)
+
+        try:
+            # runpy.run_module(module)
+            runpy.run_path(os.getcwd() + f'/{module}.py')
+        except ImportError as e:
+            stderr.write('Could not import module. Check module for exceptions.')
+            raise e
 
         lines.append(line)
 
@@ -200,7 +207,7 @@ def get_directives(entry) -> dict[str, Union[None, str, list, bool]]:
     # these are implemented
     recognized = frozenset((':follow-up', ':message', ':only', ':test-name', ':name',
                             ':no-suffix', ':suffix', ':labels', ':method', ':log', ':log-name',
-                            ':iter-object', ':object-update', ':min', ':max'))
+                            ':iter-object', ':object-update', ':min', ':max', ':save-results', ':save-cases'))
 
     # see if any are not recognized
     if not frozenset(entry['directives'].keys()).issubset(recognized):
@@ -251,6 +258,8 @@ def get_directives(entry) -> dict[str, Union[None, str, list, bool]]:
     elif entry['directives'].get(':suffix', False):
         value = entry['directives'][':suffix']['value']
         suffix = value if (value is not None) else ''
+    elif entry['directives'].get(':labels', False):                 # if there are labels, don't bother
+        suffix = ''
     else:
         suffix = 'ᵢ'
 
@@ -258,14 +267,14 @@ def get_directives(entry) -> dict[str, Union[None, str, list, bool]]:
     # that is, the labels of the domains used inside the loop
 
     # get the variable names
-    dvars = entry['domain']                                         # the domain names
+    dvars = entry['domain']                                             # the domain names
 
     if entry['directives'].get(':labels', False):
         # TODO: input must be a list - how to catch bad input?
         lbs = to_list(entry['directives'][':labels']['value'])
         directives['labels'] = [d.lower() + suffix for d in lbs]
     else:
-        directives['labels'] = [d.lower() + suffix for d in dvars]                # the name of the values in the domain                                   # the domain names
+        directives['labels'] = [d.lower() + suffix for d in dvars]      # the name of the values in the domain                                   # the domain names
 
     # make the labels here
     assert len(directives['labels']) >= 1, 'Must have 1 or more Domains defined'
@@ -323,40 +332,61 @@ def get_directives(entry) -> dict[str, Union[None, str, list, bool]]:
     else:
         directives['object-update'] = False
 
+    # *** save results & save cases ***
+
+    if entry['directives'].get(':save-results', False):
+        directives['save-results'] = True
+    else:
+        directives['save-results'] = False
+
+    if entry['directives'].get(':save-cases', False):
+        directives['save-cases'] = True
+    else:
+        directives['save-cases'] = False
+
     return directives
 
 
-def get_predicate(stub, by_group=False):
+def get_predicate(stub, by_group=False): # -> Tuple[Predicate, List]:
     """Find & build the predicates"""
 
     predicate, values = None, None
 
+    # print(PREDICATES.get(stub['predicate'], stub['predicate']))
+
     # is the predicate defined?
-    if stub.get('predicate', False):
+    if not by_group and PREDICATES.get(stub['predicate'], False): #stub.get('predicate', False):
         predicate = PREDICATES[stub['predicate']]
-    else:
-        predicate = Value(stub['predicate'], None, False, False, False)
+    elif by_group and PREDICATES.get(stub['group-predicate'], False):
+        predicate = PREDICATES[stub['group-predicate']]
+    elif by_group:
+        predicate = Value(stub['group-predicate'], None, False, False, False, False)
+        warnings.warn(f"Predicate {predicate.name} was not defined.")
+    elif not by_group:
+        predicate = Value(stub['predicate'], None, False, False, False, False)
         warnings.warn(f"Predicate {predicate.name} was not defined.")
 
-    # # name
-    # if not by_group:
-    #     if name := stub.get('predicate', False):
-    #         predicate = PREDICATES.get(name, None)
-    # elif by_group:
-    #     if name := stub.get('group-predicate', False):
-    #         predicate = PREDICATES.get(name, None)
+    # get the values associated with it
+    if stub.get('group-values', False):
+        values = stub['group-values']
+    elif stub.get('groupby-many-with-group', False):
+        values = stub['groupby-many-with-group']
+    elif stub.get('value', False):
+        values = stub['value']
+    elif stub.get('values', False):
+        values = stub['values']
 
     # values
-    if not by_group:
-        if stub.get('value', False):
-            values = stub['value']
-        elif stub.get('values', False):
-            values = stub['values']
-    elif by_group:
-        if stub.get('group-values', False):
-            values = stub['group-values']
-        elif stub.get('groupby-many-with-group', False):
-            values = stub['groupby-many-with-group']
+    # if not by_group:
+    #     if stub.get('value', False):
+    #         values = stub['value']
+    #     elif stub.get('values', False):
+    #         values = stub['values']
+    # elif by_group:
+    #     if stub.get('group-values', False):
+    #         values = stub['group-values']
+    #     elif stub.get('groupby-many-with-group', False):
+    #         values = stub['groupby-many-with-group']
 
     return predicate, values
 
@@ -633,5 +663,4 @@ def make_if_group_stmt(stub, fn_name, args):
             line = f3.format(pd_name, args)
 
     return line
-
 

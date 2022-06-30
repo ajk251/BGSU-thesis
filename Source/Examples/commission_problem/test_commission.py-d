@@ -1,0 +1,41 @@
+from Falcon.algorithms import *
+from Falcon.domains import *
+from Falcon.macros import *
+from Falcon.predicates import *
+from Falcon.utilities.utls import call
+from Falcon.utilities.TestLogWriter import write_to_log
+from Falcon.utilities import FalconError
+
+from collections import defaultdict
+
+import pytest
+from commission import *
+
+# This file was generated automatically by falcon.
+# from: commission.fcn
+# on 2022 Jun 30 Thu 15:21:21
+
+sales = sales_values()
+
+def test_commission_2S():
+
+    for locks, stocks, barrels in sales:
+
+        try:
+            result = commission(locks, stocks, barrels)
+        except Exception as e:
+            result = e
+
+        if valid_sales(locks, stocks, barrels):
+            assert valid_sales(result)
+        elif low_sales(locks, stocks, barrels):
+            assert low_sales(result)
+        elif medium_sales(locks, stocks, barrels):
+            assert medium_sales(result)
+        elif high_sales(locks, stocks, barrels):
+            assert high_sales(result)
+        else:
+            raise FalconError('Failed to meet at least one group')
+
+
+    plot_commission(results)

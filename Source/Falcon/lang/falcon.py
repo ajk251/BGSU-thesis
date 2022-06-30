@@ -399,8 +399,6 @@ class Falcon(FalconVisitor):
     # def visitTest_winnow(self, ctx: FalconParser.Test_winnowContext):
     def visitTest_groupby(self, ctx: FalconParser.Test_groupbyContext):
 
-        print('at groupby')
-
         # test = {'kind': 'winnow-test'}
         test = {'kind': 'groupby-test'}
         test['function'] = self.visit(ctx.name(0))

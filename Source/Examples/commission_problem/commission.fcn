@@ -1,0 +1,24 @@
+
+:import commission -all
+
+Domain sales Sales
+
+Groupby commission sales:
+  | :labels [locks stocks barrels]
+  | :follow-up plot_commission  :save-results  :save-cases
+  | 'invalid' valid-sales?  : error?
+  | 'low'     low-sales?    : low-commission?
+  | 'medium'  medium-sales? : medium-commission?
+  | 'high'    high-sales?   : high-commission?
+  ;
+
+
+Groupby commission sales:
+  | :labels [locks stocks barrels]
+  | :follow-up plot_commission  :save-results  :save-cases
+  | 'invalid' too-low?      : error?
+  | 'invalid' too-high?     : error?
+  | 'low'     low-sales?    : low-commission?
+  | 'medium'  medium-sales? : medium-commission?
+  | 'high'    high-sales?   : high-commission?
+  ;
