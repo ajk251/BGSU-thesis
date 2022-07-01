@@ -13,11 +13,14 @@ from commission import *
 
 # This file was generated automatically by falcon.
 # from: commission.fcn
-# on 2022 Jun 30 Thu 17:56:37
+# on 2022 Jun 30 Thu 20:53:21
 
 sales = sales_values()
 
-def test_commission_Kap():
+too_low = lambda l,s,b: l <= 0 and s <= 0 and b <= 0
+too_high = lambda l,s,b: l > 100 and s > 100 and b > 100
+
+def test_commission_xJTRD():
 
     cases = defaultdict(list)
     results = defaultdict(list)
@@ -34,15 +37,12 @@ def test_commission_Kap():
             cases['invalid'].append((locks, stocks, barrels))
             results['invalid'].append(result)
         elif low_sales(locks, stocks, barrels):
-
             cases['low'].append((locks, stocks, barrels))
             results['low'].append(result)
         elif medium_sales(locks, stocks, barrels):
-
             cases['medium'].append((locks, stocks, barrels))
             results['medium'].append(result)
         elif high_sales(locks, stocks, barrels):
-
             cases['high'].append((locks, stocks, barrels))
             results['high'].append(result)
         else:
@@ -55,7 +55,7 @@ def test_commission_Kap():
     plot_commission(cases, results)
 
 
-def test_commission_KKa():
+def test_commission_AH42():
 
     cases = defaultdict(list)
     results = defaultdict(list)
@@ -67,20 +67,17 @@ def test_commission_KKa():
         except Exception as e:
             result = e
 
-        if too-low?(locks, stocks, barrels) or too-high?(locks, stocks, barrels):
+        if too_low(locks, stocks, barrels) or too_high(locks, stocks, barrels):
             assert is_error(result)
             cases['invalid'].append((locks, stocks, barrels))
             results['invalid'].append(result)
         elif low_sales(locks, stocks, barrels):
-
             cases['low'].append((locks, stocks, barrels))
             results['low'].append(result)
         elif medium_sales(locks, stocks, barrels):
-
             cases['medium'].append((locks, stocks, barrels))
             results['medium'].append(result)
         elif high_sales(locks, stocks, barrels):
-
             cases['high'].append((locks, stocks, barrels))
             results['high'].append(result)
         else:
@@ -91,3 +88,6 @@ def test_commission_KKa():
     assert high_commission(results['high'])
 
     plot_commission(cases, results)
+
+
+test_commission_AH42()

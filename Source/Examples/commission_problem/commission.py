@@ -105,17 +105,17 @@ def high_sales(l: int, s: int, b: int) -> bool:
 
 @predicate(alias=['low-commission?'], is_group=True)
 def low_commission(c: float) -> bool:
-    pass
+    return True
 
 
 @predicate(alias=['medium-commission?'], is_group=True)
-def medium_commission() -> bool:
-    pass
+def medium_commission(c: float) -> bool:
+    return True
 
 
 @predicate(alias=['high-commission?'], is_group=True)
-def high_commission() -> bool:
-    pass
+def high_commission(c: float) -> bool:
+    return True
 
 
 # -----------------------------------------------
@@ -125,14 +125,59 @@ def high_commission() -> bool:
 
 # commissions : Dict[str, List[Tuple[int, int, int]]]
 
-def plot_commission(l: int, s: int, b: int):
+def plot_commission(cases, results):
 
+    colors = 'ygk'
+    groups = ('low', 'medium', 'high')
     fig, ax = plt.subplots(1, 1, figsize=(12, 12))
 
+    for group, color in zip(groups, colors):
+
+        sales = tuple(map(lambda t: dot((t[0],t[1],t[2]), (lock_cost, stock_cost, barrel_cost)), cases[group]))
+        ax.scatter(sales, results[group], color=color)
+
+    ax.set_xlabel('Total Sales')
+    ax.set_ylabel('Commission')
+    ax.set_title('Total sales vs Commission')
+    ax.legend(['low', 'medium', 'high'])
 
 
+    fig.savefig('/media/aaron/Shared2/School/BGSU-thesis/Source/Examples/commission_problem/commission-plot.png', format='png')
 
-    # fig.save('commission-plot.jpg')
+    # 3d plot ------------------------------
+
+    print(cases)
+    print(results)
+
+    fig = plt.figure()
+    ax  = fig.add_subplot(projection='3d')
+
+    print(len(cases['low']))
+
+    i = 0
+
+    for x,y,z in cases['low']:
+        ax.scatter(x, y, z, color='y', s=results['low'][i] / 10)
+        i += 1
+    
+    i = 0
+    
+    for x,y,z in cases['medium']:
+        ax.scatter(x, y, z, color='g', s=results['medium'][i] / 10)
+
+    i = 0
+
+    for x,y,z in cases['high']:
+        ax.scatter(x, y, z, color='b', s=results['high'][i] / 10)
+        i += 1
+
+    ax.set_xlabel('Locks')
+    ax.set_ylabel('Stocks')
+    ax.set_zlabel('Barrels')
+    ax.set_title('Locks, Stocks, Barrels and Commission')
+
+    fig.savefig('/media/aaron/Shared2/School/BGSU-thesis/Source/Examples/commission_problem/commission-plot-3d.png', format='png')
+
 
 
 

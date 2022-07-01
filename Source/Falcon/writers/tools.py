@@ -361,10 +361,10 @@ def get_predicate(stub, by_group=False): # -> Tuple[Predicate, List]:
         predicate = PREDICATES[stub['group-predicate']]
     elif by_group:
         predicate = Value(stub['group-predicate'], None, False, False, False, False)
-        warnings.warn(f"Predicate {predicate.name} was not defined.")
+        warnings.warn(f"Predicate '{predicate.name}' was not defined.")
     elif not by_group:
         predicate = Value(stub['predicate'], None, False, False, False, False)
-        warnings.warn(f"Predicate {predicate.name} was not defined.")
+        warnings.warn(f"Predicate '{predicate.name}' was not defined.")
 
     # get the values associated with it
     if stub.get('group-values', False):

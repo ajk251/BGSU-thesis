@@ -436,8 +436,6 @@ except Exception as e:
 
         names = []                                  # the partition predicate can have more than one condition
 
-        line = ''
-
         for s in stub:
             # just the predicates, no values
             predicate, _ = get_predicate(s, False)
@@ -465,17 +463,22 @@ except Exception as e:
             gline = f"{(indent-2) * TAB}assert {gpredicate.name}(results[{group}])"
             agg_groups.append(gline)
 
-        line = ''
+        # line = ''
 
-        if gpredicate.is_group or gpredicate is None:
-            line = ''                                               # in this case do nothing
-            _ = 1
-        elif gvalues is not None:
+        # if gpredicate.is_group or gpredicate is None:
+        #     line = ''                                               # in this case do nothing
+        #     _ = 1
+
+        if not gpredicate.is_group and gvalues is not None:
             line = f"{indent * TAB}assert {gpredicate.name}(result, {', '.join(gvalues)})"
-        else:
+            lines.append(line)
+        elif not gpredicate.is_group:
             line = f"{indent * TAB}assert {gpredicate.name}(result)"
-
-        lines.append(line)
+            lines.append(line)
+        # else:
+        # # elif gvalues is None and not gpredicate.is_group:
+        #     print(gvalues, gpredicate.name, gpredicate.is_group)
+        #     print('***SHOULD NOT BE HERE***')
 
         # save if necessary
         if save_cases:
@@ -485,7 +488,6 @@ except Exception as e:
             line = f'{indent * TAB}results[{group}].append(result)'
             lines.append(line)
 
-        # lines.append(line)
         indent -= 1
 
     # add the last group
