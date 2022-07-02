@@ -13,14 +13,14 @@ from commission import *
 
 # This file was generated automatically by falcon.
 # from: commission.fcn
-# on 2022 Jun 30 Thu 20:53:21
+# on 2022 Jul 02 Sat 18:23:28
 
-sales = sales_values()
+sales = linear_sales()
 
 too_low = lambda l,s,b: l <= 0 and s <= 0 and b <= 0
 too_high = lambda l,s,b: l > 100 and s > 100 and b > 100
 
-def test_commission_xJTRD():
+def test_commission_4a():
 
     cases = defaultdict(list)
     results = defaultdict(list)
@@ -55,7 +55,7 @@ def test_commission_xJTRD():
     plot_commission(cases, results)
 
 
-def test_commission_AH42():
+def test_commission_QYP():
 
     cases = defaultdict(list)
     results = defaultdict(list)
@@ -72,6 +72,7 @@ def test_commission_AH42():
             cases['invalid'].append((locks, stocks, barrels))
             results['invalid'].append(result)
         elif low_sales(locks, stocks, barrels):
+            assert low-commission+examples?(result)
             cases['low'].append((locks, stocks, barrels))
             results['low'].append(result)
         elif medium_sales(locks, stocks, barrels):
@@ -83,11 +84,7 @@ def test_commission_AH42():
         else:
             raise FalconError('Failed to meet at least one group')
 
-    assert low_commission(results['low'])
     assert medium_commission(results['medium'])
     assert high_commission(results['high'])
 
     plot_commission(cases, results)
-
-
-test_commission_AH42()

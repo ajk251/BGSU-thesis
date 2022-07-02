@@ -1,9 +1,12 @@
 
+from itertools import permutations
 from typing import Dict, Generator, List, Tuple
 from operator import mul
 from random import randrange
+import warnings
 
 import matplotlib.pyplot as plt
+import pytest
 
 from Falcon.domains import domain
 from Falcon.predicates import predicate
@@ -23,9 +26,11 @@ barrel_max = 90
 
 def commission(locks: int, stocks: int, barrels: int) -> float:
 
+    # it actually found an error!
+
     assert locks is not None and 0 <= locks <= lock_max,     f"Number of locks must an integer greater or equal to 0 and less than {lock_max}"
     assert stocks is not None and 0 <= stocks <= stock_max,  f"Number of stocks must an integer greater or equal to 0 and less than {stock_max}"
-    assert barrels is not None and 0 <= locks <= barrel_max, f"Number of barrels must an integer greater or equal to 0 and less than {barrel_max}"
+    assert barrels is not None and 0 <= barrels <= barrel_max, f"Number of barrels must an integer greater or equal to 0 and less than {barrel_max}"
 
     # if locks <= 0 or stocks <= 0 or barrels <= 0:
     #     return 0.0
@@ -53,21 +58,36 @@ def dot(x: Tuple[int, int, int], y: Tuple[float, float, float]) -> float:
     """Computes the dot product between 2 tuples."""
     return sum(map(mul, x, y))
 
+
 # domains --------------------------------------
 
 @domain(alias='Sales')
-def sales_values(n=100, test_outside: bool = False) -> Generator[Tuple[int, int, int], None, None]:
+def sales_values(n=100) -> Generator[Tuple[int, int, int], None, None]:
 
-    if test_outside:
-        yield (-1, -1, -1)
-        yield (0, 0, 0)
+    if n <= 10:
+        warnings.warn("'n' must be greater than 10. Setting n to 10.")
+        n = 10
 
-        for _ in range(n - 2):
-            yield (randrange(-10, lock_max + 10), randrange(-10, stock_max + 10), randrange(-10, barrel_max + 10))
+    # this ensures "low" is tested
+    for _ in range(10):
+        yield (randrange(1, 10), randrange(1, 10), randrange(1, 10))
 
-    else:
-        for i in range(n):
-            yield (randrange(1, lock_max), randrange(1, stock_max), randrange(1, barrel_max))
+    # -10 gives some chance of -1 or 0
+    for _ in range(n-10):
+        yield (randrange(-10, lock_max), randrange(-10, stock_max), randrange(-10, barrel_max))
+
+
+@domain(alias=['SalesProgression'])
+def linear_sales():
+
+    for l,s,b in permutations([-1, 0, 1, 2, 3], r=3):
+        yield (l, s, b)
+
+    for s in range(3, 10):
+        yield (s, s, s)
+
+    for s in range(10, 95, 5):
+        yield (s, s, s)
 
 
 # predicates ------------------------------------
@@ -79,6 +99,16 @@ def valid_sales(l: int, s: int, b: int) -> bool:
            0 <= l <= lock_max and \
            0 <= s <= stock_max and \
            0 <= b <= barrel_max)
+
+
+@predicate(alias='too-low?')
+def too_low(l: int, s: int, b: int) -> bool:
+    return l <= 0 and s <= 0 and b <= 0
+
+
+@predicate(alias='too-high?')
+def too_high(l: int, s: int, b: int) -> bool:
+    return l >= lock_max and s >= stock_max and b >= barrel_max
 
 
 @predicate(alias=['low-sales?'])
@@ -103,20 +133,28 @@ def high_sales(l: int, s: int, b: int) -> bool:
 
 # use assertion error for invalid sales
 
-@predicate(alias=['low-commission?'], is_group=True)
+@predicate(alias=['low-commission+examples?'], is_group=True)
+def low_commission_group(commissions: List[float], at_least: int = 10) -> bool:
+    return all((map(lambda c: ((c / 0.1) - 5.0) <= 1_000 or ((c / 0.1) + 5.0) <= 1_000, commissions))) and \
+           len(commissions) >= at_least
+    
+
+@predicate(alias=['low-commission?'])
 def low_commission(c: float) -> bool:
-    return True
+    s =  (c / 0.1)                                      # estimated sales
+    return ((c / 0.1) - 5.0) <= 1_000 or ((c / 0.1) + 5.0) <= 1_000     # estimating with floats…
 
 
-@predicate(alias=['medium-commission?'], is_group=True)
+@predicate(alias=['medium-commission?'])
 def medium_commission(c: float) -> bool:
-    return True
+    s =  (c / 0.15) + 334.0                             # estimated sales
+    return (s - 5.0) <= 1_800 or (s + 5.0) <= 1_800     # estimating with floats…
 
 
-@predicate(alias=['high-commission?'], is_group=True)
+@predicate(alias=['high-commission?'])
 def high_commission(c: float) -> bool:
-    return True
-
+    s =  (c / 0.2) + 700.0                              # estimated sales
+    return (s - 5.0) >= 1_800 or (s + 5.0) >= 1_800     # estimating with floats…
 
 # -----------------------------------------------
 
@@ -125,7 +163,7 @@ def high_commission(c: float) -> bool:
 
 # commissions : Dict[str, List[Tuple[int, int, int]]]
 
-def plot_commission(cases, results):
+def plot_commission(cases, results, name=None):
 
     colors = 'ygk'
     groups = ('low', 'medium', 'high')
@@ -146,13 +184,8 @@ def plot_commission(cases, results):
 
     # 3d plot ------------------------------
 
-    print(cases)
-    print(results)
-
     fig = plt.figure()
     ax  = fig.add_subplot(projection='3d')
-
-    print(len(cases['low']))
 
     i = 0
 
@@ -179,13 +212,14 @@ def plot_commission(cases, results):
     fig.savefig('/media/aaron/Shared2/School/BGSU-thesis/Source/Examples/commission_problem/commission-plot-3d.png', format='png')
 
 
+# # low
+# print(commission(10, 10, 10), dot((10, 10, 10), (lock_cost, stock_cost, barrel_cost)))
+# print(low_commission(100.0))
 
+# # medium
+# print(commission(12, 12, 12), dot((12, 12, 12), (lock_cost, stock_cost, barrel_cost)))
+# print(medium_commission(130.0))
 
-# for l,s,b in sales_values(10, False):
-#     c =  dot((lock_cost, stock_cost, barrel_cost), (l, s, b))
-#     print(l, s, b, c, commission(l, s, b))
-
-# print('-'*20)
-
-# for l,s,b in sales_values(10, True):
-#     print(l, s, b)
+# # high
+# print(commission(50, 50, 50), dot((50, 50, 50), (lock_cost, stock_cost, barrel_cost)))
+# print(high_commission(860.0))

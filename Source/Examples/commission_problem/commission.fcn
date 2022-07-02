@@ -1,7 +1,8 @@
 
 :import commission -all
 
-Domain sales Sales
+//Domain sales Sales
+Domain sales SalesProgression
 
 ```
 too_low = lambda l,s,b: l <= 0 and s <= 0 and b <= 0
@@ -21,9 +22,9 @@ Groupby commission sales:
 Groupby commission sales:
   | :labels [locks stocks barrels]
   | :follow-up plot_commission  :save-results  :save-cases
-  | 'invalid' too_low       : error?
-  | 'invalid' too_high      : _
-  | 'low'     low-sales?    : low-commission?
+  | 'invalid' too-low?      : error?
+  | 'invalid' too-high?     : _
+  | 'low'     low-sales?    : low-commission+examples?
   | 'medium'  medium-sales? : medium-commission?
   | 'high'    high-sales?   : high-commission?
   ;

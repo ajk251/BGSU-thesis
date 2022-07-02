@@ -16,6 +16,12 @@ def is_error(error) -> bool:
     return isinstance(error, Exception)
 
 
+@predicate(alias=['asserts?'])
+@on_fail_false
+def raises_assertion_error(error) -> bool:
+    return isinstance(error, AssertionError)
+
+
 @predicate(alias=['is-error?', 'raises?'])
 @on_fail_false
 def raises_error(error, error_type) -> bool:
