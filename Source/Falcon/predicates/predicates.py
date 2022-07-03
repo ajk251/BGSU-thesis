@@ -54,6 +54,7 @@ def predicate(_fn=None, *, alias=None, symbol: NullString = None, is_error: bool
 
 def on_fail_false(fn) -> bool:
     """Decorator to wrap a predicate, ensure that it *only* returns a Boolean, even in the case of failure."""
+
     @wraps(fn)
     def call_fn(*args, **kwargs):
         """Decorates a predicate. If the predicate fails, it returns False"""
@@ -64,6 +65,7 @@ def on_fail_false(fn) -> bool:
             result = False
 
         return result
+
     return call_fn
 
 

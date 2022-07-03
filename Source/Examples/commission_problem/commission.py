@@ -28,9 +28,9 @@ def commission(locks: int, stocks: int, barrels: int) -> float:
 
     # it actually found an error!
 
-    assert locks is not None and 0 <= locks <= lock_max,     f"Number of locks must an integer greater or equal to 0 and less than {lock_max}"
-    assert stocks is not None and 0 <= stocks <= stock_max,  f"Number of stocks must an integer greater or equal to 0 and less than {stock_max}"
-    assert barrels is not None and 0 <= barrels <= barrel_max, f"Number of barrels must an integer greater or equal to 0 and less than {barrel_max}"
+    assert locks is not None and 1 <= locks <= lock_max,     f"Number of locks must an integer greater or equal to 1 and less than {lock_max}"
+    assert stocks is not None and 1 <= stocks <= stock_max,  f"Number of stocks must an integer greater or equal to 1 and less than {stock_max}"
+    assert barrels is not None and 1 <= barrels <= barrel_max, f"Number of barrels must an integer greater or equal to 1 and less than {barrel_max}"
 
     # if locks <= 0 or stocks <= 0 or barrels <= 0:
     #     return 0.0
@@ -62,19 +62,15 @@ def dot(x: Tuple[int, int, int], y: Tuple[float, float, float]) -> float:
 # domains --------------------------------------
 
 @domain(alias='Sales')
-def sales_values(n=100) -> Generator[Tuple[int, int, int], None, None]:
-
-    if n <= 10:
-        warnings.warn("'n' must be greater than 10. Setting n to 10.")
-        n = 10
+def sales_values(n=100, low_values: int = 5) -> Generator[Tuple[int, int, int], None, None]:
 
     # this ensures "low" is tested
-    for _ in range(10):
+    for _ in range(low_values):
         yield (randrange(1, 10), randrange(1, 10), randrange(1, 10))
 
     # -10 gives some chance of -1 or 0
-    for _ in range(n-10):
-        yield (randrange(-10, lock_max), randrange(-10, stock_max), randrange(-10, barrel_max))
+    for _ in range(n-low_values):
+        yield (randrange(-10, lock_max+10), randrange(-10, stock_max+10), randrange(-10, barrel_max+10))
 
 
 @domain(alias=['SalesProgression'])
@@ -96,19 +92,19 @@ def linear_sales():
 @predicate(alias=['valid-sales?'])
 def valid_sales(l: int, s: int, b: int) -> bool:
     return not (all(map(lambda v: isinstance(v, int), (l,s,b))) and \
-           0 <= l <= lock_max and \
-           0 <= s <= stock_max and \
-           0 <= b <= barrel_max)
+           1 <= l <= lock_max and \
+           1 <= s <= stock_max and \
+           1 <= b <= barrel_max)
 
 
 @predicate(alias='too-low?')
 def too_low(l: int, s: int, b: int) -> bool:
-    return l <= 0 and s <= 0 and b <= 0
+    return l <= 0 or s <= 0 or b <= 0
 
 
 @predicate(alias='too-high?')
 def too_high(l: int, s: int, b: int) -> bool:
-    return l >= lock_max and s >= stock_max and b >= barrel_max
+    return l > lock_max or s > stock_max or b > barrel_max
 
 
 @predicate(alias=['low-sales?'])

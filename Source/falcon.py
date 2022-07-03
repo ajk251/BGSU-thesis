@@ -143,8 +143,4 @@ if __name__ == '__main__':
     if args.pytest:
         print('***** RUNNING PyTest *****')
 
-        # TODO: Change this!
-        if output is None:
-            dest_file = 'Tests/tests.py'
-
-        test = pytest.main([dest_file, f'--cov={dest_file}', f'--cov-report=html {dest_file}'])
+        test = pytest.main([output])
