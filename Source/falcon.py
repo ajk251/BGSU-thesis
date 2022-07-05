@@ -40,6 +40,9 @@ parser.add_argument('--debug', '-d', default=False, action='store_true',
 parser.add_argument('--pytest', default=False, action='store_true',
                     required=False, help='Invoke PyTest and run on the output file')
 
+parser.add_argument('--coverage', default=True, action='store_true',
+                    required=False, help='When using PyTest, measure coverage')
+
 if __name__ == '__main__':
 
     # TODO: do better file handling, at least using test file...
@@ -139,8 +142,13 @@ if __name__ == '__main__':
 
     # invoke PyTest
     #   https://docs.pytest.org/en/latest/how-to/usage.html
+    #   https://pytest-cov.readthedocs.io/en/latest/config.html
 
     if args.pytest:
+
         print('***** RUNNING PyTest *****')
 
-        test = pytest.main([output])
+        if args.coverage:
+            test = pytest.main([output, '--maxfail=10', f'--cov={output}', '--cov-report=html'])
+        else:
+            test = pytest.main([output, '--maxfail=10'])

@@ -13,15 +13,15 @@ from commission import *
 
 # This file was generated automatically by falcon.
 # from: commission.fcn
-# on 2022 Jul 02 Sat 20:39:58
+# on 2022 Jul 05 Tue 11:33:57
 
 sales = sales_values()
 linear_sales = linear_sales()
 
-# too_low = lambda l,s,b: l <= 1 or s <= 1 or b <= 1
-# too_high = lambda l,s,b: l >= lock_max or s >= stock_max or b >= barrel_max
+# too_low = lambda l,s,b: l <= 0 and s <= 0 and b <= 0
+# too_high = lambda l,s,b: l > 100 and s > 100 and b > 100
 
-def test_commission_I5():
+def test_commission_mdB():
 
     cases = defaultdict(list)
     results = defaultdict(list)
@@ -56,7 +56,7 @@ def test_commission_I5():
     plot_commission(cases, results)
 
 
-def test_commission_GSgH():
+def test_commission_RI():
 
     cases = defaultdict(list)
     results = defaultdict(list)
@@ -69,21 +69,17 @@ def test_commission_GSgH():
             result = e
 
         if too_low(locks, stocks, barrels) or too_high(locks, stocks, barrels):
-            print(f'WRONG      {locks},{stocks},{barrels} -> {result}')
             assert is_error(result)
             cases['invalid'].append((locks, stocks, barrels))
             results['invalid'].append(result)
         elif low_sales(locks, stocks, barrels):
-            print(f'LOW {locks},{stocks},{barrels} -> {result}')
             cases['low'].append((locks, stocks, barrels))
             results['low'].append(result)
         elif medium_sales(locks, stocks, barrels):
-            print(f'MEDIUM {locks},{stocks},{barrels} -> {result}')
             assert medium_commission(result)
             cases['medium'].append((locks, stocks, barrels))
             results['medium'].append(result)
         elif high_sales(locks, stocks, barrels):
-            print(f'HIGH {locks},{stocks},{barrels} -> {result}')
             assert high_commission(result)
             cases['high'].append((locks, stocks, barrels))
             results['high'].append(result)
@@ -93,7 +89,3 @@ def test_commission_GSgH():
     assert low_commission_group(results['low'], 5)
 
     plot_commission(cases, results)
-
-
-# test_commission_I5()
-test_commission_GSgH()

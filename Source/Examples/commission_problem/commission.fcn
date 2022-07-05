@@ -5,8 +5,8 @@ Domain sales Sales
 Domain linear_sales SalesProgression
 
 ```
-too_low = lambda l,s,b: l <= 0 and s <= 0 and b <= 0
-too_high = lambda l,s,b: l > 100 and s > 100 and b > 100
+# too_low = lambda l,s,b: l <= 0 and s <= 0 and b <= 0
+# too_high = lambda l,s,b: l > 100 and s > 100 and b > 100
 ```
 
 Groupby commission linear_sales:
