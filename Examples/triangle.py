@@ -98,4 +98,4 @@ def is_isocoles(a: int, b: int, c: int) -> bool:
 def is_scalene(a: int, b: int, c: int) -> bool:
     """Triangle where 3 sides are different"""
     return a != b and b != c and a != c
-
+ 
