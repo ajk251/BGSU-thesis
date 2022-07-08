@@ -7,35 +7,23 @@ from Falcon.utilities.TestLogWriter import write_to_log
 from Falcon.utilities import FalconError
 
 from collections import defaultdict
-import unittest
 
 import pytest
 
 # This file was generated automatically by falcon.
-# from: ./initial-tests.fcn
-# on 2022 Jun 27 Mon 17:37:55
+# from: error-test.fcn
+# on 2022 Jul 08 Fri 12:29:02
 
-art1 = ART(max_candidates=100)
-art2 = ART(max_candidates=200)
-X = integers(-1000, 1000, nrandom=10)
-Y = integers(-500, 500, nrandom=10)
-Z = integers()
 
-# start test -----------------
-def test_add():
-
-    # please work
-
-    for art1ᵢ, art2ᵢ in zip(art1, art2):
-        assert is_integer(add(art1ᵢ, art2ᵢ))
-        assert between(add(art1ᵢ, art2ᵢ), -1500, 1500)
-
-        art1()
-        art2()
+def add(x, y):
+    return x + y
+Xs = integers(n=10)
+Ys = integers(n=10)
 
 # start test -----------------
-def test_add_lI():
+def test_add_bg():
 
-    for xᵢ, zᵢ in zip(X, Z):
-        assert is_integer(add(xᵢ, zᵢ))
-        assert between(add(xᵢ, zᵢ), -100, 100)
+    for x, y in zip(Xs, Ys):
+        assert is_instance(add(x, y), int), 'The value is not the instance specified'
+        assert is_integer(add(x, y))
+        assert add(x, y) >= x+y

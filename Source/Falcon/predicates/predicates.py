@@ -7,7 +7,7 @@ from typing import Union
 PREDICATES = dict()
 
 # use this instead!
-Value = namedtuple('Value', 'name,symbol,is_symbolic,is_error,is_group,only_values')
+Value = namedtuple('Value', 'name,symbol,is_symbolic,is_error,is_group,only_values,doc_error,error_message')
 # PredicateFn = namedtuple('PredicateFn', 'name,symbol,is_symbolic,is_error,is_group,only_values')
 
 # help from: https://realpython.com/primer-on-python-decorators/
@@ -25,17 +25,18 @@ NullString = Union[None, str]
 #       only_values implies ... something ...
 
 
-def predicate(_fn=None, *, alias=None, symbol: NullString = None, is_error: bool = False, is_group: bool = False, only_values=False):
+def predicate(_fn=None, *, alias=None, symbol: NullString = None, is_error: bool = False,
+              is_group: bool = False, only_values=False, doc_error: bool = False):
     """Function decorator to define predicates for Falcon."""
 
+    # @wraps()
     def function(func):
 
         is_symbolic = True if symbol is not None else False
 
         # don't really need the function itself...
-        # values = (func.__name__, symbol, is_error, is_group)
-        values = Value(func.__name__, symbol, is_symbolic, is_error, is_group, only_values)
-        # predicate = PredicateFn(func.__name__, symbol, is_symbolic, is_error, is_group, only_values)
+        values = Value(func.__name__, symbol, is_symbolic, is_error, is_group, only_values, doc_error, func.__doc__)
+
         if isinstance(alias, (list, tuple)):
             for name in alias:
                 PREDICATES[name] = values

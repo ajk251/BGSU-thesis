@@ -22,32 +22,33 @@ import os.path as path
 #   • add multiple files as input
 #   • count print statements (?)
 
-# nl           = re.compile('\n', re.MULTILINE)
-# blank        = re.compile('^\s*$', re.MULTILINE)
-# comment      = re.compile('^ *\#\s*', re.MULTILINE)
-# line_comment = re.compile('[\w\S]+[ ]*(\#)', re.MULTILINE)      # this is not perfect, will capture ￫ # 'https.../#thing  # this 
-# multi_comment = re.compile('\"\"\"[\s\S]*?\"\"\"', re.MULTILINE)
-# code         = re.compile('^\s*\w+', re.MULTILINE)
+nl           = re.compile('\n', re.MULTILINE)
+blank        = re.compile('^\s*$', re.MULTILINE)
+comment      = re.compile('^ *\#\s*', re.MULTILINE)
+line_comment = re.compile('[\w\S]+[ ]*(\#)', re.MULTILINE)      # this is not perfect, will capture ￫ # 'https.../#thing  # this 
+multi_comment = re.compile('\"\"\"[\s\S]*?\"\"\"', re.MULTILINE)
+code         = re.compile('^\s*\w+', re.MULTILINE)
 
-# funcs        = re.compile('^def .+\:$', re.MULTILINE)        # unique & line-starting
-# classes      = re.compile('^class [\w\d]+', re.MULTILINE)
-# class_def    = re.compile('^ +def .+\:$', re.MULTILINE)
-# imports      = re.compile('^import |^from ', re.MULTILINE)
-# assertions   = re.compile('^\s*assert ', re.MULTILINE)       # all assertions start with white-space*
+funcs        = re.compile('^def .+\:$', re.MULTILINE)        # unique & line-starting
+classes      = re.compile('^class [\w\d]+', re.MULTILINE)
+class_def    = re.compile('^ +def .+\:$', re.MULTILINE)
+imports      = re.compile('^import |^from ', re.MULTILINE)
+assertions   = re.compile('^\s*assert ', re.MULTILINE)       # all assertions start with white-space*
 
 
-nl           = re.compile('\n')
-blank        = re.compile('^\s*$')
-comment      = re.compile('^ *\#\s*')
-line_comment = re.compile('[\w\S]+[ ]*(\#)')      # this is not perfect, will capture ￫ # 'https.../#thing  # this 
-multi_comment = re.compile('\"\"\"[\s\S]*?\"\"\"')
-code         = re.compile('^\s*\w+')
+# this is useful on a per-line basis ------------
+# nl           = re.compile('\n')
+# blank        = re.compile('^\s*$')
+# comment      = re.compile('^ *\#\s*')
+# line_comment = re.compile('[\w\S]+[ ]*(\#)')      # this is not perfect, will capture ￫ # 'https.../#thing  # this 
+# multi_comment = re.compile('\"\"\"[\s\S]*?\"\"\"')
+# code         = re.compile('^\s*\w+')
 
-funcs        = re.compile('^def .+\:$')        # unique & line-starting
-classes      = re.compile('^class [\w\d]+')
-class_def    = re.compile('^ +def .+\:$')
-imports      = re.compile('^import |^from ')
-assertions   = re.compile('^\s*assert ')       # all assertions start with white-space*
+# funcs        = re.compile('^def .+\:$')        # unique & line-starting
+# classes      = re.compile('^class [\w\d]+')
+# class_def    = re.compile('^ +def .+\:$')
+# imports      = re.compile('^import |^from ')
+# assertions   = re.compile('^\s*assert ')       # all assertions start with white-space*
 
 # -----------------------------------------------
 # NOTE/Warning:
@@ -122,74 +123,75 @@ def counts(file_path: str):
 def count_lines(file_path: str) -> Dict[str, int]:
     """Count the number of lines of code, comments, blank lines, ect in a file."""
 
-    results = dict.fromkeys(['blank', 'loc', 'sloc', 'max-line-length', 'lines-over-80', 'mean-line-length', 'inline comment'], 0)
+    results = dict.fromkeys(['blank', 'loc', 'sloc', 'max-line-length', 'lines-over-80',
+                             'mean-line-length', 'inline comment', 'total-chars'], 0)
 
     with open(file_path, mode='r') as file:
 
         text = file.read()
 
-        for line in text.split('\n'):
-
-            results['blank'] += 0 if line == '' else 1
-            results['loc'] += 1
-            results['sloc'] += 1 if line != '' and (not line.startswith('#')) else 0
-
-
-        code_lines = tuple((line for line in text.split('\n') if (line != '' and (not line.startswith('#')))))
-        lengths = tuple((len(line) for line in code_lines))
-
-        results['max-line-length'] = max(lengths)
-        results['lines-over-80'] = len(tuple((len(line) >= 80 for line in code_lines)))
-        results['mean-line-length'] = mean(lengths)                
-
-        results['inline comment'] += 1 if re.fullmatch(line_comment, line) is not None else 0
-
-
-
-        #     results['total-chars'] += len(line)
-        #     # results['blank-chars'] += len(line)
+        # for line in text.split('\n'):
 
         #     results['blank'] += 0 if line == '' else 1
         #     results['loc'] += 1
         #     results['sloc'] += 1 if line != '' and (not line.startswith('#')) else 0
+
 
         # code_lines = tuple((line for line in text.split('\n') if (line != '' and (not line.startswith('#')))))
         # lengths = tuple((len(line) for line in code_lines))
 
         # results['max-line-length'] = max(lengths)
         # results['lines-over-80'] = len(tuple((len(line) >= 80 for line in code_lines)))
-        # results['mean-line-length'] = mean(lengths)
+        # results['mean-line-length'] = mean(lengths)                
 
-        # results['total-chars'] = len(text)
-        # results['non-ws chars'] = len(tuple(filter(lambda c: c not in (' ', '\n', '\t', '\r'), text)))
-        # results['total lines'] = len(nl.findall(text)) + 1                        # IDEs give the extra line
-        # results['blank']     = len(blank.findall(text))
-        # results['comment']   = len(comment.findall(text))
-        # results['inline comment'] = len(line_comment.findall(text))
-        # # results['multi-comment'] = len(multi_comment.findall(text))
+        # results['inline comment'] += 1 if re.fullmatch(line_comment, line) is not None else 0
+
+        for line in text.split('\n'):
+
+            results['total-chars'] += len(line)
+            # results['blank-chars'] += len(line)
+
+            results['blank'] += 0 if line == '' else 1
+            results['loc'] += 1
+            results['sloc'] += 1 if line != '' and (not line.startswith('#')) else 0
+
+        code_lines = tuple((line for line in text.split('\n') if (line != '' and (not line.startswith('#')))))
+        lengths = tuple((len(line) for line in code_lines))
+
+        results['max-line-length'] = max(lengths)
+        results['lines-over-80'] = len(tuple((len(line) >= 80 for line in code_lines)))
+        results['mean-line-length'] = mean(lengths)
+
+        results['total-chars'] = len(text)
+        results['non-ws chars'] = len(tuple(filter(lambda c: c not in (' ', '\n', '\t', '\r'), text)))
+        results['total lines'] = len(nl.findall(text)) + 1                        # IDEs give the extra line
+        results['blank']     = len(blank.findall(text))
+        results['comment']   = len(comment.findall(text))
+        results['inline comment'] = len(line_comment.findall(text))
+        # results['multi-comment'] = len(multi_comment.findall(text))
         
-        # # this is a special case - have to count the number of lines inside the comments
-        # #   it counts the right number, but the lines inside count as code
+        # this is a special case - have to count the number of lines inside the comments
+        #   it counts the right number, but the lines inside count as code
 
-        # n = 0
+        n = 0
 
-        # for line in multi_comment.findall(text):
+        for line in multi_comment.findall(text):
 
-        #     sublines = line.split('\n')
+            sublines = line.split('\n')
 
-        #     if len(sublines) == 1:
-        #         continue
+            if len(sublines) == 1:
+                continue
 
-        #     for subline in sublines:
-        #         if subline != '"""': n += 1
+            for subline in sublines:
+                if subline != '"""': n += 1
 
-        # results['lines-code'] = len(code.findall(text)) - n
+        results['lines-code'] = len(code.findall(text)) - n
 
-        # results['functions'] = len(funcs.findall(text))
-        # results['classes'] = len(classes.findall(text))
-        # results['class-defs'] = len(class_def.findall(text))
-        # results['imports'] = len(imports.findall(text))
-        # results['assertions'] = len(assertions.findall(text))
+        results['functions'] = len(funcs.findall(text))
+        results['classes'] = len(classes.findall(text))
+        results['class-defs'] = len(class_def.findall(text))
+        results['imports'] = len(imports.findall(text))
+        results['assertions'] = len(assertions.findall(text))
 
     return results
 
@@ -268,6 +270,5 @@ if __name__ == '__main__':
         #     print('  ', '{:<15}'.format(variable), '{:>7}'.format(count))
 
         print(pretty(results))
-        print(halstead(file))
 
         print()

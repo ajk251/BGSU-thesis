@@ -78,9 +78,11 @@ def lone(sequence, predicate_fn):
 
 @predicate(alias=['is-empty?', 'empty?'], is_group=True)
 def empty(sequence) -> bool:
+    """The sequence must be empty"""
     return len(sequence) == 0
 
 
 @predicate(alias=['not-empty?'], is_group=True)
 def not_empty(sequence) -> bool:
+    """The sequence must contain more than one element"""
     return len(sequence) >= 1

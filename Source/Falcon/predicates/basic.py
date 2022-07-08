@@ -162,34 +162,46 @@ def is_error_and_contains(error, message) -> bool:
 # basic -----------------------------------------
 
 
-@predicate(alias=['is-None?', 'is-none?', 'None?', 'none?'])
+@predicate(alias=['is-None?', 'is-none?', 'None?', 'none?'], doc_error=True)
 def is_none(value) -> bool:
+    """Value must be None"""
     return value is None
 
 
-@predicate(alias=['instance?', 'is?'])
+@predicate(alias=['not-none?', 'not-None?'], doc_error=True)
+def is_not_none(value):
+    """Value must not be None"""
+    return value is not None
+
+
+@predicate(alias=['instance?', 'is?'], doc_error=True)
 def is_instance(value, result) -> bool:
+    """The value is not the instance specified"""
     # this was done for the triangle example
-    return isinstance(result, value)
+    return isinstance(value, result)
 
 
-@predicate(alias=['is-a?'])
+@predicate(alias=['is-a?'], doc_error=True)
 def is_a(kind, *value) -> bool:
+    f"""The value is not any of {repr(value)}"""
     return isinstance(kind, value)
 
 
-@predicate(alias=['same-as?'])
+@predicate(alias=['same-as?'], doc_error=True)
 def same_instance(value_a, value_b) -> bool:
+    """The value must be the same instance"""
     return id(value_a) == id(value_b)
 
 
-@predicate(alias=['in', 'in?', '∋', '∍'], symbol='in')
+@predicate(alias=['in', 'in?', '∋', '∍'], symbol='in', doc_error=True)
 def is_in(value, container) -> bool:
+    """The value must in the sequence"""
     return op.contains(container, value)
 
 
-@predicate(alias=['!in', '¬in', '∌'], symbol='not in')
+@predicate(alias=['!in', '¬in', '∌'], symbol='not in', doc_error=True)
 def not_in(value, container) -> bool:
+    """The value must not be in the sequence"""
     return not op.contains(container, value)
 
 # compare ---------------------------------------
@@ -213,7 +225,7 @@ def strong_equals(a, b) -> bool:
     return id(a) != id(b) and type(a) == type(b) and a == b
 
 
-@predicate(alias=['!=', '¬=', '≠', 'ne?'], symbol='!=')
+@predicate(alias=['!=', '≠', 'ne?'], symbol='!=')
 def ne(a, b) -> bool:
     return op.ne(a, b)
 
@@ -239,6 +251,7 @@ def ge(a, b) -> bool:
 
 # search --------------------------------------------------
 
+
 @predicate(alias=['sorted?', 'sorted≤?', 'sorted<=?'])
 def is_sorted(sequence) -> bool:
     """Tests i≤j for all values in sequence"""
@@ -261,6 +274,7 @@ def descending(sequence) -> bool:
 def ascending(sequence) -> bool:
     """Tests for ascending order, ie 1, 2, 3 …, where i < j"""
     return all((i < j for i, j in zip(sequence, sequence[1:])))
+
 
 @predicate(alias=['all-unique?'])
 def all_unique(sequence) -> bool:

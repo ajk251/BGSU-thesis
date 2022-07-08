@@ -465,13 +465,15 @@ def make_assert_stmt(stub, fn_name, args=None, just_result=False):
 
     # find
     if (stub['kind'].startswith('predicate')) and (stub.get('predicate', '') not in PREDICATES):
-        # raise FalconError(f'Predicate "{stub["predicate"]}" not found. Treating a "raw" predicate.')
         warnings.warn(f'Predicate "{stub["predicate"]}" not found. Treating a "raw" predicate.')
+        predicate = Value(stub["predicate"], None, False, False, False, False, False, None)
+    else:
+        predicate = PREDICATES[stub['predicate']]
 
     use_symbolic = False
     error_type = False
 
-    # TODO: refactor to this. Returns a namedtuple -> name, symbol, is_symbolic, is_error, is_group
+    # TODO: refactor to this. Returns a namedtuple -> name, symbol, is_symbolic, is_error, is_group, doc_error
     # predicate = PREDICATES[stub['predicate']]
     # has_values = ...
 
@@ -540,6 +542,8 @@ def make_assert_stmt(stub, fn_name, args=None, just_result=False):
     # TODO: 'message' should be in all the stubs, eventually
     if 'error-message' in stub and stub['error-message'] is not None:
         line += f", {stub['error-message']}"
+    elif predicate.doc_error and predicate.error_message is not None:
+        line += f", '{predicate.error_message}'"
 
     return line
 
