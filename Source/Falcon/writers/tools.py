@@ -119,14 +119,14 @@ def add_imports(entry) -> str:
 def falcon_intro(source=None) -> str:
     """Add a message to the generated file"""
 
-    intro = "# This file was generated automatically by falcon."
+    intro = "# This file was generated automatically by Falcon."
     intro += '' if not source else '\n# from: ' + source
     intro += '\n# on ' + datetime.now().strftime("%Y %b %d %a %H:%M:%S") + nl + nl
 
     return intro
 
-
 # component parts -------------------------------
+
 
 def make_args(entry) -> str:
     """Makes the arguments for a function, <fn>(x,y,z)"""

@@ -92,7 +92,7 @@ if __name__ == '__main__':
 
         # the output file
     if args.output == [] or args.output is None:
-        name, ext = os.path.splitext(file)
+        name, ext = os.path.splitext(file)                      # uses the falcon file name
         output = os.getcwd() + f'/test_falcon_{name}.py'
     else:
         output = os.getcwd() + '/' + args.output[0]
@@ -127,6 +127,8 @@ if __name__ == '__main__':
     if args.unit:
         write_basic_unittest(falcon_tree, file, output)
 
+    print('***** Done *****')
+
     # -------------------------------------------
 
     # show the tree - for debugging
@@ -153,3 +155,5 @@ if __name__ == '__main__':
             test = pytest.main([output, '--maxfail=10', f'--cov={output}', '--cov-report=html'])
         else:
             test = pytest.main([output, '--maxfail=10'])
+
+    print('***** Finished *****')

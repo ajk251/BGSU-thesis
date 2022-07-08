@@ -97,7 +97,7 @@ def make_global(entry) -> str:
         kind, value = block if len(block) == 2 else (block[0], block[1:])
 
         if kind == 'code':
-            line = '\n' + code_block(value)
+            line = code_block(value) + '\n'
             lines.append(line)
         elif kind == 'assertion':
             line = basic_Assert(entry['tests'][value])

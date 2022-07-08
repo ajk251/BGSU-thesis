@@ -27,3 +27,6 @@ def test_add_Bgqx():
         assert is_instance(add(x, y), int), 'The value is not the instance specified'
         assert is_integer(add(x, y))
         assert add(x, y) >= x+y
+        
+        
+print('Finished')
