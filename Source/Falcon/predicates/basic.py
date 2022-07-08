@@ -183,7 +183,7 @@ def is_instance(value, result) -> bool:
 
 @predicate(alias=['is-a?'], doc_error=True)
 def is_a(kind, *value) -> bool:
-    f"""The value is not any of {repr(value)}"""
+    """The value is not any of instances specified"""
     return isinstance(kind, value)
 
 

@@ -57,12 +57,6 @@ if __name__ == '__main__':
     else:
         file = args.file[0]
 
-    # the output file
-    if args.output == [] or args.output is None:
-        output = os.getcwd() + '/test_falcon_file.py'
-    else:
-        output = os.getcwd() + '/' + args.output[0]
-
     # file = None if args.file[0] in ('.', '-', '_') else os.getcwd() + '/' + args.file[0]
     # output = None if args.output[0] is None else args.output[0]
 
@@ -95,6 +89,13 @@ if __name__ == '__main__':
 
     if not os.path.exists(file):
         raise FileExistsError(f"File '{file}' was not found")
+
+        # the output file
+    if args.output == [] or args.output is None:
+        name, ext = os.path.splitext(file)
+        output = os.getcwd() + f'/test_falcon_{name}.py'
+    else:
+        output = os.getcwd() + '/' + args.output[0]
 
     input_stream = FileStream(file, encoding='utf-8')
     lexer = FalconLexer(input_stream)
