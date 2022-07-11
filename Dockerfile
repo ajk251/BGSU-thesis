@@ -1,0 +1,35 @@
+FROM python:3.9-alpine
+VOLUME /falcon
+
+#VOLUME /falcon
+#WORKDIR /DockerImage
+
+COPY ./Source/test-docker.py .
+
+COPY ./Source/Examples/ ./Examples/
+COPY ./Source/Falcon/ ./Falcon/
+COPY ./Source/falcon.py .
+
+# add github
+RUN apk add git
+
+# install Python & files
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+RUN touch /usr/src/.bashrc | echo "python falcon.py" >> /usr/src/.bashrc
+
+# help from:
+#    https://devops.ionos.com/tutorials/configure-a-docker-container-to-automatically-pull-from-github-using-oauth/
+
+# Pull Falcon from Github
+#RUN git clone -b docker https://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:x-oauth-basic@github.com/ajk251/BGSU-thesis.git
+#RUN git clone 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:x-oauth-basic@git@github.com:ajk251/BGSU-thesis.git
+#RUN git clone https://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:x-oauth-basic@github.com/ajk251/BGSU-thesis.git
+#RUN cp -R /myapp/* /home/app
+#RUN chown app:app -r /home/app/
+
+RUN ls ./
+
+#CMD ["python", "test-docker.py"]
+CMD ["python", "falcon.py", "-h"]
