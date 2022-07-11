@@ -10,6 +10,7 @@ Groupby addg X:
   ;
 
 Groupby addf Xvalues -> bin_fn:
+  | :no-error-message
   | 'a' is-float?
   | 'a' is-int?
   | 'b' is-int?

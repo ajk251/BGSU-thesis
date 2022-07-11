@@ -348,9 +348,9 @@ def get_directives(entry) -> dict[str, Union[None, str, list, bool]]:
     # *** leave the error message if avaliable ***
 
     if entry['directives'].get(':no-error-message', False):
-        directives['no-error-message'] = True
-    else:
         directives['no-error-message'] = False
+    else:
+        directives['no-error-message'] = True
 
     return directives
 
@@ -679,7 +679,7 @@ def make_if_group_stmt(stub, fn_name, args):
 
 def make_group_predicate_error(group: str, error_message: str, predicate_name: str, add_predicate: bool = True) -> str:
 
-    msg = ''
+    # msg = ''
 
     if add_predicate is False:
         return ''

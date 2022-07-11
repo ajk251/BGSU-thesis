@@ -361,7 +361,9 @@ def basic_Groupby2(entry) -> str:
     followup = directives['follow-up']
     save_results = True #directives['save-results']                 # if one is a group, it must be true
     save_cases = directives['save-cases']
-    use_error_msg = True
+    use_error_msg = directives['no-error-message']
+
+    print(use_error_msg)
 
     args = ', '.join(labels)
     fn_sig = '{}({})'.format(fn_name, args)
@@ -432,8 +434,6 @@ except Exception as e:
     cond = 'if'         # rather than have if if, if elif, ...
 
     indent += 1
-
-
 
     # TODO: fix predicate
     # each stub: [{partition-predicate, test-predicate, <data>}, or more {}]

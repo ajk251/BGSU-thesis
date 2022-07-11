@@ -12,11 +12,11 @@ import pytest
 
 # This file was generated automatically by Falcon.
 # from: Tests/groupby-tests.fcn
-# on 2022 Jul 10 Sun 20:18:08
+# on 2022 Jul 10 Sun 20:22:55
 
 X = integers()
 
-def test_addg_XBeDc():
+def test_addg_BtW61():
 
     results = defaultdict(list)
 
@@ -46,7 +46,7 @@ def test_addg_XBeDc():
     plot_results(results)
 
 
-def test_addf_zmBH():
+def test_addf_KH7JW():
 
     results = defaultdict(list)
 
@@ -58,22 +58,22 @@ def test_addf_zmBH():
             result = e
 
         if is_float(xvaluesᵢ) or is_integer(xvaluesᵢ):
-            assert is_float(result), "Group 'a' predicate 'is_float' has failed"
+            assert is_float(result)
             results['a'].append(result)
         elif is_integer(xvaluesᵢ):
-            assert is_integer(result), "Group 'b' predicate 'is_integer' has failed"
+            assert is_integer(result)
             results['b'].append(result)
         elif is_positive(xvaluesᵢ):
-            assert is_positive(result), "Tests whether the values is a number greater than 0"
+            assert is_positive(result)
             results['c'].append(result)
         elif between(xvaluesᵢ):
-            assert between(result, 0, 1), "Group 'd' predicate 'between' has failed"
+            assert between(result, 0, 1)
             results['d'].append(result)
         elif ge(xvaluesᵢ):
-            assert ge(result, 1), "Group 'e' predicate 'ge' has failed"
+            assert ge(result, 1)
             results['e'].append(result)
         elif raises_error(xvaluesᵢ):
-            assert raises_error(result, InvalidInputError), "Tests that the error is an instance of the specified type"
+            assert raises_error(result, InvalidInputError)
             results['error'].append(result)
         else:
             raise FalconError('Failed to meet at least one group')
