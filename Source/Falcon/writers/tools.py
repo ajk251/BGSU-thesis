@@ -207,7 +207,8 @@ def get_directives(entry) -> dict[str, Union[None, str, list, bool]]:
     # these are implemented
     recognized = frozenset((':follow-up', ':message', ':only', ':test-name', ':name',
                             ':no-suffix', ':suffix', ':labels', ':method', ':log', ':log-name',
-                            ':iter-object', ':object-update', ':min', ':max', ':save-results', ':save-cases'))
+                            ':iter-object', ':object-update', ':min', ':max', ':save-results',
+                            ':save-cases', ':no-error-message'))
 
     # see if any are not recognized
     if not frozenset(entry['directives'].keys()).issubset(recognized):
@@ -292,7 +293,7 @@ def get_directives(entry) -> dict[str, Union[None, str, list, bool]]:
         algo = entry['directives'][':method']['value']
 
         if algo not in ALGORITHMS:
-            raise f"Directive :method not found {algo}"
+            raise FalconError(f"Directive :method not found {algo}")
 
         # get the real name
         algo = ALGORITHMS[algo]
@@ -327,10 +328,10 @@ def get_directives(entry) -> dict[str, Union[None, str, list, bool]]:
     else:
         directives['iter-object'] = None
 
-    if entry['directives'].get(':object-update', False):
-        directives['object-update'] = True
+    if entry['directives'].get(':update', False):
+        directives['update'] = True
     else:
-        directives['object-update'] = False
+        directives['update'] = False
 
     # *** save results & save cases ***
 
@@ -343,6 +344,13 @@ def get_directives(entry) -> dict[str, Union[None, str, list, bool]]:
         directives['save-cases'] = True
     else:
         directives['save-cases'] = False
+
+    # *** leave the error message if avaliable ***
+
+    if entry['directives'].get(':no-error-message', False):
+        directives['no-error-message'] = True
+    else:
+        directives['no-error-message'] = False
 
     return directives
 
@@ -357,8 +365,8 @@ def get_predicate(stub, by_group=False): # -> Tuple[Predicate, List]:
     # is the predicate defined?
     if not by_group and PREDICATES.get(stub['predicate'], False): #stub.get('predicate', False):
         predicate = PREDICATES[stub['predicate']]
-    elif by_group and PREDICATES.get(stub['group-predicate'], False):
-        predicate = PREDICATES[stub['group-predicate']]
+    elif by_group and PREDICATES.get(stub['predicate'], False):
+        predicate = PREDICATES[stub['predicate']]
     elif by_group:
         predicate = Value(stub['group-predicate'], None, False, False, False, False)
         warnings.warn(f"Predicate '{predicate.name}' was not defined.")
@@ -444,7 +452,7 @@ def make_boolean(entry, fn_sig='') -> str:
     return ''.join(line)
 
 
-def make_assert_stmt(stub, fn_name, args=None, just_result=False):
+def make_assert_stmt(stub, fn_name, args=None, just_result: bool = False, use_error_msg: bool = False):
 
     indent: int = 0
 
@@ -542,7 +550,7 @@ def make_assert_stmt(stub, fn_name, args=None, just_result=False):
     # TODO: 'message' should be in all the stubs, eventually
     if 'error-message' in stub and stub['error-message'] is not None:
         line += f", {stub['error-message']}"
-    elif predicate.doc_error and predicate.error_message is not None:
+    elif use_error_msg and predicate.doc_error and predicate.error_message is not None:
         line += f", '{predicate.error_message}'"
 
     return line
@@ -667,4 +675,17 @@ def make_if_group_stmt(stub, fn_name, args):
             line = f3.format(pd_name, args)
 
     return line
+
+
+def make_group_predicate_error(group: str, error_message: str, predicate_name: str, add_predicate: bool = True) -> str:
+
+    msg = ''
+
+    if add_predicate is False:
+        return ''
+
+    if error_message is not None and error_message != '':
+        return f", \"{error_message}\""
+
+    return f', "Group {group} predicate \'{predicate_name}\' has failed"'
 

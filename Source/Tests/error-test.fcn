@@ -8,7 +8,7 @@ Domain Xs Integers -n 10
 Domain Ys Integers -n 10
 
 Test add Xs Ys:
-  | :labels [x y]
+  | :labels [x y] :method twise
   | is? int
   | int?
   | ≥ `x+y`

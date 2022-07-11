@@ -48,9 +48,9 @@ def write_basic_test(intermediate, source=None, destination=None):
     elif destination is not None:
         file = destination
     else:
-        file = 'Tests/test_falcon_file.py'
+        file = os.getcwd() + '/test_falcon_file.py'
 
-    with open(file, 'w', encoding='utf-8') as falcon:
+    with open(file, 'w+', encoding='utf-8') as falcon:
 
         # write the boilerplate stuff, that applies globally
         lines = make_initial(intermediate['initial'], source)
@@ -156,7 +156,10 @@ def basic_Test(entry) -> str:
     algo = directives['algo']
     params = directives['params']
     fn_name = directives['fn_name']
-    obj_update = directives['object-update']
+    obj_update = directives['update']
+    use_error_msg = directives['no-error-message']
+
+    # TODO: logging!
 
     # write tests ------
     lines = ['\n# start test -----------------', pyfunc, '']
@@ -186,7 +189,7 @@ def basic_Test(entry) -> str:
     indent += 1
 
     for stub in entry['stubs']:
-        stmt = make_assert_stmt(stub, fn_name, args)
+        stmt = make_assert_stmt(stub, fn_name, args, use_error_msg)
         lines.append((indent * TAB) + stmt)
 
     lines.append('')
@@ -194,7 +197,7 @@ def basic_Test(entry) -> str:
     if obj_update:
         # test_case = ', '.join(str(arg) for arg in args)
         for domain in entry['domain']:
-            line = indent * TAB + domain + "()"
+            line = indent * TAB + domain + "() # <-- User defined arguments here"
             lines.append(line)
 
     # indent -= 1
@@ -358,6 +361,7 @@ def basic_Groupby2(entry) -> str:
     followup = directives['follow-up']
     save_results = True #directives['save-results']                 # if one is a group, it must be true
     save_cases = directives['save-cases']
+    use_error_msg = True
 
     args = ', '.join(labels)
     fn_sig = '{}({})'.format(fn_name, args)
@@ -429,6 +433,8 @@ except Exception as e:
 
     indent += 1
 
+
+
     # TODO: fix predicate
     # each stub: [{partition-predicate, test-predicate, <data>}, or more {}]
 
@@ -458,9 +464,12 @@ except Exception as e:
         # the first two go at the end
         if gpredicate.is_group and gvalues is not None:
             gline = f"{(indent-2) * TAB}assert {gpredicate.name}(results[{group}], {', '.join(gvalues)})"
+            gline += make_group_predicate_error(group, gpredicate.error_message, gpredicate.name, use_error_msg)
+
             agg_groups.append(gline)
         elif gpredicate.is_group:
             gline = f"{(indent-2) * TAB}assert {gpredicate.name}(results[{group}])"
+            gline += make_group_predicate_error(group, gpredicate.error_message, gpredicate.name, use_error_msg)
             agg_groups.append(gline)
 
         # line = ''
@@ -471,9 +480,11 @@ except Exception as e:
 
         if not gpredicate.is_group and gvalues is not None:
             line = f"{indent * TAB}assert {gpredicate.name}(result, {', '.join(gvalues)})"
+            line += make_group_predicate_error(group, gpredicate.error_message, gpredicate.name, use_error_msg)
             lines.append(line)
         elif not gpredicate.is_group:
             line = f"{indent * TAB}assert {gpredicate.name}(result)"
+            line += make_group_predicate_error(group, gpredicate.error_message, gpredicate.name, use_error_msg)
             lines.append(line)
         # else:
         # # elif gvalues is None and not gpredicate.is_group:

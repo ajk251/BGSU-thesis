@@ -85,17 +85,21 @@ if __name__ == '__main__':
         # thesis examples
         # file = 'ThesisExamples/FalconMotivation.fcn'
 
-        print(f"Using debugging file: '{file}'")
+        # print(f"Using debugging file: '{file}'")
 
     if not os.path.exists(file):
         raise FileExistsError(f"File '{file}' was not found")
 
         # the output file
     if args.output == [] or args.output is None:
-        name, ext = os.path.splitext(file)                      # uses the falcon file name
+        path = os.path.basename(file)
+        name, ext = os.path.splitext(path)                      # uses the falcon file name
         output = os.getcwd() + f'/test_falcon_{name}.py'
     else:
         output = os.getcwd() + '/' + args.output[0]
+
+    print('Using file:      ', file)
+    print('Generating file: ', output)
 
     input_stream = FileStream(file, encoding='utf-8')
     lexer = FalconLexer(input_stream)
@@ -116,9 +120,6 @@ if __name__ == '__main__':
 
     # if output is None:
     #     output = os.getcwd() + '/test_falcon_file.py'
-
-    print('Using file:      ', file)
-    print('Generating file: ', output)
 
     # one or both
     if args.test:

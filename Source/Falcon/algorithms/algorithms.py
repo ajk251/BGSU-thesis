@@ -46,7 +46,7 @@ def all_triplets(*sequences):
     return chain(product(*sequences), product(*sequences), product(*sequences))
 
 
-@algorithm(alias=['covering', 't-wise'])
+@algorithm(alias=['covering', 't-wise', 'twise'])
 def twise_combination(*sequences, tway: int = 3):
     """
     Generates t-wise combinations of sequences, without unnecessary values. Like IPOG, but more clear and practical, though less efficient.
