@@ -9,10 +9,11 @@ import math
 
 # numerical -------------------------------------
 
-@predicate(alias=['modof?', '%=', 'mod-of?'])
-def is_modulus_of(b, n) -> bool:
-    '''Tests b % n == 0'''
-    return b % n == 0
+@predicate(alias=['modof?', '%=', 'mod-of?'], doc_error=True)
+def is_modulus_of(a, n) -> bool:
+    '''Value a % n != 0'''
+    if a < 1: return False
+    return a % n == 0
 
 
 @predicate(alias=['is-even', 'even?'])

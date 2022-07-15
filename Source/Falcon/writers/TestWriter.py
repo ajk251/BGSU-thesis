@@ -362,8 +362,7 @@ def basic_Groupby2(entry) -> str:
     save_results = True #directives['save-results']                 # if one is a group, it must be true
     save_cases = directives['save-cases']
     use_error_msg = directives['no-error-message']
-
-    print(use_error_msg)
+    min_cases = directives['min-cases']
 
     args = ', '.join(labels)
     fn_sig = '{}({})'.format(fn_name, args)
@@ -396,9 +395,13 @@ except Exception as e:
     if save_cases:
         line = (indent * TAB) + 'cases = defaultdict(list)'
         lines.append(line)
+
     if save_results:
-        line = (indent * TAB) + 'results = defaultdict(list)\n'
+        line = (indent * TAB) + 'results = defaultdict(list)'
         lines.append(line)
+
+    line = f"{indent * TAB}n_cases = defaultdict(int)\n"
+    lines.append(line)
 
     # build the for loop, naked/with custom iterator/generic & no parameters
     if len(labels) == 1:
@@ -498,6 +501,8 @@ except Exception as e:
         if save_results:
             line = f'{indent * TAB}results[{group}].append(result)'
             lines.append(line)
+        line = f'{indent * TAB}n_cases[{group}] += 1'
+        lines.append(line)
 
         indent -= 1
 
@@ -508,6 +513,10 @@ except Exception as e:
 
     # add the aggregate group operations
     lines.extend(agg_groups)
+
+    # must have a minimum number of test cases
+    line = f'{TAB}for group, n in n_cases.items():\n{(indent+0) * TAB}assert n >= {min_cases}, f"\'{{group}}\' not meet the min number of examples"'
+    lines.append(line)
 
     indent -= 1
 

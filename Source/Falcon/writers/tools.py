@@ -208,7 +208,7 @@ def get_directives(entry) -> dict[str, Union[None, str, list, bool]]:
     recognized = frozenset((':follow-up', ':message', ':only', ':test-name', ':name',
                             ':no-suffix', ':suffix', ':labels', ':method', ':log', ':log-name',
                             ':iter-object', ':object-update', ':min', ':max', ':save-results',
-                            ':save-cases', ':no-error-message'))
+                            ':save-cases', ':no-error-message', ':min-cases', ':no-minimum'))
 
     # see if any are not recognized
     if not frozenset(entry['directives'].keys()).issubset(recognized):
@@ -345,12 +345,21 @@ def get_directives(entry) -> dict[str, Union[None, str, list, bool]]:
     else:
         directives['save-cases'] = False
 
-    # *** leave the error message if avaliable ***
+    # *** leave the error message if available ***
 
     if entry['directives'].get(':no-error-message', False):
         directives['no-error-message'] = False
     else:
         directives['no-error-message'] = True
+
+    # *** Groupby - min cases ***
+
+    if entry['directives'].get(':min-cases', False):
+        directives['min-cases'] = int(entry['directives'][':min-cases'])
+    elif entry['directives'].get(':no-minimum', False):
+        directives['min-cases'] = 0
+    else:
+        directives['min-cases'] = 1
 
     return directives
 
