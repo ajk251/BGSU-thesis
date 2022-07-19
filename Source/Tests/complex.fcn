@@ -1,10 +1,10 @@
 
-:import Tests.ComplexNumber -from Complex
-:import Tests.ComplexPredicates -all
+//:import ComplexNumber
+:import ComplexNumber -from Complex
+:import ComplexPredicates -all
 
 Domain A Reals2
 Domain B Reals2
-
 
 Domain lower Integers -lower 0 -upper 100
 Domain upper Integers -lower -100 -upper 100
@@ -37,6 +37,7 @@ Test Complex A:
   | additive-id?
   | multiplicative-id?
   | additive-id?
+  | complex-self?
   ;
 
 Domain C1 ComplexDomain

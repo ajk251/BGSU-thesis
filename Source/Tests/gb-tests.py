@@ -12,11 +12,11 @@ import pytest
 
 # This file was generated automatically by Falcon.
 # from: Tests/groupby-tests.fcn
-# on 2022 Jul 15 Fri 14:49:06
+# on 2022 Jul 18 Mon 16:45:39
 
 X = integers()
 
-def test_addg_HY():
+def test_addg_yWV():
 
     results = defaultdict(list)
     n_cases = defaultdict(int)
@@ -53,7 +53,7 @@ def test_addg_HY():
     plot_results(results)
 
 
-def test_addf_YCkc():
+def test_addf_FSL():
 
     results = defaultdict(list)
     n_cases = defaultdict(int)

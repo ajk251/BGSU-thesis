@@ -418,9 +418,6 @@ def make_boolean(entry, fn_sig='') -> str:
 
     for element in entry['values']:
 
-        # if element == '(': continue
-        # elif element == ')': continue
-
         if element == '(':
             case.append('(')
             continue
@@ -484,6 +481,10 @@ def make_assert_stmt(stub, fn_name, args=None, just_result: bool = False, use_er
     if (stub['kind'].startswith('predicate')) and (stub.get('predicate', '') not in PREDICATES):
         warnings.warn(f'Predicate "{stub["predicate"]}" not found. Treating a "raw" predicate.')
         predicate = Value(stub["predicate"], None, False, False, False, False, False, None)
+    elif stub['kind'] == 'assert-logical':
+        print('FIX!  make_assert_stmt')
+    elif stub['kind'] == 'logical':
+        print('FIX!  make_assert_stmt')
     else:
         predicate = PREDICATES[stub['predicate']]
 

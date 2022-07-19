@@ -297,3 +297,8 @@ def complex_rmul(a: Complex, b: Complex):
     o = deepcopy(a)
     a *= b
     return o == Complex(a.real * b.real, a.imaginary * b.imaginary)
+
+
+@predicate(alias=['complex-self?'], is_error=True)
+def complex_div(*args):
+    return True

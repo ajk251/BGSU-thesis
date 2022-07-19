@@ -16,6 +16,9 @@ from Falcon.utilities.FalconError import FalconError
 
 from Falcon import domains
 
+from pathlib import Path
+from os import remove
+
 from Falcon.writers.tools import *
 
 tabsize: int = 4
@@ -50,7 +53,7 @@ def write_basic_test(intermediate, source=None, destination=None):
     else:
         file = os.getcwd() + '/test_falcon_file.py'
 
-    with open(file, 'w+', encoding='utf-8') as falcon:
+    with open(file, 'w', encoding='utf-8') as falcon:
 
         # write the boilerplate stuff, that applies globally
         lines = make_initial(intermediate['initial'], source)
@@ -172,7 +175,7 @@ def basic_Test(entry) -> str:
     # build the for loop, naked/with custom iterator/generic & no parameters
     if len(dvars) == 1:
         # note dvars is the number of domains, labels can be user-defined number to unpack
-        template = indent * TAB + "for {} in {}:".format(','.join(labels), dvars[0])
+        template = indent * TAB + "for {} in {}:".format(', '.join(labels), dvars[0])
     elif len(params) > 0:
         template = indent * TAB + 'for {} in {}({}, {}):'.format(', '.join(labels), algo, ', '.join(dvars), ', '.join(params))
     elif len(labels) > 1 and len(dvars) == 1:
@@ -267,12 +270,10 @@ def basic_Assert(entry) -> str:
             lines.append((TAB * indent) + stub['value'])
             continue
 
-        # print(get_predicate(stub, False))
-
         # is the predicate defined?
         if stub.get('predicate', False):
             predicate = PREDICATES[stub['predicate']]
-        else:
+        elif stub['kind'] not in ('assert-logical', 'assert-error'):
             predicate = Value(stub['predicate'], None, False, False, False)
             warnings.warn(f"Predicate {predicate.name} was not defined.")
 
@@ -306,14 +307,11 @@ def basic_Assert(entry) -> str:
         fn = fn_name + args
         value = stub['value'][1:]
 
-        # print(get_predicate(stub, False), stub['value'])
-
         if PREDICATES[stub['predicate']].is_symbolic:
             # the symbolic representation
             pd_name = PREDICATES[stub['predicate']].symbol
             line = a1.format(fn, pd_name, value)
         else:
-            # print(get_predicate(stub, False), stub['value'])
             pd_name = PREDICATES[stub['predicate']].name
 
             if ignore_true and value == 'True':
@@ -321,14 +319,12 @@ def basic_Assert(entry) -> str:
             elif stub['kind'] == 'logical':
                 line = make_assert_stmt(stub, fn_name, args, just_result=False)
                 # stmt = make_assert_stmt(stub, fn_name, args)
-                # print(stmt)
             elif len(value) > 2:
                 # more than 1 value in predicate args
                 v = ', '.join(v for v in value[1:])
                 line = f"assert {pd_name}({fn_name}{args}, {v})"
                 # line = a2.format(pd_name, fn_name, ', '.join((v for v in value[1:])))
             else:
-                # print(get_predicate(stub, False), stub['value'])
                 line = a2.format(pd_name, fn, ', '.join(value))
 
         if 'error-message' in stub and stub['error-message'] is not None:
