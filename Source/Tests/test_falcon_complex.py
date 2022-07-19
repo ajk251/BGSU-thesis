@@ -14,7 +14,7 @@ from ComplexPredicates import *
 
 # This file was generated automatically by Falcon.
 # from: complex.fcn
-# on 2022 Jul 19 Tue 14:04:32
+# on 2022 Jul 19 Tue 14:28:39
 
 A = Reals2()
 B = Reals2()
@@ -22,15 +22,15 @@ lower = integers(lower=0, upper=100)
 upper = integers(lower=-100, upper=100)
 critical = CSVDomain('./tests/special-case.txt')
 
-def test_Complex_assertions_QC():
+def test_Complex_assertions_ERo():
 
-    assert eq(Complex, (1.0, 1.0), Complex(1.0, 1.0))
-    assert eq(Complex, (1, 1), Complex(1.0, 1.0)), "This should never fail"
-    assert lt(Complex, (10.0, 10.0), Complex(20.0, 20.0))
+    assert eq(Complex(1.0, 1.0), Complex(1.0, 1.0))
+    assert eq(Complex(1, 1), Complex(1.0, 1.0)), "This should never fail"
+    assert lt(Complex(10.0, 10.0), Complex(20.0, 20.0))
     assert is_error(Complex(nan, 1.0), AssertionError)
     assert between(Complex(1.0, 1.0), -1.0, 1.0)
     assert is_error_and_contains(Complex(inf, inf), Exception, "Value must be a float")
-    assert is_complex(Complex(1.0, 0.0), False, False, False, False, None) or is_float(Complex(1.0, 0.0), False, False, False, False, None)
+    assert is_complex(Complex(1.0, 0.0)) or is_float(Complex(1.0, 0.0))
     with pytest.raises(TypeError):
         assert is_a(Complex(inf, inf))
     with pytest.raises(Exception):
@@ -42,11 +42,11 @@ def test_Complex_assertions_QC():
 
 
 # start test -----------------
-def test_Complex_Q6rz():
+def test_Complex_hn():
 
     # Test the unary properties blah blah blah
 
-    for a,b in A:
+    for a, b in A:
         assert not (is_none(Complex))
         with pytest.raises(Exception):
             assert valid_number(Complex)
@@ -67,7 +67,7 @@ C1 = ComplexDomain()
 C2 = ComplexDomain()
 
 # start test -----------------
-def test___rqJ():
+def test___aCFY():
 
     # Test the properties of Complex numbers
 
@@ -84,7 +84,7 @@ def test___rqJ():
 
 
 # start test -----------------
-def test___fl1():
+def test___qk():
 
     # Test the mathematical properties
 
@@ -98,7 +98,7 @@ def test___fl1():
 
 CT = ComplexTestDomain()
 
-def test_Complex_ua1():
+def test_Complex_qASI():
 
     for r,i in CT:
 

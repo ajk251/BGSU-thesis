@@ -439,18 +439,30 @@ def make_boolean(entry, fn_sig='') -> str:
 
         if isinstance(element, tuple):
 
-            predicate = element[0]
-            use_symbolic = element[1]
+            name = element[0]
+
+            # get the predicate
+            if name in PREDICATES:
+                predicate = PREDICATES[name]
+            else:
+                predicate = Value(name, None, False, False, False, False, False, None)
+                warnings.warn(f'Predicate "{name}" was not found')
+
+            # predicate = element[0]
+            # use_symbolic = element[1]
+
             # args = element[2:] if len(element) > 2 else None
             args = element[3:] if element[2] is False else None
 
-            if use_symbolic is not None:
+            # if use_symbolic is not None:
+            if predicate.symbol:
                 # line.append(f1.format(fn_sig, use_symbolic, ''.join(args[1:])))
-                line.append(f1.format(fn_sig, use_symbolic, args[0]))
-            elif not args:
-                line.append(f2.format(predicate, fn_sig))
+                line.append(f1.format(fn_sig, predicate.symbol, args[0]))
+            # elif not args:
             else:
-                line.append(f3.format(predicate, fn_sig, ', '.join([str(a) for a in args])))
+                line.append(f2.format(predicate.name, fn_sig))
+            # else:
+                # line.append(f3.format(predicate.name, fn_sig, ', '.join([str(a) for a in args])))
                 # line.append(f3.format(predicate, fn_sig, ', '.join(args)))
         else:
             line.append(element)
