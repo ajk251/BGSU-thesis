@@ -7,8 +7,20 @@ from typing import Union
 PREDICATES = dict()
 
 # use this instead!
-Value = namedtuple('Value', 'name,symbol,is_symbolic,is_error,is_group,only_values,doc_error,error_message')
-# PredicateFn = namedtuple('PredicateFn', 'name,symbol,is_symbolic,is_error,is_group,only_values')
+# Value = namedtuple('Value', 'name,symbol,is_symbolic,is_error,is_group,only_values,doc_error,error_message')
+Predicate = namedtuple('Predicate', 'name,symbol,is_symbolic,is_error,is_group,only_values,doc_error,error_message')
+
+
+# class Predicate(namedtuple):
+#
+#     name: str                       # the name of the predicate
+#     symbol: str                     # uses a binary symbol, x < y
+#     is_symbolic: bool
+#     is_group: bool                  # operates in an aggregate group
+#     only_values: bool               # I DON'T KNOW
+#     doc_error: str                  # Use the doc string as an error message
+#     error_message: str              # the actual message
+
 
 # help from: https://realpython.com/primer-on-python-decorators/
 # TODO: check whether the name already exists
@@ -17,6 +29,7 @@ Value = namedtuple('Value', 'name,symbol,is_symbolic,is_error,is_group,only_valu
 #		if error, wrap and return ([Error|None], [True|False])
 
 # TODO: change all the names & stuff to PredicateFn
+#       change Value to Predicate
 
 NullString = Union[None, str]
 
@@ -24,6 +37,8 @@ NullString = Union[None, str]
 #       is_group implies tests should be in the aggregate
 #       only_values implies ... something ...
 
+
+# TODO: make is_error => make_callable
 
 def predicate(_fn=None, *, alias=None, symbol: NullString = None, is_error: bool = False,
               is_group: bool = False, only_values=False, doc_error: bool = False):
@@ -35,7 +50,7 @@ def predicate(_fn=None, *, alias=None, symbol: NullString = None, is_error: bool
         is_symbolic = True if symbol is not None else False
 
         # don't really need the function itself...
-        values = Value(func.__name__, symbol, is_symbolic, is_error, is_group, only_values, doc_error, func.__doc__)
+        values = Predicate(func.__name__, symbol, is_symbolic, is_error, is_group, only_values, doc_error, func.__doc__)
 
         if isinstance(alias, (list, tuple)):
             for name in alias:

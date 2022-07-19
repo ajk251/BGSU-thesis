@@ -11,7 +11,7 @@ from string import ascii_letters, digits
 
 from Falcon.algorithms.algorithms import ALGORITHMS
 from Falcon.macros.macros import MACROS
-from Falcon.predicates.predicates import PREDICATES, Value
+from Falcon.predicates.predicates import PREDICATES, Predicate
 from Falcon.utilities.FalconError import FalconError
 
 from Falcon import domains
@@ -188,11 +188,10 @@ def basic_Test(entry) -> str:
 
     # fn_name = entry['function']
     args = ', '.join(labels)
-
     indent += 1
 
     for stub in entry['stubs']:
-        stmt = make_assert_stmt(stub, fn_name, args, use_error_msg)
+        stmt = make_assert_stmt(stub, fn_name, args, just_result=False, use_error_msg=use_error_msg)
         lines.append((indent * TAB) + stmt)
 
     lines.append('')
@@ -274,7 +273,7 @@ def basic_Assert(entry) -> str:
         if stub.get('predicate', False):
             predicate = PREDICATES[stub['predicate']]
         elif stub['kind'] not in ('assert-logical', 'assert-error'):
-            predicate = Value(stub['predicate'], None, False, False, False)
+            predicate = Predicate(stub['predicate'], None, False, False, False)
             warnings.warn(f"Predicate {predicate.name} was not defined.")
 
         # this is kind of a special case/after-thought
@@ -283,11 +282,14 @@ def basic_Assert(entry) -> str:
             # these must raise an error, ie catches(fn, args, Exception)
             # pd_name = PREDICATES[stub['predicate']].name
             args = make_args(stub['argument'])
-            line = f"{indent * TAB}assert {predicate.name}({fn_name}{args}"
-            line += f", {', '.join(s for s in stub['value'][1:] if s is not None)})" if len(stub['value']) > 1 else ')'
-            line += f", {stub['error-message']}" if 'error-message' in stub and stub['error-message'] is not None else ''
+            line = f"{indent * TAB}assert {fn_name}{args} {predicate.symbol} "
+            line += f"{', '.join(s for s in stub['value'][1:] if s is not None)}" if len(stub['value']) > 1 else ')'
+
+            # args = make_args(stub['argument'])
+            # line = f"{indent * TAB}assert {predicate.name}({fn_name}{args}"
+            # line += f", {', '.join(s for s in stub['value'][1:] if s is not None)})" if len(stub['value']) > 1 else ')'
+            # line += f", {stub['error-message']}" if 'error-message' in stub and stub['error-message'] is not None else ''
             lines.append(line)
-            print('line -> ', line)
             continue
         elif stub['kind'] == 'assert-logical':
             # logical conditions
@@ -795,6 +797,7 @@ def basic_Satisfy2(entry):
     algo = directives['algo']
     params = directives['params']
     fn_name = directives['fn_name']
+    use_error_msg = directives['no-error-message']
 
     # these are for the log
     use_log = directives['use-log']
@@ -856,7 +859,8 @@ count = 0
     for stub in entry['stubs']:
 
         # the actual test assertion
-        stmt = make_assert_stmt(stub, 'result', None, True)
+        # stmt = make_assert_stmt(stub, 'result', None, True)
+        stmt = make_assert_stmt(stub, '', just_result=True, use_error_msg=use_error_msg)
 
         if stub['kind'].startswith('predicate'):
 

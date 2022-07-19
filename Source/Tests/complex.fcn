@@ -26,7 +26,7 @@ Assert Complex:
 
 Test Complex A:
   | :message "Test the unary properties blah blah blah"
-  | :labels [a b]
+  | :labels [a b] :name 'complex_unary'
   | !(is-None?)
   |! valid-complex?
   |! ZeroDivisionError valid-complex?
@@ -44,7 +44,7 @@ Domain C1 ComplexDomain
 Domain C2 ComplexDomain
 
 Test _ C1 C2:
-  | :message "Test the properties of Complex numbers" :no-suffix
+  | :message "Test the properties of Complex numbers" :no-suffix :test-name 'complex_binary'
   | closure+?
   | closure*?
   | commutative+?

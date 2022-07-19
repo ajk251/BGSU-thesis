@@ -14,7 +14,7 @@ from ComplexPredicates import *
 
 # This file was generated automatically by Falcon.
 # from: complex.fcn
-# on 2022 Jul 19 Tue 14:28:39
+# on 2022 Jul 19 Tue 15:29:10
 
 A = Reals2()
 B = Reals2()
@@ -22,11 +22,11 @@ lower = integers(lower=0, upper=100)
 upper = integers(lower=-100, upper=100)
 critical = CSVDomain('./tests/special-case.txt')
 
-def test_Complex_assertions_ERo():
+def test_Complex_assertions_6OPd():
 
-    assert eq(Complex(1.0, 1.0), Complex(1.0, 1.0))
-    assert eq(Complex(1, 1), Complex(1.0, 1.0)), "This should never fail"
-    assert lt(Complex(10.0, 10.0), Complex(20.0, 20.0))
+    assert Complex(1.0, 1.0) == Complex(1.0, 1.0)
+    assert Complex(1, 1) == Complex(1.0, 1.0)
+    assert Complex(10.0, 10.0) < Complex(20.0, 20.0)
     assert is_error(Complex(nan, 1.0), AssertionError)
     assert between(Complex(1.0, 1.0), -1.0, 1.0)
     assert is_error_and_contains(Complex(inf, inf), Exception, "Value must be a float")
@@ -42,32 +42,32 @@ def test_Complex_assertions_ERo():
 
 
 # start test -----------------
-def test_Complex_hn():
+def test_complex_unary():
 
     # Test the unary properties blah blah blah
 
     for a, b in A:
-        assert not (is_none(Complex))
+        assert not (is_none(Complex(a, b)))
         with pytest.raises(Exception):
-            assert valid_number(Complex)
+            assert valid_number(Complex(a, b))
         with pytest.raises(ZeroDivisionError):
-            assert valid_number(Complex)
+            assert valid_number(Complex(a, b))
         with pytest.raises(TypeError):
-            assert between(Complex, -10, 10)
+            assert between(Complex(a, b), -10, 10)
         with pytest.raises(Exception):
-            assert between(Complex, 1, 2)
-        assert valid_number(Complex)
-        assert valid_complex(Complex)
-        assert property_additive_identity(Complex)
-        assert property_multiplicative_identity(Complex)
-        assert property_additive_identity(Complex)
-        assert complex_div(Complex)
+            assert between(Complex(a, b), 1, 2)
+        assert valid_number(Complex(a, b))
+        assert valid_complex(Complex(a, b))
+        assert property_additive_identity(Complex(a, b))
+        assert property_multiplicative_identity(Complex(a, b))
+        assert property_additive_identity(Complex(a, b))
+        assert complex_div(Complex(a, b))
 
 C1 = ComplexDomain()
 C2 = ComplexDomain()
 
 # start test -----------------
-def test___aCFY():
+def complex_binary():
 
     # Test the properties of Complex numbers
 
@@ -84,7 +84,7 @@ def test___aCFY():
 
 
 # start test -----------------
-def test___qk():
+def test___0u():
 
     # Test the mathematical properties
 
@@ -98,7 +98,7 @@ def test___qk():
 
 CT = ComplexTestDomain()
 
-def test_Complex_qASI():
+def test_Complex_tElKU():
 
     for r,i in CT:
 

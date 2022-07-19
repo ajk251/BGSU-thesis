@@ -14,7 +14,7 @@ from typing import Union
 
 from Falcon.algorithms.algorithms import ALGORITHMS
 from Falcon.macros.macros import MACROS
-from Falcon.predicates.predicates import PREDICATES, Value
+from Falcon.predicates.predicates import PREDICATES, Predicate
 from Falcon.utilities.FalconError import FalconError
 from Falcon.domains import DOMAINS
 
@@ -243,10 +243,10 @@ def get_directives(entry) -> dict[str, Union[None, str, list, bool]]:
 
     if entry['directives'].get(':test-name', False):
         # TODO: raise warning if it does not start with test
-        t_name = entry['directives'][':test-name']['value']
+        t_name = entry['directives'][':test-name']['value'].strip('\'').strip('\"')
         directives['pyfunc'] = f'def {t_name}():'
     elif entry['directives'].get(':name', False):
-        t_name = entry['directives'][':name']['value']
+        t_name = entry['directives'][':name']['value'].strip('\'').strip('\"')
         directives['pyfunc'] = f'def {t_name}():' if t_name.startswith('test') else f'def test_{t_name}():'
     else:
         rand_name = ''.join((choices(ascii_letters+digits, k=randint(2, 5))))
@@ -369,18 +369,16 @@ def get_predicate(stub, by_group=False): # -> Tuple[Predicate, List]:
 
     predicate, values = None, None
 
-    # print(PREDICATES.get(stub['predicate'], stub['predicate']))
-
     # is the predicate defined?
     if not by_group and PREDICATES.get(stub['predicate'], False): #stub.get('predicate', False):
         predicate = PREDICATES[stub['predicate']]
     elif by_group and PREDICATES.get(stub['predicate'], False):
         predicate = PREDICATES[stub['predicate']]
     elif by_group:
-        predicate = Value(stub['group-predicate'], None, False, False, False, False)
+        predicate = Predicate(stub['group-predicate'], None, False, False, False, False)
         warnings.warn(f"Predicate '{predicate.name}' was not defined.")
     elif not by_group:
-        predicate = Value(stub['predicate'], None, False, False, False, False)
+        predicate = Predicate(stub['predicate'], None, False, False, False, False)
         warnings.warn(f"Predicate '{predicate.name}' was not defined.")
 
     # get the values associated with it
@@ -445,7 +443,7 @@ def make_boolean(entry, fn_sig='') -> str:
             if name in PREDICATES:
                 predicate = PREDICATES[name]
             else:
-                predicate = Value(name, None, False, False, False, False, False, None)
+                predicate = Predicate(name, None, False, False, False, False, False, None)
                 warnings.warn(f'Predicate "{name}" was not found')
 
             # predicate = element[0]
@@ -472,6 +470,9 @@ def make_boolean(entry, fn_sig='') -> str:
 
 def make_assert_stmt(stub, fn_name, args=None, just_result: bool = False, use_error_msg: bool = False):
 
+    # TODO: REFACTOR to use Predicate
+    # just_result --> it is using 'result' instead of fn(args)
+
     indent: int = 0
 
     # TODO: 2 & 3 are the same!
@@ -483,8 +484,11 @@ def make_assert_stmt(stub, fn_name, args=None, just_result: bool = False, use_er
     # deal with no function, just acting on the predicates
     if fn_name == '_':
         fn_sig = args
+    elif just_result:
+        fn_sig = 'result'
     else:
-        fn_sig = '{}({})'.format(fn_name, args) if not just_result else fn_name
+        # fn_sig = '{}({})'.format(fn_name, args) if not just_result else fn_name
+        fn_sig = f'{fn_name}({args})'
 
     indent += 1
     line = ''
@@ -492,7 +496,7 @@ def make_assert_stmt(stub, fn_name, args=None, just_result: bool = False, use_er
     # find
     if (stub['kind'].startswith('predicate')) and (stub.get('predicate', '') not in PREDICATES):
         warnings.warn(f'Predicate "{stub["predicate"]}" not found. Treating a "raw" predicate.')
-        predicate = Value(stub["predicate"], None, False, False, False, False, False, None)
+        predicate = Predicate(stub["predicate"], None, False, False, False, False, False, None)
     elif stub['kind'] == 'assert-logical':
         print('FIX!  make_assert_stmt')
     elif stub['kind'] == 'logical':
@@ -568,6 +572,12 @@ def make_assert_stmt(stub, fn_name, args=None, just_result: bool = False, use_er
     elif stub['kind'] == 'assert-error':
         e = 'Exception' if stub["error"] is None else stub['error']
         line = f'with pytest.raises({e}):\n' + ((indent + 1) * TAB) + f4.format(pd_name, fn_sig)
+
+    # this is how it should be done / need to accommodate no defined predicates
+    if pd_name in PREDICATES:
+        predicate = PREDICATES[pd_name]
+    else:
+        predicate = Predicate(pd_name, None, False, False, False, False, False, None)
 
     # TODO: 'message' should be in all the stubs, eventually
     if 'error-message' in stub and stub['error-message'] is not None:
