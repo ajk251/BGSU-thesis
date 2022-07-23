@@ -1,12 +1,25 @@
 
 import operator as op
 
+from time import process_time_ns
+
 from Falcon.predicates.predicates import predicate, on_fail_false
 
 
 # useful -----------------------------------------
 
 # simple list, comes from:  https://docs.python.org/3/library/exceptions.html
+
+
+@predicate(alias=['finishes-ms?'], is_error=True)
+def finishes_in_lt_ms(fn, args, ms):
+    """Measures the amount of time it takes to execute <= ms"""
+
+    start = process_time_ns()
+    fn(*args)
+    end = process_time_ns()
+
+    return ((end - start) / 1_000_000) <= ms
 
 
 @predicate(alias=['error?'])
@@ -29,14 +42,14 @@ def raises_error(error, error_type) -> bool:
     return isinstance(error, Exception) or isinstance(error, error_type)
 
 
-@predicate(alias=['error-and-says?'])
+@predicate(alias=['error-and-says?', 'raises-and-says?', 'raises&says?'])
 @on_fail_false
 def is_error_and_says(error, error_type, message) -> bool:
     """
     Tests that the error is of the specific type and the error message is the same or
     contained in the error message.
     """
-    result =  isinstance(error, error_type) or isinstance(error, error_type)
+    result = isinstance(error, error_type) or isinstance(error, error_type)
     result &= error.args[0] == message or message in error.args[0]
 
     return result

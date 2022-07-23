@@ -2,6 +2,8 @@
 from itertools import chain, combinations, product, tee
 from random import choice
 
+from Falcon.utilities.falcon_types import *
+
 ALGORITHMS = {}
 
 
@@ -108,7 +110,7 @@ def all_triplets_of(sequence, n: int = 3):
 
 
 @algorithm(alias=['combs-of', 'all-combinations-of', 'all-orderings-of'])
-def combinations_of(sequence, n=3):
+def combinations_of(sequence: Iterable, n: int = 3):
     """Builds the cartesian product of n copies of a sequence"""
     return product(*(sequence for _ in range(n)))
 

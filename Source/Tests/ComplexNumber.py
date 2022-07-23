@@ -18,8 +18,8 @@ class Complex(Number):
         if isnan(imaginary) or isinf(imaginary):
             raise ComplexError('Imaginary component cannot be nan or inf')
 
-        self.n = real
-        self.j = imaginary
+        self.n = float(real)
+        self.j = float(imaginary)
 
     @property
     def real(self):

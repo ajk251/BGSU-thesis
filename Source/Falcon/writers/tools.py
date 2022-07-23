@@ -87,19 +87,25 @@ def add_imports(entry) -> str:
 
         line = ''
 
+        # this is to help with naming issues, like Tests.Module
+        if 'dot' in args or '.' in args:
+            name = '.' + module
+        elif 'dotdot' in args or '..' in args:
+            name = '..' + module
+
         if len(args) == 0:
-            line = 'import ' + module
+            line = 'import ' + name
         elif 'from' in args and 'as' in args:
-            line = 'from {} import {} as {}'.format(module, args['from'], args['as'])
+            line = 'from {} import {} as {}'.format(name, args['from'], args['as'])
         elif 'from' in args and '[' in args['from']:
             s = args['from'].strip('[]').split(',')         # for some reason, this is just a string
-            line = 'from {} import {}'.format(module, ','.join(fn for fn in s))
+            line = 'from {} import {}'.format(name, ','.join(fn for fn in s))
         elif 'all' in args:
-            line = 'from {} import *'.format(module)
+            line = 'from {} import *'.format(name)
         elif 'from' in args:
-            line = 'from {} import {}'.format(module, args['from'])
+            line = 'from {} import {}'.format(name, args['from'])
         elif 'as' in args:
-            line = 'import {} as {}'.format(module, args['as'])
+            line = 'import {} as {}'.format(name, args['as'])
 
         # has to load the module to get the predicates from predicates.PREDICATES
         # TODO: maybe force every test module to have …_predicates, to avoid imports‽
@@ -470,114 +476,74 @@ def make_boolean(entry, fn_sig='') -> str:
 
 def make_assert_stmt(stub, fn_name, args=None, just_result: bool = False, use_error_msg: bool = False):
 
-    # TODO: REFACTOR to use Predicate
     # just_result --> it is using 'result' instead of fn(args)
 
     indent: int = 0
 
-    # TODO: 2 & 3 are the same!
     f1 = 'assert {} {} {}'              # w/ symbol             result < 4
     f2 = 'assert {}({}, {})'            # pd( fn(arg), value)
-    f3 = 'assert {}({}, {})'            # w/ function
-    f4 = 'assert {}({})'                # ignoring True
+    f3 = 'assert {}({})'                # pd(result|args)
 
-    # deal with no function, just acting on the predicates
+    # deal with no function, just acting on the predicates -> fn_sig ==> function-signature
     if fn_name == '_':
         fn_sig = args
     elif just_result:
         fn_sig = 'result'
     else:
-        # fn_sig = '{}({})'.format(fn_name, args) if not just_result else fn_name
         fn_sig = f'{fn_name}({args})'
 
     indent += 1
-    line = ''
+    line: str = ''
 
-    # find
-    if (stub['kind'].startswith('predicate')) and (stub.get('predicate', '') not in PREDICATES):
-        warnings.warn(f'Predicate "{stub["predicate"]}" not found. Treating a "raw" predicate.')
-        predicate = Predicate(stub["predicate"], None, False, False, False, False, False, None)
-    elif stub['kind'] == 'assert-logical':
-        print('FIX!  make_assert_stmt')
-    elif stub['kind'] == 'logical':
-        print('FIX!  make_assert_stmt')
-    else:
-        predicate = PREDICATES[stub['predicate']]
+    # Predicate -> name, symbol, is_symbolic, is_error, is_group, doc_error
 
-    use_symbolic = False
-    error_type = False
-
-    # TODO: refactor to this. Returns a namedtuple -> name, symbol, is_symbolic, is_error, is_group, doc_error
-    # predicate = PREDICATES[stub['predicate']]
-    # has_values = ...
-
-    if stub['kind'].startswith('predicate') and stub['predicate'] in PREDICATES:
-        # get the symbolic name if there is one, otherwise the function name
-
-        if PREDICATES[stub['predicate']][1]:
-            pd_name = PREDICATES[stub['predicate']][1]
-            use_symbolic = True
-        else:
-            pd_name = PREDICATES[stub['predicate']][0]
-            use_symbolic = False
-    elif stub['kind'].startswith('predicate'):
-        pd_name = PREDICATES[stub['predicate']][0]
-    elif stub.get('predicate', False):
-        # TODO: Does not handle symbolic tests!!!
-        pd_name = PREDICATES[stub['predicate']][0]
-    elif stub['kind'] in ('code', 'logical', 'assert-logical'):
-        # These are the exception to the rule...
-        pd_name = ''
-    else:
-        # raise FalconError(f"Predicate {stub['predicate']} not found")
-        warnings.warn(f"Predicate {stub['predicate']} not found.")
-        pd_name = stub['predicate']
-
-    if stub['kind'] == 'predicate-value':
-        if PREDICATES[stub['predicate']].is_error and not just_result:
-            # it's an error
-            line = f'assert {pd_name}({fn_name}, {args}, {stub["value"]})'
-        elif PREDICATES[stub['predicate']].is_error and isinstance(stub["value"], tuple):
-            line = f2.format(pd_name, 'result', ','.join(stub["value"]))
-        elif PREDICATES[stub['predicate']].is_error:
-            line = f4.format(pd_name, 'result')
-        elif use_symbolic and stub['value'] == 'True':
-            line = f4.format(pd_name, fn_sig)
-        elif use_symbolic:
-            line = f1.format(fn_sig, pd_name, stub['value'])
-        else:
-            line = f2.format(pd_name, fn_sig, stub['value'])
-    elif stub['kind'] == 'predicate':
-        line = f4.format(pd_name, fn_sig)
-    elif stub['kind'] == 'predicate-value+':
-        line = f2.format(pd_name, fn_sig, ', '.join(stub['value']))
-    elif stub['kind'] == 'logical' or stub['kind'] == 'assert-logical':
-        line = 'assert ' + make_boolean(stub['values'], fn_sig)
+    # these are code / logical (and they have no 'predicate' argument)
+    if stub['kind'] == 'logical' or stub['kind'] == 'assert-logical':
+        return 'assert ' + make_boolean(stub['values'], fn_sig)
     elif stub['kind'] == 'code':
-        line = stub['value']
-    elif stub['kind'] == 'predicate-side-effect':
-        line = f4.format(pd_name, stub['name'])
-    elif stub['kind'] == 'predicate-side-effect+':
-        args = ', '.join(stub['values'])
-        line = f3.format(pd_name, stub['name'], args)
-    elif stub['kind'] == 'predicate-fail-side-effect+':
+        return stub['value']
+
+    # get the predicate or make one up & the values for the predicate
+    if stub['predicate'] in PREDICATES:
+        predicate, values = get_predicate(stub, False)
+    else:
+        predicate = Predicate(stub["predicate"], None, False, False, False, False, False, None)
+        values = stub['value'] if stub.get('value', False) else stub['values']      # it will return True, not a (…)\
+        warnings.warn(f'Predicate "{stub["predicate"]}" not found. Treating as a "raw" predicate.')
+
+    # somewhere in the tree is says True, needs refactored out
+    if isinstance(values, bool):
+        values = None
+    elif values == 'True':
+        values = None
+
+    if stub['predicate'] == 'finishes-ms?':
+        print(stub)
+
+    # just have to know has-values, symbolic, is-error
+    # or logical
+    if stub['kind'] == 'predicate-fail-side-effect+':                           # special cases
         e = 'Exception' if stub["error"] is None else stub['error']
-        line = f'with pytest.raises({e}):\n' + ((indent + 2) * TAB) + f2.format(pd_name, fn_sig, ', '.join(stub['value']))
+        line = f'with pytest.raises({e}):\n' + ((indent + 2) * TAB) + f2.format(predicate.name, fn_sig, ', '.join(stub['value']))
     elif stub['kind'] == 'predicate-fail-side-effect':
         e = 'Exception' if stub["error"] is None else stub['error']
-        line = f'with pytest.raises({e}):\n' + ((indent + 2) * TAB) + f4.format(pd_name, fn_sig)
+        line = f'with pytest.raises({e}):\n' + ((indent + 2) * TAB) + f3.format(predicate.name, fn_sig)
     elif stub['kind'] == 'assert-error+':
         e = 'Exception' if stub["error"] is None else stub['error']
-        line = f'with pytest.raises({e}):\n' + ((indent + 1) * TAB) + f2.format(pd_name, fn_sig, ', '.join(stub['value'][1:]))
+        line = f'with pytest.raises({e}):\n' + ((indent + 1) * TAB) + f2.format(predicate.name, fn_sig, ', '.join(stub['value'][1:]))
     elif stub['kind'] == 'assert-error':
         e = 'Exception' if stub["error"] is None else stub['error']
-        line = f'with pytest.raises({e}):\n' + ((indent + 1) * TAB) + f4.format(pd_name, fn_sig)
-
-    # this is how it should be done / need to accommodate no defined predicates
-    if pd_name in PREDICATES:
-        predicate = PREDICATES[pd_name]
-    else:
-        predicate = Predicate(pd_name, None, False, False, False, False, False, None)
+        line = f'with pytest.raises({e}):\n' + ((indent + 1) * TAB) + f3.format(predicate.name, fn_sig)
+    elif predicate.is_error and values is None:
+        line = f'assert {predicate.name}({fn_name}, ({args}))'                            # calls it as fn, args
+    elif predicate.is_error and values:
+        line = f'assert {predicate.name}({fn_name}, ({args}), {", ".join(values)})'     # calls it as fn, args, values
+    elif predicate.is_symbolic:
+        line = f3.format(predicate.name, fn_sig)                                         # uses symbol
+    elif values:
+        line = f2.format(predicate.name, fn_sig, ', '.join(values))
+    elif values is None:
+        line = f3.format(predicate.name, fn_sig)
 
     # TODO: 'message' should be in all the stubs, eventually
     if 'error-message' in stub and stub['error-message'] is not None:
@@ -586,6 +552,124 @@ def make_assert_stmt(stub, fn_name, args=None, just_result: bool = False, use_er
         line += f", '{predicate.error_message}'"
 
     return line
+
+# def make_assert_stmt(stub, fn_name, args=None, just_result: bool = False, use_error_msg: bool = False):
+#
+#     # TODO: REFACTOR to use Predicate
+#     # just_result --> it is using 'result' instead of fn(args)
+#
+#     indent: int = 0
+#
+#     # TODO: 2 & 3 are the same!
+#     f1 = 'assert {} {} {}'              # w/ symbol             result < 4
+#     f2 = 'assert {}({}, {})'            # pd( fn(arg), value)
+#     f3 = 'assert {}({}, {})'            # w/ function
+#     f4 = 'assert {}({})'                # ignoring True
+#
+#     # deal with no function, just acting on the predicates
+#     if fn_name == '_':
+#         fn_sig = args
+#     elif just_result:
+#         fn_sig = 'result'
+#     else:
+#         # fn_sig = '{}({})'.format(fn_name, args) if not just_result else fn_name
+#         fn_sig = f'{fn_name}({args})'
+#
+#     indent += 1
+#     line = ''
+#
+#     # TODO get or create a Predicate type
+#
+#     # find
+#     if (stub['kind'].startswith('predicate')) and (stub.get('predicate', '') not in PREDICATES):
+#         warnings.warn(f'Predicate "{stub["predicate"]}" not found. Treating a "raw" predicate.')
+#         predicate = Predicate(stub["predicate"], None, False, False, False, False, False, None)
+#     elif stub['kind'] == 'assert-logical':
+#         print('FIX!  make_assert_stmt')
+#     elif stub['kind'] == 'logical':
+#         print('FIX!  make_assert_stmt')
+#     else:
+#         predicate = PREDICATES[stub['predicate']]
+#
+#     use_symbolic = False
+#     error_type = False
+#
+#     # TODO: refactor to this. Returns a namedtuple -> name, symbol, is_symbolic, is_error, is_group, doc_error
+#     # predicate = PREDICATES[stub['predicate']]
+#     # has_values = ...
+#
+#     if stub['kind'].startswith('predicate') and stub['predicate'] in PREDICATES:
+#         # get the symbolic name if there is one, otherwise the function name
+#
+#         if PREDICATES[stub['predicate']][1]:
+#             pd_name = PREDICATES[stub['predicate']][1]
+#             use_symbolic = True
+#         else:
+#             pd_name = PREDICATES[stub['predicate']][0]
+#             use_symbolic = False
+#     elif stub['kind'].startswith('predicate'):
+#         pd_name = PREDICATES[stub['predicate']][0]
+#     elif stub.get('predicate', False):
+#         # TODO: Does not handle symbolic tests!!!
+#         pd_name = PREDICATES[stub['predicate']][0]
+#     else:
+#         # raise FalconError(f"Predicate {stub['predicate']} not found")
+#         warnings.warn(f"Predicate {stub['predicate']} not found.")
+#         pd_name = stub['predicate']
+#
+#     if stub['kind'] == 'predicate-value':
+#         if PREDICATES[stub['predicate']].is_error and not just_result:
+#             # it's an error
+#             line = f'assert {pd_name}({fn_name}, {args}, {stub["value"]})'
+#         elif PREDICATES[stub['predicate']].is_error and isinstance(stub["value"], tuple):
+#             line = f2.format(pd_name, 'result', ','.join(stub["value"]))
+#         elif PREDICATES[stub['predicate']].is_error:
+#             line = f4.format(pd_name, 'result')
+#         elif use_symbolic and stub['value'] == 'True':
+#             line = f4.format(pd_name, fn_sig)
+#         elif use_symbolic:
+#             line = f1.format(fn_sig, pd_name, stub['value'])
+#         else:
+#             line = f2.format(pd_name, fn_sig, stub['value'])
+#     elif stub['kind'] == 'predicate':
+#         line = f4.format(pd_name, fn_sig)
+#     elif stub['kind'] == 'predicate-value+':
+#         line = f2.format(pd_name, fn_sig, ', '.join(stub['value']))
+#     elif stub['kind'] == 'logical' or stub['kind'] == 'assert-logical':
+#         line = 'assert ' + make_boolean(stub['values'], fn_sig)
+#     elif stub['kind'] == 'code':
+#         line = stub['value']
+#     elif stub['kind'] == 'predicate-side-effect':
+#         line = f4.format(pd_name, stub['name'])
+#     elif stub['kind'] == 'predicate-side-effect+':
+#         args = ', '.join(stub['values'])
+#         line = f3.format(pd_name, stub['name'], args)
+#     elif stub['kind'] == 'predicate-fail-side-effect+':
+#         e = 'Exception' if stub["error"] is None else stub['error']
+#         line = f'with pytest.raises({e}):\n' + ((indent + 2) * TAB) + f2.format(pd_name, fn_sig, ', '.join(stub['value']))
+#     elif stub['kind'] == 'predicate-fail-side-effect':
+#         e = 'Exception' if stub["error"] is None else stub['error']
+#         line = f'with pytest.raises({e}):\n' + ((indent + 2) * TAB) + f4.format(pd_name, fn_sig)
+#     elif stub['kind'] == 'assert-error+':
+#         e = 'Exception' if stub["error"] is None else stub['error']
+#         line = f'with pytest.raises({e}):\n' + ((indent + 1) * TAB) + f2.format(pd_name, fn_sig, ', '.join(stub['value'][1:]))
+#     elif stub['kind'] == 'assert-error':
+#         e = 'Exception' if stub["error"] is None else stub['error']
+#         line = f'with pytest.raises({e}):\n' + ((indent + 1) * TAB) + f4.format(pd_name, fn_sig)
+#
+#     # this is how it should be done / need to accommodate no defined predicates
+#     if pd_name in PREDICATES:
+#         predicate = PREDICATES[pd_name]
+#     else:
+#         predicate = Predicate(pd_name, None, False, False, False, False, False, None)
+#
+#     # TODO: 'message' should be in all the stubs, eventually
+#     if 'error-message' in stub and stub['error-message'] is not None:
+#         line += f", {stub['error-message']}"
+#     elif use_error_msg and predicate.doc_error and predicate.error_message is not None:
+#         line += f", '{predicate.error_message}'"
+#
+#     return line
 
 
 def make_assert_group_stmt(stub, fn_name, args):

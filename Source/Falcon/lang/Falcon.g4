@@ -213,7 +213,7 @@ ARROW: '->' | '→';
 // CODE/ID is meant to represent the variable names used in most languages
 // LABEL is meant to have a more liberal/loose name-ing scheme, Racket-like
 //CODE: (CHAR | '_')(CHAR | DIGIT | [_.])*;
-LABEL: (CHAR | '_')(CHAR | DIGIT | [-_+&~?])*;
+LABEL: (CHAR | '_')(CHAR | DIGIT | [-_+&~?￫])*;
 
 // could do more...
 NUMBER: ('+'|'-')? DIGIT+                       // integer

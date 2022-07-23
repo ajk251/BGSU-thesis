@@ -278,9 +278,6 @@ def basic_Assert(entry) -> str:
 
         # this is kind of a special case/after-thought
         if predicate.is_symbolic:
-        # if stub.get('predicate', False) and PREDICATES[stub['predicate']].is_symbolic:
-            # these must raise an error, ie catches(fn, args, Exception)
-            # pd_name = PREDICATES[stub['predicate']].name
             args = make_args(stub['argument'])
             line = f"{indent * TAB}assert {fn_name}{args} {predicate.symbol} "
             line += f"{', '.join(s for s in stub['value'][1:] if s is not None)}" if len(stub['value']) > 1 else ')'
@@ -305,6 +302,19 @@ def basic_Assert(entry) -> str:
             line = (indent * TAB) + make_assert_stmt(stub, fn_name, args)
             lines.append(line)
             continue
+        elif predicate.is_error:
+
+            values = None
+
+            if stub.get('value', False):
+                args = make_args(stub['argument']).strip('(').strip(')')
+                values = ', '.join(stub['value'][1:])
+                line = (indent * TAB) + f"assert {predicate.name}({fn_name}, ({args}), {values})"
+            else:
+                line = (indent * TAB) + (indent * TAB) + f"assert {predicate.name}({fn_name}, ({args}))"
+            lines.append(line)
+            continue
+
 
         args = make_args(stub['argument'])
         fn = fn_name + args
@@ -828,7 +838,7 @@ def basic_Satisfy2(entry):
 
     # build the for loop, naked/with custom iterator/generic & no parameters
     if len(dvars) == 1:
-        template = indent * TAB + "for {} in {}:".format(','.join(labels), dvars[0])
+        template = indent * TAB + "for {} in {}:".format(', '.join(labels), dvars[0])
     elif len(params) > 0:
         template = indent * TAB + 'for {} in {}({}, {}):'.format(', '.join(labels), algo, ', '.join(dvars), ', '.join(params))
     else:
@@ -860,9 +870,22 @@ count = 0
 
         # the actual test assertion
         # stmt = make_assert_stmt(stub, 'result', None, True)
-        stmt = make_assert_stmt(stub, '', just_result=True, use_error_msg=use_error_msg)
+        special_case = False
 
-        if stub['kind'].startswith('predicate'):
+        # these are the exceptions to the rule:
+        if stub['kind'] == 'predicate-fail-side-effect':
+            e = 'Exception' if stub["error"] is None else stub['error']
+            predicate, values = get_predicate(stub, False)
+            stmt = f'{indent * TAB}with pytest.raises({e}):\n' + f'{(indent + 1) * TAB}if {predicate.name}(result):\n'
+            stmt += f'{(indent + 2) * TAB}count += 1'
+            special_case = True
+        elif stub['kind'] == 'predicate-fail-side-effect+':
+            continue
+            special_case = True
+        else:
+            stmt = make_assert_stmt(stub, '', just_result=True, use_error_msg=use_error_msg)
+
+        if stub['kind'].startswith('predicate') and not special_case:
 
             # this is cheating and bad form
             #remove the left
@@ -886,6 +909,8 @@ count = 0
         elif stub['kind'] == 'code':
             line = '\n' + (indent * TAB) + stub['value'] + '\n'
             lines.append(line)
+        elif special_case:
+            lines.append(stmt)
 
     # finish    part of the has_error stuff
     # line = '\n' + (indent * TAB) + 'if has_error:\n' + ((indent+1) * TAB) + 'errors.append((({}), result))'.format(', '.join(labels))
@@ -903,7 +928,7 @@ count = 0
     lines.append(line)
 
     if maximum is not None:
-        line = (indent * TAB) + f'assert count > {maximum}, f"Exceed number of predicates met - met: {{count}}, max: {maximum}"'
+        line = (indent * TAB) + f'assert count <= {maximum}, f"Exceed number of predicates met - met: {{count}}, max: {maximum}"'
         lines.append(line)
 
     # this doesn't work...

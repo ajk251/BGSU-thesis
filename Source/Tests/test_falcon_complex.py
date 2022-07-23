@@ -9,12 +9,12 @@ from Falcon.utilities import FalconError
 from collections import defaultdict
 
 import pytest
-from ComplexNumber import Complex
-from ComplexPredicates import *
+from .ComplexNumber import Complex, ComplexError
+from .ComplexPredicates import *
 
 # This file was generated automatically by Falcon.
 # from: complex.fcn
-# on 2022 Jul 19 Tue 15:29:10
+# on 2022 Jul 22 Fri 21:53:01
 
 A = Reals2()
 B = Reals2()
@@ -22,9 +22,10 @@ lower = integers(lower=0, upper=100)
 upper = integers(lower=-100, upper=100)
 critical = CSVDomain('./tests/special-case.txt')
 
-def test_Complex_assertions_6OPd():
+def test_Complex_assertions_On5Jd():
 
     assert Complex(1.0, 1.0) == Complex(1.0, 1.0)
+    assert finishes_in_lt_ms(Complex, (1.0, 1.0), 100)
     assert Complex(1, 1) == Complex(1.0, 1.0)
     assert Complex(10.0, 10.0) < Complex(20.0, 20.0)
     assert is_error(Complex(nan, 1.0), AssertionError)
@@ -61,7 +62,8 @@ def test_complex_unary():
         assert property_additive_identity(Complex(a, b))
         assert property_multiplicative_identity(Complex(a, b))
         assert property_additive_identity(Complex(a, b))
-        assert complex_div(Complex(a, b))
+        assert complex_div(Complex, (a, b))
+        assert complex_test_error_kind(Complex, (a, b), 1, 2)
 
 C1 = ComplexDomain()
 C2 = ComplexDomain()
@@ -84,7 +86,7 @@ def complex_binary():
 
 
 # start test -----------------
-def test___0u():
+def test___uf():
 
     # Test the mathematical properties
 
@@ -92,15 +94,17 @@ def test___0u():
         assert complex_add(c1, c2)
         assert complex_sub(c1, c2)
         assert complex_mult(c1, c2)
+        with pytest.raises(NotImplementedError):
+            assert complex_div(c1, c2)
         assert complex_radd(c1, c2)
         assert complex_rsub(c1, c2)
         assert complex_rmul(c1, c2)
 
 CT = ComplexTestDomain()
 
-def test_Complex_tElKU():
+def test_Complex_hx():
 
-    for r,i in CT:
+    for r, i in CT:
 
         try:
             result = Complex(r, i)
@@ -119,5 +123,8 @@ def test_Complex_tElKU():
             count += 1
         if property_multiplicative_identity(result):
             count += 1
+        if is_error_and_says(result, ComplexError, "cannot be"):
+            count += 1
 
         assert count >= 1, f"The minimum number of predicates has not been met - met: {count}, min: 1  [with {result}]"
+        assert count <= 5, f"Exceed number of predicates met - met: {count}, max: 5"

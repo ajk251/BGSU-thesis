@@ -1,15 +1,17 @@
 import sys
 from itertools import combinations, count, product
 from random import choice, randrange, randint, random, uniform
-from typing import Any, Generator, Iterator, Tuple, Union
+from typing import Any, Generator, Iterator, Tuple, Union, NewType
 from sys import float_info, maxsize
 
 from Falcon.domains.domains import domain
 
-Number = Union[int, float]
 # Note:
 #   - numpy as linspace, geospace, logspace
 
+Number = Union[int, float]
+IntBound = NewType('IntBound', Tuple[int, int])             # ie range(i, j)
+Linspace = NewType('Linspace', Tuple[float, float, int])    # ie count(i, j, n)
 
 # linear ranges -------------------------------------------
 
@@ -138,6 +140,18 @@ def boundary(lower: float = -1.0, upper: float = 1.0, epsilon: float = 5.0, bdry
 @domain(alias=['Cartesian', 'CartesianProduct', 'Product'])
 def cartesian(values) -> Iterator[Tuple[Any, ...]]:
     return product(*values)
+
+
+@domain(alias=['grid'])
+def grid(bounds: IntBound) -> Generator[Tuple[Any, ...], None, None]:
+    """Takes a Tuple[int, int] and returns the cartesian product of all the bounds"""
+    yield from product(*(range(i, j) for i, j in bounds))
+
+
+def floatgrid(bounds: Linspace):
+    # had help from: https://stackoverflow.com/questions/12334442/does-python-have-a-linspace-function-in-its-std-lib
+    linspace = lambda i,j,n: lambda i,j,n: tuple((i + ((j-i)/(n-1)) * _n for _n in range(n)))
+    yield from product(*(linspace(i, j, n) for i, j, n in bounds))
 
 
 @domain(alias=['PermutationsOf', 'PermsOf'])

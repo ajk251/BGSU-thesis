@@ -117,6 +117,11 @@ def ComplexTestValues(n: int = 100):
 # -----------------------------------------------
 # for special tests
 
+@predicate(alias=['complex-test-error?'], is_error=True)
+def complex_test_error_kind(fn, args, a, b):
+    print('here!')
+    return True
+
 @predicate(alias=['agrees?'])
 @on_fail_false
 def complex_agree(a, b, C: Complex) -> bool:
@@ -252,7 +257,7 @@ def complex_not_equal(a: Complex, b: Complex):
 @predicate(alias=['complex+?'])
 @on_fail_false
 def complex_add(a: Complex, b: Complex):
-    return (Complex(a[0], a[1]) + Complex(b[0], b[1])) == Complex(a[0] + b[0], a[1] + b[1])
+    return (Complex(a[0], a[1]) + Complex(b[0], b[1])) == Complex(b[0] + a[0], b[1] + a[1])
 
 
 @predicate(alias=['complex-?'])
