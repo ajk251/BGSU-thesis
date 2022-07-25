@@ -18,6 +18,11 @@ from Falcon.predicates.predicates import PREDICATES, Predicate
 from Falcon.utilities.FalconError import FalconError
 from Falcon.domains import DOMAINS
 
+"""
+Functions/utility methods that are common to all writers
+"""
+
+
 tabsize: int = 4
 TAB: str = ' ' * tabsize
 nl: str = '\n'
@@ -37,7 +42,8 @@ def clean(name: str) -> str:
 
 
 def to_list(text):
-    # because I screwed up. I should have made this a json first, so I don't have to read it by characters...
+
+    # because I screwed up
 
     txt = text.split(',')
     txt[0] = txt[0].strip('[')
@@ -511,14 +517,11 @@ def make_assert_stmt(stub, fn_name, args=None, just_result: bool = False, use_er
         values = stub['value'] if stub.get('value', False) else stub['values']      # it will return True, not a (…)\
         warnings.warn(f'Predicate "{stub["predicate"]}" not found. Treating as a "raw" predicate.')
 
-    # somewhere in the tree is says True, needs refactored out
+    # somewhere in the tree is says True (eg, is-none?), needs refactored out
     if isinstance(values, bool):
         values = None
     elif values == 'True':
         values = None
-
-    if stub['predicate'] == 'finishes-ms?':
-        print(stub)
 
     # just have to know has-values, symbolic, is-error
     # or logical

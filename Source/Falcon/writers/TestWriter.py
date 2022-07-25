@@ -270,10 +270,11 @@ def basic_Assert(entry) -> str:
             continue
 
         # is the predicate defined?
-        if stub.get('predicate', False):
+        # if stub.get('predicate', False):
+        if stub.get('predicate', False) and PREDICATES.get(stub['predicate'], False):
             predicate = PREDICATES[stub['predicate']]
         elif stub['kind'] not in ('assert-logical', 'assert-error'):
-            predicate = Predicate(stub['predicate'], None, False, False, False)
+            predicate = Predicate(stub['predicate'], None, False, False, False, False, False, None)
             warnings.warn(f"Predicate {predicate.name} was not defined.")
 
         # this is kind of a special case/after-thought
@@ -315,17 +316,16 @@ def basic_Assert(entry) -> str:
             lines.append(line)
             continue
 
-
         args = make_args(stub['argument'])
         fn = fn_name + args
         value = stub['value'][1:]
 
-        if PREDICATES[stub['predicate']].is_symbolic:
+        if predicate.is_symbolic:
             # the symbolic representation
             pd_name = PREDICATES[stub['predicate']].symbol
             line = a1.format(fn, pd_name, value)
         else:
-            pd_name = PREDICATES[stub['predicate']].name
+            pd_name = predicate.name #PREDICATES[stub['predicate']].name
 
             if ignore_true and value == 'True':
                 line = a3.format(pd_name, fn)

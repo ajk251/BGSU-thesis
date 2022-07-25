@@ -89,40 +89,6 @@ def tokens_by_line(file_path):
 
 # -----------------------------------------------
 
-def ast_walk(file_path: str):
-
-
-    # cyclomatic complexity
-    # halstead
-    # counts
-    #   functions
-    #       names, lines, arguments (all 5) halstead, complexity
-    #       has-docstring, comments (both), lines
-    #       out fn calls
-    #   classes
-    #       names, total funcs, magic methods
-    #       inherits n, 
-    #   counts
-    #       imports
-    #       asserts
-
-
-    results = dict.fromkeys(('cyclomatic', 'myers'), 0)
-
-    with open(file_path, 'r') as file:
-        tree = ast.parse(file.read(), type_comments=True)
-
-    for node in ast.walk(tree):
-        print(node)
-        print(type(node), node._fields, node.__dict__)
-        print()
-        
-
-        # cyclomatic complexity
-
-
-
-
 
 def cyclomatic_complexity(tokens) -> Tuple[int, int]:
 

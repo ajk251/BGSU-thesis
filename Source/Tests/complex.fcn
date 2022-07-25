@@ -17,7 +17,7 @@ Assert Complex:
   | (10.0, 10.0) < `Complex(20.0, 20.0)`
   | (nan, 1.0) error? AssertionError
   | (1.0, 1.0) between? `-1.0` `1.0`
-  | (inf,inf) error-says? Exception "Value must be a float"
+  | (inf,inf) raises&says? Exception "Value must be a float"
   | (1.0, 0.0) is-complex? || is-float?
   |! TypeError (inf, inf) is-a? Complex
   |! (nan, nan) is-a? Complex
@@ -61,7 +61,7 @@ Test _ C1 C2:
   | complex+?
   | complex-?
   | complex*?
-  |! NotImplementedError complex-div?
+  |! NotImplementedError complex÷?
   | complex+=?
   | complex-=?
   | complex*=?
@@ -77,6 +77,4 @@ Satisfy Complex CT:
   | additive-id?
   | multiplicative-id?
   | raises&says? ComplexError "cannot be"
-  //|! ComplexError valid-complex?
-  //|! ComplexError complex-number?
   ;

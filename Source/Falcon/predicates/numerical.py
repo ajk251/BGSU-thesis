@@ -40,23 +40,6 @@ def is_negative(n) -> bool:
     return isinstance(n, Number) and n < 0
 
 
-@predicate(alias=['int?', 'integer?', 'is-int?', 'ℤ?'])
-def is_int(n) -> bool:
-    '''Tests if a given value is an integer'''
-    return isinstance(n, int) or isinstance(n, Integral)
-
-
-@predicate(alias=['float?', 'real?', 'is-float', 'ℝ?'])
-def is_float(n) -> bool:
-    '''Tests if a given value is an float'''
-    return isinstance(n, float) or isinstance(n, Real)
-
-
-@predicate(alias='number?')
-def is_number(n) -> bool:
-    '''Test whether a number is a sub-class of Number'''
-    return isinstance(n, Number)
-
 # Fraction, Complex...
 
 
@@ -77,7 +60,7 @@ def is_close(a, b, tol=0.00001):
     return math.isclose(a, b, rel_tol=tol, abs_tol=tol)
 
 
-@predicate(alias=['safe-number?', 'not-nan-or-inf?'])
+@predicate(alias=['safe-number?', 'not-nan-or-inf?', 'valid-float?'])
 def is_valid_float(n: float) -> bool:
     """Returns whether a number is an actual float, not a NaN or Inf."""
     return not (math.isnan(n) or math.isnan(n))
@@ -86,29 +69,29 @@ def is_valid_float(n: float) -> bool:
 @predicate(alias=['is-nan-inf?'])
 def is_nan_or_inf(n: float) -> bool:
     """Returns whether a number is an actual float, not a NaN or Inf."""
-    return math.isnan(n) or math.isnan(n)
+    return not (math.isnan(n) or math.isnan(n))
 
 
 # bounds testing --------------------------------
 # these names need some thought…
 
 
-@predicate(alias=['between?', 'in[]?'])
+@predicate(alias=['between?'])
 def between(n, lower, upper) -> bool:
     return lower <= n <= upper
 
 
-@predicate(alias=['in[)?'])
+@predicate(alias=['in-interval?'])
 def in_interval(n, lower, upper) -> bool:
     return lower <= n < upper
 
 
-@predicate(alias=['in()?'])
+@predicate(alias=['within?'])
 def is_within(n, lower, upper) -> bool:
     return lower < n < upper
 
 
-@predicate(alias=['outside?', 'out)('])
+@predicate(alias=['outside?'])
 def is_outside(n, lower, upper):
     return lower >= n and n <= upper
 

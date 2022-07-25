@@ -4,6 +4,7 @@ from Falcon.predicates.predicates import predicate
 from abc import ABC
 from decimal import Decimal
 from fractions import Fraction
+from numbers import Integral, Number, Real
 
 import numbers
 import types
@@ -15,14 +16,17 @@ import types
 
 # system ----------------------------------------
 
-@predicate(alias=['none?', 'is-none?'])
-def is_none(a) -> bool:
-    return a is None
+@predicate(alias=['is-None?', 'is-none?', 'None?', 'none?'], doc_error=True)
+def is_none(value) -> bool:
+    """Value must be None"""
+    return value is None
 
 
-@predicate(alias=['not-none?', 'is-not-none?'])
-def is_not_none(a) -> bool:
-    return a is not None
+@predicate(alias=['not-none?', 'not-None?'], doc_error=True)
+def is_not_none(value):
+    """Value must not be None"""
+    return value is not None
+
 
 
 @predicate(alias='same?')
@@ -71,17 +75,13 @@ def is_string(s) -> bool:
 # I'm not sure how redundant some of this is...
 
 
-@predicate(alias=['number?'])
-def is_number(n):
-    return isinstance(n, numbers.Number)
+@predicate(alias=['int?', 'integer?', 'is-int?', 'ℤ?'])
+def is_int(n) -> bool:
+    '''Tests if a given value is an integer'''
+    return isinstance(n, int) or isinstance(n, Integral)
 
 
-@predicate(alias=['is-int?', 'int?'])
-def is_integer(n) -> bool:
-    return isinstance(n, numbers.Integral) and isinstance(n, int)
-
-
-@predicate(alias=['is-real?', 'is-float?', 'float?'])
+@predicate(alias=['is-real?', 'is-float?', 'float?', 'real?', 'ℝ'])
 def is_float(n) -> bool:
     return isinstance(n, numbers.Real) and isinstance(n, float)
 
@@ -89,6 +89,12 @@ def is_float(n) -> bool:
 @predicate(alias=['floating-int?', 'real-int?', 'real-or-int?'])
 def is_float_int(n) -> bool:
     return float.is_integer(n)
+
+
+@predicate(alias='number?')
+def is_number(n) -> bool:
+    '''Test whether a number is a sub-class of Number'''
+    return isinstance(n, Number)
 
 
 @predicate(alias=['is-fraction?', 'is/?', 'fraction?'])

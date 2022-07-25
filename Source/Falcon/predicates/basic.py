@@ -5,11 +5,10 @@ from time import process_time_ns
 
 from Falcon.predicates.predicates import predicate, on_fail_false
 
-
-# useful -----------------------------------------
-
 # simple list, comes from:  https://docs.python.org/3/library/exceptions.html
 
+
+# -----------------------------------------------
 
 @predicate(alias=['finishes-ms?'], is_error=True)
 def finishes_in_lt_ms(fn, args, ms):
@@ -22,27 +21,10 @@ def finishes_in_lt_ms(fn, args, ms):
     return ((end - start) / 1_000_000) <= ms
 
 
-@predicate(alias=['error?'])
-@on_fail_false
-def is_error(error) -> bool:
-    """Tests that the error is an Exception"""
-    return isinstance(error, Exception)
+# These are useful in Test ----------------------
+# use error for these
 
-
-@predicate(alias=['asserts?'])
-@on_fail_false
-def raises_assertion_error(error) -> bool:
-    return isinstance(error, AssertionError)
-
-
-@predicate(alias=['is-error?', 'raises?'])
-@on_fail_false
-def raises_error(error, error_type) -> bool:
-    """Tests that the error is an instance of the specified type"""
-    return isinstance(error, Exception) or isinstance(error, error_type)
-
-
-@predicate(alias=['error-and-says?', 'raises-and-says?', 'raises&says?'])
+@predicate(alias=['error-and-says?'], is_error=True)
 @on_fail_false
 def is_error_and_says(error, error_type, message) -> bool:
     """
@@ -55,7 +37,61 @@ def is_error_and_says(error, error_type, message) -> bool:
     return result
 
 
-@predicate(alias=['error-says?'])
+@predicate(alias=['error?', 'is-error?'], is_error=True)
+def catch_error(fn, args, exception) -> bool:
+
+    result = False
+
+    try:
+        fn(*args)
+    except Exception as error:
+        result = isinstance(error, exception)
+    finally:
+        return result
+
+
+@predicate(alias=['error-message?', 'error-says?'], is_error=True)
+def catch_error_message(fn, args, exception, message):
+
+    result = False
+
+    try:
+        fn(*args)
+    except Exception as error:
+        result = isinstance(error, exception)
+    finally:
+        result = message in error.args[0]
+
+    return result
+
+
+# -----------------------------------------------
+# these are define for use in Satisfy/Groupby ---
+# they trap in try/except block & use result
+
+# uses raises for these
+
+@predicate(alias=['raises?'])
+@on_fail_false
+def is_error(error) -> bool:
+    """Tests that the error is an Exception"""
+    return isinstance(error, Exception)
+
+
+@predicate(alias=['asserts?'])
+@on_fail_false
+def raises_assertion_error(error) -> bool:
+    return isinstance(error, AssertionError)
+
+
+@predicate(alias=['raises-error?'])
+@on_fail_false
+def raises_error(error, error_type) -> bool:
+    """Tests that the error is an instance of the specified type"""
+    return isinstance(error, error_type)
+
+
+@predicate(alias=['raises-and-says?', 'raises&says?'])
 @on_fail_false
 def is_error_and_contains(error, message) -> bool:
     """
@@ -66,131 +102,11 @@ def is_error_and_contains(error, message) -> bool:
            (error.args[0] == message or message in error.args[0])
 
 
-# must be of the form catches(fn, (args), ...)
+# useful -----------------------------------------
 
-# @predicate(alias=['error?', 'raises?'], is_error=True)
-# def catch_error(fn, args, exception) -> bool:
-#
-#     result = False
-#
-#     try:
-#         fn(*args)
-#     except Exception as error:
-#         result = isinstance(error, exception)
-#     finally:
-#         return result
-#
-#
-# @predicate(alias=['error-message?', 'error-says?', 'raises-with-message?', 'raises-message?'], is_error=True)
-# def catch_error_message(fn, args, exception, message):
-#
-#     result = False
-#
-#     try:
-#         fn(*args)
-#     except Exception as error:
-#         result = isinstance(error, exception)
-#     finally:
-#         result = message in error.args[0]
-#
-#     return result
-#
-#
-# @predicate(alias='zero-error?', is_error=True)
-# def catch_zero_div(fn, args) -> bool:
-#
-#     result = False
-#
-#     try:
-#         fn(*args)
-#     except Exception as error:
-#         result = isinstance(error, ZeroDivisionError)
-#     finally:
-#         return result
-#
-#
-# @predicate(alias=['asserts?', 'is-assertion?'], is_error=True)
-# def catch_assertion(fn, args) -> bool:
-#
-#     result = False
-#
-#     try:
-#         fn(*args)
-#     except Exception as error:
-#         result = isinstance(error, AssertionError)
-#     finally:
-#         return result
-#
-#
-# @predicate(alias='math-error?', is_error=True)
-# def catch_arithmetic(fn, args) -> bool:
-#
-#     result = False
-#
-#     try:
-#         fn(*args)
-#     except Exception as error:
-#         result = isinstance(error, ArithmeticError)
-#     finally:
-#         return result
-#
-#
-# @predicate(alias='lookup-error?', is_error=True)
-# def catch_lookup(fn, args) -> bool:
-#
-#     result = False
-#
-#     try:
-#         fn(*args)
-#     except Exception as error:
-#         result = isinstance(error, LookupError)
-#     finally:
-#         return result
-
-
-# @predicate(alias=['raises?'], is_error=True)
-# def raises(e, error) -> bool:
-#
-#     # try:
-#     #     fn(*args, **kwargs)
-#     # except Exception as e:
-#     #     return isinstance(e, Exception)
-#     # finally:
-#     #     return False
-#     return e is error
-#
-#
-# # Be careful with this, you can't test for an AssertionError like in raises? --> it must be an instance of the
-# #   error
-# @predicate(alias=['asserts?', 'is_assertion', 'is-assertion', 'is-assertion?'], is_error=True)
-# def assertion(fn, args, kwargs, error=AssertionError):
-#
-#     try:
-#         fn(*args, **kwargs)
-#     except AssertionError as ae:
-#         return isinstance(ae, AssertionError)
-#     finally:
-#         return False
-
-# basic -----------------------------------------
-
-
-@predicate(alias=['is-None?', 'is-none?', 'None?', 'none?'], doc_error=True)
-def is_none(value) -> bool:
-    """Value must be None"""
-    return value is None
-
-
-@predicate(alias=['not-none?', 'not-None?'], doc_error=True)
-def is_not_none(value):
-    """Value must not be None"""
-    return value is not None
-
-
-@predicate(alias=['instance?', 'is?'], doc_error=True)
+@predicate(alias=['instance?', 'is?', '≡'], doc_error=True)
 def is_instance(value, result) -> bool:
     """The value is not the instance specified"""
-    # this was done for the triangle example
     return isinstance(value, result)
 
 
@@ -198,6 +114,11 @@ def is_instance(value, result) -> bool:
 def is_a(kind, *value) -> bool:
     """The value is not any of instances specified"""
     return isinstance(kind, value)
+
+
+@predicate(alias=['is-not?', 'is-not-instance?', '≢'])
+def is_not_instance_of(kind, *value) -> bool:
+    return not isinstance(kind, value)
 
 
 @predicate(alias=['same-as?'], doc_error=True)
@@ -262,34 +183,29 @@ def le(a, b) -> bool:
 def ge(a, b) -> bool:
     return op.ge(a, b)
 
-# search --------------------------------------------------
+# special cases ----------------------------------
 
 
-@predicate(alias=['sorted?', 'sorted≤?', 'sorted<=?'])
-def is_sorted(sequence) -> bool:
-    """Tests i≤j for all values in sequence"""
-    return all((i <= j for i, j in zip(sequence, sequence[1:])))
+@predicate(alias=['not-lt?', '≮'])
+def not_lt(a, b) -> bool:
+    """Value a ≮ b"""
+    return not (a < b)
 
 
-@predicate(alias=['sorted<?', 'sorted-strict?'])
-def is_strictly_sorted(sequence) -> bool:
-    """Tests i<j for all values in sequence"""
-    return all((i < j for i, j in zip(sequence, sequence[1:])))
+@predicate(alias=['not-gt?', '≯'])
+def not_gt(a, b) -> bool:
+    """Value a ≯ b"""
+    return not (a > b)
 
 
-@predicate(alias=['descending?'])
-def descending(sequence) -> bool:
-    """Tests for decending order, ie 100, 99, 98, …, where i > j"""
-    return all((i > j for i, j in zip(sequence, sequence[1:])))
+@predicate(alias=['not-le?', '≰'])
+def not_le(a, b) -> bool:
+    """Value a ≰ b"""
+    return not (a <= b)
 
 
-@predicate(alias=['ascending?'])
-def ascending(sequence) -> bool:
-    """Tests for ascending order, ie 1, 2, 3 …, where i < j"""
-    return all((i < j for i, j in zip(sequence, sequence[1:])))
+@predicate(alias=['not-ge?', '≱'])
+def not_ge(a, b) -> bool:
+    """Value a ≱ b"""
+    return not (a >= b)
 
-
-@predicate(alias=['all-unique?'])
-def all_unique(sequence) -> bool:
-    """Tests that a sequence only contains unique values"""
-    return len(frozenset(sequence)) == len(sequence)

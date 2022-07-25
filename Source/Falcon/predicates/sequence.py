@@ -86,3 +86,35 @@ def empty(sequence) -> bool:
 def not_empty(sequence) -> bool:
     """The sequence must contain more than one element"""
     return len(sequence) >= 1
+
+
+# search --------------------------------------------------
+
+@predicate(alias=['sorted?', 'sorted≤?', 'sorted<=?'])
+def is_sorted(sequence) -> bool:
+    """Tests i≤j for all values in sequence"""
+    return all((i <= j for i, j in zip(sequence, sequence[1:])))
+
+
+@predicate(alias=['sorted<?', 'sorted-strict?'])
+def is_strictly_sorted(sequence) -> bool:
+    """Tests i<j for all values in sequence"""
+    return all((i < j for i, j in zip(sequence, sequence[1:])))
+
+
+@predicate(alias=['descending?'])
+def descending(sequence) -> bool:
+    """Tests for decending order, ie 100, 99, 98, …, where i > j"""
+    return all((i > j for i, j in zip(sequence, sequence[1:])))
+
+
+@predicate(alias=['ascending?'])
+def ascending(sequence) -> bool:
+    """Tests for ascending order, ie 1, 2, 3 …, where i < j"""
+    return all((i < j for i, j in zip(sequence, sequence[1:])))
+
+
+@predicate(alias=['all-unique?'])
+def all_unique(sequence) -> bool:
+    """Tests that a sequence only contains unique values"""
+    return len(frozenset(sequence)) == len(sequence)

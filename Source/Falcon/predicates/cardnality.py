@@ -21,7 +21,7 @@ def cardnality_le(sequence, n: int) -> bool:
     return len(sequence) <= n
 
 
-@predicate(alias=['#<=', '#≥', 'card-lt?'])
+@predicate(alias=['#>=', '#≥', 'card-ge?'])
 def cardnality_ge(sequence, n: int) -> bool:
     return len(sequence) >= n
 

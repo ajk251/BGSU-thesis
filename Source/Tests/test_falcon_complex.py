@@ -14,7 +14,7 @@ from .ComplexPredicates import *
 
 # This file was generated automatically by Falcon.
 # from: complex.fcn
-# on 2022 Jul 22 Fri 21:53:01
+# on 2022 Jul 25 Mon 12:01:45
 
 A = Reals2()
 B = Reals2()
@@ -22,13 +22,13 @@ lower = integers(lower=0, upper=100)
 upper = integers(lower=-100, upper=100)
 critical = CSVDomain('./tests/special-case.txt')
 
-def test_Complex_assertions_On5Jd():
+def test_Complex_assertions_0F():
 
     assert Complex(1.0, 1.0) == Complex(1.0, 1.0)
     assert finishes_in_lt_ms(Complex, (1.0, 1.0), 100)
     assert Complex(1, 1) == Complex(1.0, 1.0)
     assert Complex(10.0, 10.0) < Complex(20.0, 20.0)
-    assert is_error(Complex(nan, 1.0), AssertionError)
+    assert catch_error(Complex, (nan, 1.0), AssertionError)
     assert between(Complex(1.0, 1.0), -1.0, 1.0)
     assert is_error_and_contains(Complex(inf, inf), Exception, "Value must be a float")
     assert is_complex(Complex(1.0, 0.0)) or is_float(Complex(1.0, 0.0))
@@ -86,7 +86,7 @@ def complex_binary():
 
 
 # start test -----------------
-def test___uf():
+def test___Gox():
 
     # Test the mathematical properties
 
@@ -102,7 +102,7 @@ def test___uf():
 
 CT = ComplexTestDomain()
 
-def test_Complex_hx():
+def test_Complex_Ze():
 
     for r, i in CT:
 
@@ -123,7 +123,7 @@ def test_Complex_hx():
             count += 1
         if property_multiplicative_identity(result):
             count += 1
-        if is_error_and_says(result, ComplexError, "cannot be"):
+        if is_error_and_contains(result, ComplexError, "cannot be"):
             count += 1
 
         assert count >= 1, f"The minimum number of predicates has not been met - met: {count}, min: 1  [with {result}]"
