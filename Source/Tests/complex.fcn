@@ -11,6 +11,7 @@ Domain upper Integers -lower -100 -upper 100
 Domain critical CSVDomain './tests/special-case.txt'
 
 Assert Complex:
+  | `print('hello1')`
   | (1.0, 1.0) = `Complex(1.0, 1.0)`
   | (1.0, 1.0) finishes-ms? 100
   | (1, 1) = `Complex(1.0, 1.0)` ~~ "This should never fail"
@@ -28,6 +29,7 @@ Assert Complex:
 Test Complex A:
   | :message "Test the unary properties blah blah blah"
   | :labels [a b] :name 'complex_unary'
+  | `print('hello world')`
   | !(is-None?)
   |! valid-complex?
   |! ZeroDivisionError valid-complex?
@@ -77,4 +79,5 @@ Satisfy Complex CT:
   | additive-id?
   | multiplicative-id?
   | raises&says? ComplexError "cannot be"
+  | `print('hello1')`
   ;

@@ -49,6 +49,11 @@ class FalconVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by FalconParser#stub_codeline.
+    def visitStub_codeline(self, ctx:FalconParser.Stub_codelineContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by FalconParser#stub_p.
     def visitStub_p(self, ctx:FalconParser.Stub_pContext):
         return self.visitChildren(ctx)

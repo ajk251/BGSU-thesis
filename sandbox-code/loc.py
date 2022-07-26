@@ -306,7 +306,7 @@ def count_lines(file_path: str) -> Dict[str, int]:
     # counts(tokens)
     # print(halstead(tokens))
     # print(tokens_by_line(file_path))
-    ast_walk(file_path)
+    # ast_walk(file_path)
 
     with open(file_path, mode='r') as file:
 
@@ -330,7 +330,7 @@ def count_lines(file_path: str) -> Dict[str, int]:
 
         results['total-chars'] = len(text)
         results['non-ws chars'] = len(tuple(filter(lambda c: c not in (' ', '\n', '\t', '\r'), text)))
-        results['total lines'] = len(nl.findall(text)) + 1                        # IDEs give the extra line
+        results['total lines'] = len(nl.findall(text)) + 1                        # IDEs give the extra line …nl text...
         results['blank']     = len(blank.findall(text))
         results['comment']   = len(comment.findall(text))
         results['inline comment'] = len(line_comment.findall(text))

@@ -150,7 +150,7 @@ def basic_Test(entry) -> str:
 
     indent: int = 0
 
-    directives = get_directives(entry)
+    directives = get_directives(entry, None)
 
     message = directives['message']
     pyfunc = directives['pyfunc']
@@ -243,7 +243,6 @@ def basic_Assert(entry) -> str:
     elif entry['directives'].get(':name', None):
         t_name = entry['directives'][':name']['value']
         pyfunc = f'def {t_name}():' if t_name.startswith('test') else f'def test_{t_name}():'
-
     else:
         rand_name = ''.join((choices(ascii_letters+digits, k=randint(2, 5))))
         pyfunc = f'def test_{fn_name}_assertions_{rand_name}():' #.format(fn_name, rand_name)
@@ -265,7 +264,11 @@ def basic_Assert(entry) -> str:
 
     for stub in entry['stubs']:
 
+        # these add lines of code
         if stub['kind'] == 'code':
+            lines.append((TAB * indent) + stub['value'])
+            continue
+        elif stub['kind'] == 'codeline':
             lines.append((TAB * indent) + stub['value'])
             continue
 
@@ -358,7 +361,7 @@ def basic_Groupby2(entry) -> str:
     indent: int = 0
     lines = ['']
 
-    directives = get_directives(entry)
+    directives = get_directives(entry, 'groupby')
 
     # message = directives['message']
     pyfunc = directives['pyfunc']
@@ -798,7 +801,7 @@ def basic_Satisfy2(entry):
 
     # at least 1 or more predicates must be true
     indent: int = 0
-    directives = get_directives(entry)
+    directives = get_directives(entry, 'satisfy')
 
     message = directives['message']
     pyfunc = directives['pyfunc']
@@ -906,7 +909,7 @@ count = 0
             # # assume that the error has been caught
             # if PREDICATES[stub['predicate']][2]:
             #     lines.append(((indent+1) * TAB) + 'has_error = False')
-        elif stub['kind'] == 'code':
+        elif stub['kind'] == 'code' or stub['kind'] == 'codeline':
             line = '\n' + (indent * TAB) + stub['value'] + '\n'
             lines.append(line)
         elif special_case:

@@ -209,7 +209,7 @@ def make_domain(entry) -> str:
     return line
 
 
-def get_directives(entry) -> dict[str, Union[None, str, list, bool]]:
+def get_directives(entry, test_name=None) -> dict[str, Union[None, str, list, bool]]:
     """Extract the directives and put them into a dictionary"""
 
     # supported:
@@ -242,7 +242,7 @@ def get_directives(entry) -> dict[str, Union[None, str, list, bool]]:
     else:
         directives['message'] = None
 
-    # *** get the only args
+    # *** get the only args ***
     if entry['directives'].get(':only', None) is not None:
         directives['only'] = entry['directives'][':only']['value']
     else:
@@ -260,10 +260,15 @@ def get_directives(entry) -> dict[str, Union[None, str, list, bool]]:
     elif entry['directives'].get(':name', False):
         t_name = entry['directives'][':name']['value'].strip('\'').strip('\"')
         directives['pyfunc'] = f'def {t_name}():' if t_name.startswith('test') else f'def test_{t_name}():'
+    elif test_name:
+        rand_name = ''.join((choices(ascii_letters+digits, k=randint(2, 5))))
+        fname = 'object' if fn_name == '_' else fn_name
+        directives['pyfunc'] = f"def test_{test_name}_{fname}_{rand_name}():"
     else:
         rand_name = ''.join((choices(ascii_letters+digits, k=randint(2, 5))))
-        # fname = entry['directives'][':name']['value'] if entry['directives'].get(':name', False) else ''
-        directives['pyfunc'] = f"def test_{fn_name}_{rand_name}():"
+        fname = 'object' if fn_name == '_' else fn_name
+        directives['pyfunc'] = f"def test_{fname}_{rand_name}():"
+
     # *** get suffix ***
     # looks for :no-suffix or :suffix <blank> or :suffix '' or :suffix '_i'
     if entry['directives'].get(':no-suffix', False):
@@ -507,6 +512,8 @@ def make_assert_stmt(stub, fn_name, args=None, just_result: bool = False, use_er
     if stub['kind'] == 'logical' or stub['kind'] == 'assert-logical':
         return 'assert ' + make_boolean(stub['values'], fn_sig)
     elif stub['kind'] == 'code':
+        return stub['value']
+    elif stub['kind'] == 'codeline':
         return stub['value']
 
     # get the predicate or make one up & the values for the predicate

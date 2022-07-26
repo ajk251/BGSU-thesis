@@ -80,6 +80,15 @@ class FalconListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by FalconParser#stub_codeline.
+    def enterStub_codeline(self, ctx:FalconParser.Stub_codelineContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#stub_codeline.
+    def exitStub_codeline(self, ctx:FalconParser.Stub_codelineContext):
+        pass
+
+
     # Enter a parse tree produced by FalconParser#stub_p.
     def enterStub_p(self, ctx:FalconParser.Stub_pContext):
         pass

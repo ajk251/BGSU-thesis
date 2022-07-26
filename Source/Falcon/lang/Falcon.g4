@@ -41,7 +41,8 @@ domain_names: name                                                  #get_domain_
             | name (COMMA? name)+                                   #get_domain_names
             ;
 
-test_stub: BAR predicate ('~~' STRING)?                             #stub_p
+test_stub: BAR code                                                 #stub_codeline
+         | BAR predicate ('~~' STRING)?                             #stub_p
          | BAR predicate value ('~~' STRING)?                       #stub_pv
          | BAR predicate (value)+ ('~~' STRING)?                    #stub_many_pv
          | BAR arg_list predicate value+ ('~~' STRING)?             #stub_assert
@@ -55,7 +56,6 @@ test_stub: BAR predicate ('~~' STRING)?                             #stub_p
          | ABAR value predicate ('~~' STRING)?                      #stub_side_effect
          | EBAR value? predicate ('~~' STRING)?                     #stub_fail_side_effect
          | EBAR value? predicate (value)+ ('~~' STRING)?            #stub_fail_side_effect_many
-//         | MBAR predicate value* ('~~' STRING)?                     #stub_value_bar               # change predicate instead
          ;
 
 test_logical: OP_NOT? predicate value* (OP_LOGICAL OP_NOT? predicate value*)* #stub_logic

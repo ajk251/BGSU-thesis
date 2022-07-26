@@ -14,7 +14,7 @@ from .ComplexPredicates import *
 
 # This file was generated automatically by Falcon.
 # from: complex.fcn
-# on 2022 Jul 25 Mon 12:01:45
+# on 2022 Jul 25 Mon 22:56:43
 
 A = Reals2()
 B = Reals2()
@@ -22,8 +22,9 @@ lower = integers(lower=0, upper=100)
 upper = integers(lower=-100, upper=100)
 critical = CSVDomain('./tests/special-case.txt')
 
-def test_Complex_assertions_0F():
+def test_Complex_assertions_hR():
 
+    print('hello1')
     assert Complex(1.0, 1.0) == Complex(1.0, 1.0)
     assert finishes_in_lt_ms(Complex, (1.0, 1.0), 100)
     assert Complex(1, 1) == Complex(1.0, 1.0)
@@ -48,6 +49,7 @@ def test_complex_unary():
     # Test the unary properties blah blah blah
 
     for a, b in A:
+        print('hello world')
         assert not (is_none(Complex(a, b)))
         with pytest.raises(Exception):
             assert valid_number(Complex(a, b))
@@ -86,7 +88,7 @@ def complex_binary():
 
 
 # start test -----------------
-def test___Gox():
+def test_object_Q3PuG():
 
     # Test the mathematical properties
 
@@ -102,7 +104,7 @@ def test___Gox():
 
 CT = ComplexTestDomain()
 
-def test_Complex_Ze():
+def test_satisfy_Complex_wI():
 
     for r, i in CT:
 
@@ -125,6 +127,9 @@ def test_Complex_Ze():
             count += 1
         if is_error_and_contains(result, ComplexError, "cannot be"):
             count += 1
+
+        print('hello1')
+
 
         assert count >= 1, f"The minimum number of predicates has not been met - met: {count}, min: 1  [with {result}]"
         assert count <= 5, f"Exceed number of predicates met - met: {count}, max: 5"

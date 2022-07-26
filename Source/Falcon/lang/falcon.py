@@ -289,7 +289,8 @@ class Falcon(FalconVisitor):
         # test['directives'] = []
         test['stubs'] = []
 
-        okay_stubs = (FalconParser.Stub_pvContext,
+        okay_stubs = (FalconParser.Stub_codelineContext,
+                      FalconParser.Stub_pvContext,
                       FalconParser.Stub_pContext,
                       FalconParser.Stub_many_pvContext,
                       FalconParser.Stub_codeContext,
@@ -374,7 +375,8 @@ class Falcon(FalconVisitor):
         okay_stubs = (FalconParser.Stub_assertContext,
                       FalconParser.Stub_assert_pContext,
                       FalconParser.Stub_assert_logicalContext,
-                      FalconParser.Stub_assert_errorContext)
+                      FalconParser.Stub_assert_errorContext,
+                      FalconParser.Stub_codelineContext)
 
         for stub in ctx.children:
 
@@ -480,7 +482,8 @@ class Falcon(FalconVisitor):
         # self.ns[self.current_ns]['tests'][test['id']] = test
         # self.ns[self.current_ns]['ordering'].append(('test', test['id']))
 
-        okay_stubs = (FalconParser.Stub_pvContext,
+        okay_stubs = (FalconParser.Stub_codelineContext,
+                      FalconParser.Stub_pvContext,
                       FalconParser.Stub_pContext,
                       FalconParser.Stub_many_pvContext,
                       FalconParser.Stub_codeContext,
@@ -678,6 +681,15 @@ class Falcon(FalconVisitor):
 
         if ctx.STRING():
             stub['error-message'] = str(ctx.STRING())
+
+        return stub
+
+    def visitStub_codeline(self, ctx: FalconParser.Stub_codelineContext):
+
+        stub = {'kind': 'codeline'}
+
+        code = self.visit(ctx.code())
+        stub['value'] = code['value']
 
         return stub
 
