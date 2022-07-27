@@ -109,13 +109,15 @@ def add_imports(entry) -> str:
 
         line = ''
 
-        # this is to help with naming issues, like Tests.Module
-        if 'dot' in args or '.' in args:
-            name = '.' + module
-        elif 'dotdot' in args or '..' in args:
-            name = '..' + module
-        else:
-            name = module
+        # # this is to help with naming issues, like Tests.Module
+        # if 'dot' in args or '.' in args:
+        #     name = '.' + module
+        # elif 'dotdot' in args or '..' in args:
+        #     name = '..' + module
+        # else:
+        #     name = module
+
+        name = module           # TODO: refactor
 
         # path = pathlib.PurePath(os.getcwd() + f'./{module}.py')
         # print(path.parts, path.parts[-2])
@@ -135,8 +137,6 @@ def add_imports(entry) -> str:
             line = 'import {} as {}'.format(name, args['as'])
 
         # has to load the module to get the predicates from predicates.PREDICATES
-        # TODO: maybe force every test module to have …_predicates, to avoid imports‽
-
         try:
             runpy.run_path(f'{name}.py')
         except ImportError as e:
@@ -243,7 +243,8 @@ def get_directives(entry, test_name=None) -> dict[str, Union[None, str, list, bo
     recognized = frozenset((':follow-up', ':message', ':only', ':test-name', ':name',
                             ':no-suffix', ':suffix', ':labels', ':method', ':log', ':log-name',
                             ':iter-object', ':object-update', ':min', ':max', ':save-results',
-                            ':save-cases', ':no-error-message', ':min-cases', ':no-minimum'))
+                            ':save-cases', ':no-error-message', ':min-cases', ':no-minimum',
+                            ':either'))
 
     # see if any are not recognized
     if not frozenset(entry['directives'].keys()).issubset(recognized):
@@ -400,6 +401,13 @@ def get_directives(entry, test_name=None) -> dict[str, Union[None, str, list, bo
         directives['min-cases'] = 0
     else:
         directives['min-cases'] = 1
+
+    # *** either ***
+
+    if entry['directives'].get(':either', False):
+        directives['either'] = to_list(entry['directives'][':either']['value'])
+    elif entry['directives'].get(':either', False):
+        directives['either'] = None
 
     return directives
 

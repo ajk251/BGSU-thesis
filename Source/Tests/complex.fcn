@@ -72,12 +72,10 @@ Test _ C1 C2:
 Domain CT ComplexTest
 
 Satisfy Complex CT:
-  | :labels [r, i] :min 1 :max 5
+  | :labels [r, i] :either [4 1]
   | valid-complex?
   | complex-number?
-  | valid-complex?
   | additive-id?
   | multiplicative-id?
   | raises&says? ComplexError "cannot be"
-  | `print('hello1')`
   ;

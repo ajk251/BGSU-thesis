@@ -14,12 +14,12 @@ from ComplexNumber import Complex, ComplexError
 
 # This file was generated automatically by Falcon.
 # from: complex.fcn
-# on 2022 Jul 27 Wed 13:40:58
+# on 2022 Jul 27 Wed 13:59:20
 
 # [ComplexNumber, ComplexPredicates]
 CT = ComplexTestDomain()
 
-def test_satisfy_Complex_uQPIC():
+def test_satisfy_Complex_BbOW():
 
     for r, i in CT:
 
@@ -34,8 +34,6 @@ def test_satisfy_Complex_uQPIC():
             count += 1
         if valid_complex(result):
             count += 1
-        if valid_number(result):
-            count += 1
         if property_additive_identity(result):
             count += 1
         if property_multiplicative_identity(result):
@@ -43,5 +41,4 @@ def test_satisfy_Complex_uQPIC():
         if raises_error(result, ComplexError):
             count += 1
 
-        assert count >= 1, f"The minimum number of predicates has not been met - met: {count}, min: 1  [with {result}]"
-        assert count <= 5, f"Exceed number of predicates met - met: {count}, max: 5"
+        assert count in (4, 1), 'Count must either be 4, 1'

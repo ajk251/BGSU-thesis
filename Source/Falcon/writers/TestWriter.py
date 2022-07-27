@@ -95,7 +95,7 @@ def make_global(entry) -> str:
 
     # adds a general description
     if entry['directives'].get(':desc', False):
-        desc =entry['directives'][':sut'][0]
+        desc = entry['directives'][':desc'][0]
     else:
         desc = None
 
@@ -823,6 +823,7 @@ def basic_Satisfy2(entry):
     params = directives['params']
     fn_name = directives['fn_name']
     use_error_msg = directives['no-error-message']
+    either = directives['either']
 
     # these are for the log
     use_log = directives['use-log']
@@ -831,6 +832,8 @@ def basic_Satisfy2(entry):
     # these are the minimum and maximum number of predicates that should be meet.
     if entry['directives'].get(':min', False):
         minimum = entry['directives'][':min']['value']
+    elif entry['directives'].get(':no-minimum', False):
+        minimum = None
     else:
         minimum = 1
 
@@ -934,8 +937,15 @@ count = 0
 
     lines.append('')
 
-    line = (indent * TAB) + f'assert count >= {minimum}, f"The minimum number of predicates has not been met - met: {{count}}, min: {minimum}  [with {{result}}]"'
-    lines.append(line)
+    if either:
+        error = f"'Count must be 1 of {', '.join(either)}'"
+        line = (indent * TAB) + f'assert count in ({", ".join(either)}), {error}'
+        lines.append(line)
+        minimum, maximum = None, None
+
+    if minimum is not None:
+        line = (indent * TAB) + f'assert count >= {minimum}, f"The minimum number of predicates has not been met - met: {{count}}, min: {minimum}  [with {{result}}]"'
+        lines.append(line)
 
     if maximum is not None:
         line = (indent * TAB) + f'assert count <= {maximum}, f"Exceed number of predicates met - met: {{count}}, max: {maximum}"'
