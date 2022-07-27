@@ -1,15 +1,17 @@
 
 import re
 import runpy
+import pathlib
 import textwrap
 import os
+import sys
 import warnings
 
 from collections import defaultdict
 from datetime import datetime
 from random import choices, randint
 from string import ascii_letters, digits
-from sys import stderr
+from sys import stderr, path
 from typing import Union
 
 from Falcon.algorithms.algorithms import ALGORITHMS
@@ -32,8 +34,20 @@ booleans = {'∧': 'and', '&&': 'and', 'and': 'and',
             '∨': 'or', '||': 'or', 'or': 'or',
             '!': 'not', '¬': 'not', 'not': 'not'}
 
-# helper funcs ----------------------------------
 
+def add_pytest_config_file(path: str):
+
+    # as it turns out, this may not be needed
+
+    # a solution based on this
+    #   https://stackoverflow.com/questions/49028611/pytest-cannot-find-module
+
+    contents = '[tool.pytest.ini_options]\npythonpath = ["."]\n'
+
+    with open(path, 'w') as file:
+        file.write(contents)
+
+# helper funcs ----------------------------------
 
 def clean(name: str) -> str:
     # from here: https://stackoverflow.com/questions/3303312/how-do-i-convert-a-string-to-a-valid-variable-name-in-python
@@ -79,6 +93,8 @@ def add_imports(entry) -> str:
 
     # TODO: Make these prettier
 
+    sys.path.append('.')                # have to add the current directory
+
     lines = ['from Falcon.algorithms import *',
              'from Falcon.domains import *',
              'from Falcon.macros import *',
@@ -98,6 +114,11 @@ def add_imports(entry) -> str:
             name = '.' + module
         elif 'dotdot' in args or '..' in args:
             name = '..' + module
+        else:
+            name = module
+
+        # path = pathlib.PurePath(os.getcwd() + f'./{module}.py')
+        # print(path.parts, path.parts[-2])
 
         if len(args) == 0:
             line = 'import ' + name
@@ -117,10 +138,12 @@ def add_imports(entry) -> str:
         # TODO: maybe force every test module to have …_predicates, to avoid imports‽
 
         try:
-            # runpy.run_module(module)
-            runpy.run_path(os.getcwd() + f'/{module}.py')
+            runpy.run_path(f'{name}.py')
         except ImportError as e:
             stderr.write('Could not import module. Check module for exceptions.')
+            raise e
+        except ModuleNotFoundError as e:
+            stderr.write('Could not find module')
             raise e
 
         lines.append(line)
@@ -372,7 +395,7 @@ def get_directives(entry, test_name=None) -> dict[str, Union[None, str, list, bo
     # *** Groupby - min cases ***
 
     if entry['directives'].get(':min-cases', False):
-        directives['min-cases'] = int(entry['directives'][':min-cases'])
+        directives['min-cases'] =  int(entry['directives'][':min-cases']['value'])
     elif entry['directives'].get(':no-minimum', False):
         directives['min-cases'] = 0
     else:
@@ -389,8 +412,8 @@ def get_predicate(stub, by_group=False): # -> Tuple[Predicate, List]:
     # is the predicate defined?
     if not by_group and PREDICATES.get(stub['predicate'], False): #stub.get('predicate', False):
         predicate = PREDICATES[stub['predicate']]
-    elif by_group and PREDICATES.get(stub['predicate'], False):
-        predicate = PREDICATES[stub['predicate']]
+    elif by_group and PREDICATES.get(stub['group-predicate'], False):
+        predicate = PREDICATES[stub['group-predicate']]
     elif by_group:
         predicate = Predicate(stub['group-predicate'], None, False, False, False, False)
         warnings.warn(f"Predicate '{predicate.name}' was not defined.")
@@ -550,8 +573,10 @@ def make_assert_stmt(stub, fn_name, args=None, just_result: bool = False, use_er
         line = f'assert {predicate.name}({fn_name}, ({args}), {", ".join(values)})'     # calls it as fn, args, values
     elif predicate.is_symbolic:
         line = f3.format(predicate.name, fn_sig)                                         # uses symbol
-    elif values:
+    elif values and isinstance(values, tuple):
         line = f2.format(predicate.name, fn_sig, ', '.join(values))
+    elif values:
+        line = f2.format(predicate.name, fn_sig, values)
     elif values is None:
         line = f3.format(predicate.name, fn_sig)
 

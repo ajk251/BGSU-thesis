@@ -5,7 +5,7 @@ from functools import wraps
 from typing import Union
 
 PREDICATES = dict()
-SUPRESS_PREDICATE = False       # Don't show if it has been found already
+SUPRESS_PREDICATE_WARN = False       # Don't show if it has been found already
 
 
 # Value = namedtuple('Value', 'name,symbol,is_symbolic,is_error,is_group,only_values,doc_error,error_message')
@@ -49,13 +49,13 @@ def predicate(_fn=None, *, alias=None, symbol: NullString = None, is_error: bool
         if isinstance(alias, (list, tuple)):
             for name in alias:
 
-                if name in PREDICATES:
+                if SUPRESS_PREDICATE_WARN and name in PREDICATES:
                     warnings.warn(f"Name {name} was previously defined. Replacing existing.")
 
                 PREDICATES[name] = values
         elif alias:
 
-            if alias in PREDICATES:
+            if SUPRESS_PREDICATE_WARN and alias in PREDICATES:
                     warnings.warn(f"Name {alias} was previously defined. Replacing existing.")
 
             PREDICATES[alias] = values

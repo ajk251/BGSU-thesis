@@ -26,11 +26,17 @@ def finishes_in_lt_ms(fn, args, ms):
 
 @predicate(alias=['error-and-says?'], is_error=True)
 @on_fail_false
-def is_error_and_says(error, error_type, message) -> bool:
+def is_error_and_says(fn, args, error, error_type, message) -> bool:
     """
     Tests that the error is of the specific type and the error message is the same or
     contained in the error message.
     """
+
+    try:
+        result = fn(*args)
+    except Exception as err:
+        result = err
+
     result = isinstance(error, error_type) or isinstance(error, error_type)
     result &= error.args[0] == message or message in error.args[0]
 
@@ -98,8 +104,7 @@ def is_error_and_contains(error, message) -> bool:
     Tests that the error is an Exception and the message is the error message or the message
     is contained in the error message.
     """
-    return (isinstance(error, Exception) or isinstance(error, Exception)) \
-           (error.args[0] == message or message in error.args[0])
+    return isinstance(error, Exception) and (error.args[0] == message or message in error.args[0])
 
 
 # useful -----------------------------------------
@@ -107,13 +112,19 @@ def is_error_and_contains(error, message) -> bool:
 @predicate(alias=['instance?', 'is?', '≡'], doc_error=True)
 def is_instance(value, result) -> bool:
     """The value is not the instance specified"""
-    return isinstance(value, result)
+    return isinstance(result, value)
 
 
 @predicate(alias=['is-a?'], doc_error=True)
 def is_a(kind, *value) -> bool:
     """The value is not any of instances specified"""
     return isinstance(kind, value)
+
+
+@predicate(alias=['isnt?'])
+def is_not(kind, result) -> bool:
+    """Tests that the value is not of instance kind"""
+    return not isinstance(result, kind)
 
 
 @predicate(alias=['is-not?', 'is-not-instance?', '≢'])
@@ -143,7 +154,7 @@ def not_in(value, container) -> bool:
 
 @predicate(alias=['=', 'eq?'], symbol='==')
 def eq(a, b) -> bool:
-    """Weak equality, ie a = b, and does not check for types. For instance, 1 = 1.0"""
+    """Weak equality, ie a = b"""
     return op.eq(a, b)
 
 

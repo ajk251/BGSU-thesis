@@ -1,0 +1,20 @@
+
+:import ComplexPredicates -all
+:import ComplexNumber -from [Complex, ComplexError]
+
+
+:desc "this tests complex numbers..."
+:sut [ComplexNumber, ComplexPredicates]
+
+
+Domain CT ComplexTest
+
+Satisfy Complex CT:
+  | :labels [r, i] :min 1 :max 5
+  | valid-complex?
+  | complex-number?
+  | valid-complex?
+  | additive-id?
+  | multiplicative-id?
+  | raises-error? ComplexError
+  ;

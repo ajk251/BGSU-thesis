@@ -9,12 +9,12 @@ from Falcon.utilities import FalconError
 from collections import defaultdict
 
 import pytest
-from .ComplexNumber import Complex, ComplexError
-from .ComplexPredicates import *
+from ComplexNumber import Complex, ComplexError
+from ComplexPredicates import *
 
 # This file was generated automatically by Falcon.
 # from: complex.fcn
-# on 2022 Jul 25 Mon 22:56:43
+# on 2022 Jul 27 Wed 11:45:57
 
 A = Reals2()
 B = Reals2()
@@ -22,7 +22,7 @@ lower = integers(lower=0, upper=100)
 upper = integers(lower=-100, upper=100)
 critical = CSVDomain('./tests/special-case.txt')
 
-def test_Complex_assertions_hR():
+def test_Complex_assertions_sBH():
 
     print('hello1')
     assert Complex(1.0, 1.0) == Complex(1.0, 1.0)
@@ -42,10 +42,7 @@ def test_Complex_assertions_hR():
     with pytest.raises(TypeError):
         assert between(Complex(nan, inf), -1, 1)
 
-
-# start test -----------------
 def test_complex_unary():
-
     # Test the unary properties blah blah blah
 
     for a, b in A:
@@ -69,10 +66,7 @@ def test_complex_unary():
 
 C1 = ComplexDomain()
 C2 = ComplexDomain()
-
-# start test -----------------
 def complex_binary():
-
     # Test the properties of Complex numbers
 
     for c1, c2 in zip(C1, C2):
@@ -86,10 +80,7 @@ def complex_binary():
         with pytest.raises(TypeError):
             assert property_closure_add(c1, c2)
 
-
-# start test -----------------
-def test_object_Q3PuG():
-
+def test_object_CYPW():
     # Test the mathematical properties
 
     for c1, c2 in zip(C1, C2):
@@ -104,7 +95,7 @@ def test_object_Q3PuG():
 
 CT = ComplexTestDomain()
 
-def test_satisfy_Complex_wI():
+def test_satisfy_Complex_SO():
 
     for r, i in CT:
 

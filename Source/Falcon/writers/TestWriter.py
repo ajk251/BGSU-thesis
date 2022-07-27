@@ -25,6 +25,8 @@ tabsize: int = 4
 TAB: str = ' ' * tabsize
 nl: str = '\n'
 
+SUT = None              # this gets used with coverage
+
 # ⊻ ⊼ ⊽ ￫ these require special treatment…
 booleans = {'∧': 'and', '&&': 'and', 'and': 'and',
             '∨': 'or', '||': 'or', 'or': 'or',
@@ -90,7 +92,16 @@ def make_global(entry) -> str:
     lines = []
 
     # directives -----
-    desc = entry['directives'].get(':desc', None)
+
+    # adds a general description
+    if entry['directives'].get(':desc', False):
+        desc =entry['directives'][':sut'][0]
+    else:
+        desc = None
+
+    # adds a SUT for coverage.py
+    if entry['directives'].get(':sut', False):
+        SUT = to_list(entry['directives'][':sut'][0])
 
     if desc:
         lines.append(indent * TAB + '# ' + desc)
@@ -165,7 +176,8 @@ def basic_Test(entry) -> str:
     # TODO: logging!
 
     # write tests ------
-    lines = ['\n# start test -----------------', pyfunc, '']
+    # lines = ['\n# start test -----------------', pyfunc, '']
+    lines = [pyfunc]
     indent += 1
 
     if message:
@@ -479,12 +491,12 @@ except Exception as e:
         # the first two go at the end
         if gpredicate.is_group and gvalues is not None:
             gline = f"{(indent-2) * TAB}assert {gpredicate.name}(results[{group}], {', '.join(gvalues)})"
-            gline += make_group_predicate_error(group, gpredicate.error_message, gpredicate.name, use_error_msg)
+            gline += make_group_predicate_error(group, gpredicate.error_message, gpredicate.name, use_error_msg and gpredicate.doc_error)
 
             agg_groups.append(gline)
         elif gpredicate.is_group:
             gline = f"{(indent-2) * TAB}assert {gpredicate.name}(results[{group}])"
-            gline += make_group_predicate_error(group, gpredicate.error_message, gpredicate.name, use_error_msg)
+            gline += make_group_predicate_error(group, gpredicate.error_message, gpredicate.name, use_error_msg and gpredicate.doc_error)
             agg_groups.append(gline)
 
         # line = ''
@@ -495,7 +507,7 @@ except Exception as e:
 
         if not gpredicate.is_group and gvalues is not None:
             line = f"{indent * TAB}assert {gpredicate.name}(result, {', '.join(gvalues)})"
-            line += make_group_predicate_error(group, gpredicate.error_message, gpredicate.name, use_error_msg)
+            line += make_group_predicate_error(group, gpredicate.error_message, gpredicate.name, use_error_msg and gpredicate.doc_error)
             lines.append(line)
         elif not gpredicate.is_group:
             line = f"{indent * TAB}assert {gpredicate.name}(result)"
@@ -894,7 +906,7 @@ count = 0
             #remove the left
             test = stmt.lstrip('assert').lstrip()           # otherwise a weird bug with result < 4 --> sult < 4
 
-            #remove the right, if needed
+            # remove the right, if needed
             if stub['error-message'] is not None:
                 test = test.rstrip(', ' + stub['error-message'])
 
@@ -904,11 +916,6 @@ count = 0
             if use_log:
                 lines.append(((indent+1) * TAB) + f"oracles['{stub['predicate']}'].append((({', '.join(labels)}), repr(result)))")
 
-            # lines.append(((indent+1) * TAB) + stmt)
-
-            # # assume that the error has been caught
-            # if PREDICATES[stub['predicate']][2]:
-            #     lines.append(((indent+1) * TAB) + 'has_error = False')
         elif stub['kind'] == 'code' or stub['kind'] == 'codeline':
             line = '\n' + (indent * TAB) + stub['value'] + '\n'
             lines.append(line)

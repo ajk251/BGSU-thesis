@@ -1,5 +1,6 @@
 
 import argparse
+import pathlib
 import pprint
 import os
 
@@ -13,7 +14,8 @@ from Falcon.gen.FalconParser import FalconParser
 # from Falcon.lang.falcon import Falcon
 from Falcon.lang.falcon import Falcon
 from Falcon.writers.UnitTestWriter import write_basic_unittest
-from Falcon.writers.TestWriter import write_basic_test
+from Falcon.writers.TestWriter import write_basic_test, SUT
+from Falcon.writers.tools import add_pytest_config_file
 
 # argument parser ----------------
 
@@ -98,6 +100,11 @@ if __name__ == '__main__':
     else:
         output = os.getcwd() + '/' + args.output[0]
 
+    # add pytest.toml
+    # if not os.path.exists(os.getcwd() + '/' + 'pyproject.toml'):
+    #     add_pytest_config_file(os.getcwd() + '/' + 'pyproject.toml')
+    #     print('added pyproject.toml')
+
     print('Using file:      ', file)
     print('Generating file: ', output)
 
@@ -114,12 +121,6 @@ if __name__ == '__main__':
 
     # gets the dict/json-like tree from antlr
     falcon_tree = falcon.intermediate_tests()
-
-    # the destination file is optional
-    # dest_file = None if args.output[0] == [] else args.output[0]
-
-    # if output is None:
-    #     output = os.getcwd() + '/test_falcon_file.py'
 
     # one or both
     if args.test:
@@ -147,13 +148,18 @@ if __name__ == '__main__':
     # invoke PyTest
     #   https://docs.pytest.org/en/latest/how-to/usage.html
     #   https://pytest-cov.readthedocs.io/en/latest/config.html
+    #   https://docs.pytest.org/en/7.1.x/reference/reference.html#confval-pythonpath
+    #   https://stackoverflow.com/questions/46652192/py-test-gives-coverage-py-warning-module-sample-py-was-never-imported
+    #   https://pytest-cov.readthedocs.io/en/latest/readme.html#documentation
 
     if args.pytest:
 
         print('***** RUNNING PyTest *****')
 
         if args.coverage:
-            test = pytest.main([output, '--maxfail=10', f'--cov={output}', '--cov-report=html'])
+            name = '.' if SUT is None else SUT
+            print(' --> ', name, SUT)
+            test = pytest.main([output, '--maxfail=10', f'--cov={name}', '--cov-report=html'])
         else:
             test = pytest.main([output, '--maxfail=10'])
 

@@ -1,7 +1,7 @@
 
 //:import ComplexNumber
-:import ComplexNumber -from [Complex, ComplexError] //-dot
-:import ComplexPredicates -all //-dot
+:import ComplexNumber -from [Complex, ComplexError]
+:import ComplexPredicates -all
 
 Domain A Reals2
 Domain B Reals2

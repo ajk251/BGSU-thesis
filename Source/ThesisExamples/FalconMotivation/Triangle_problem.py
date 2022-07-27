@@ -39,12 +39,11 @@ def classify(a: int, b: int, c: int) -> Triangle:
 
 # ---------------------------------------------------------
 
-
-@predicate(alias=['!ints+?', '!positive-integers?', 'not-positive-ints?', 'positive-ints?'])
-@on_fail_false
-def not_positive_integers(a: int, b: int, c: int) -> bool:
-    """Tests that all values are positive integers"""
-    return any(map(lambda n: (not isinstance(n, int)) or (not n > 0), (a, b, c)))
+# @predicate(alias=['!ints+?', '!positive-integers?', 'not-positive-ints?', 'positive-ints?'])
+# @on_fail_false
+# def not_positive_integers(a: int, b: int, c: int) -> bool:
+#     """Tests that all values are positive integers"""
+#     return any(map(lambda n: (not isinstance(n, int)) or (not n > 0), (a, b, c)))
 
     # if (not isinstance(a, int)) or (not a >= 1):
     #     return False
@@ -69,8 +68,8 @@ def not_satisfy_triangle_theorem(a: int, b: int, c: int) -> bool:
 @on_fail_false
 def not_triangle(a: int, b: int, c: int) -> bool:
     """Tests that three inputs do not form a valid triangle"""
-    result =  any(map(lambda n: (not isinstance(n, int)) or (not n > 0), (a, b, c)))
-    result &= not ((a < b+c) and (b < a+c) and (c < a+b))
+    result =  not any(map(lambda n: (isinstance(n, int)) or (n > 0), (a, b, c)))
+    result |= not ((a < b+c) and (b < a+c) and (c < a+b))
 
     return result
 
