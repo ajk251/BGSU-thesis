@@ -1,4 +1,5 @@
 
+import importlib
 import re
 import runpy
 import pathlib
@@ -108,43 +109,36 @@ def add_imports(entry) -> str:
     for module, args in entry:
 
         line = ''
-
-        # # this is to help with naming issues, like Tests.Module
-        # if 'dot' in args or '.' in args:
-        #     name = '.' + module
-        # elif 'dotdot' in args or '..' in args:
-        #     name = '..' + module
-        # else:
-        #     name = module
-
-        name = module           # TODO: refactor
-
-        # path = pathlib.PurePath(os.getcwd() + f'./{module}.py')
-        # print(path.parts, path.parts[-2])
+        # module = module           # TODO: refactor
 
         if len(args) == 0:
-            line = 'import ' + name
+            line = 'import ' + module
         elif 'from' in args and 'as' in args:
-            line = 'from {} import {} as {}'.format(name, args['from'], args['as'])
+            line = 'from {} import {} as {}'.format(module, args['from'], args['as'])
         elif 'from' in args and '[' in args['from']:
             s = args['from'].strip('[]').split(',')         # for some reason, this is just a string
-            line = 'from {} import {}'.format(name, ','.join(fn for fn in s))
+            line = 'from {} import {}'.format(module, ','.join(fn for fn in s))
         elif 'all' in args:
-            line = 'from {} import *'.format(name)
+            line = 'from {} import *'.format(module)
         elif 'from' in args:
-            line = 'from {} import {}'.format(name, args['from'])
+            line = 'from {} import {}'.format(module, args['from'])
         elif 'as' in args:
-            line = 'import {} as {}'.format(name, args['as'])
+            line = 'import {} as {}'.format(module, args['as'])
 
         # has to load the module to get the predicates from predicates.PREDICATES
-        try:
-            runpy.run_path(f'{name}.py')
-        except ImportError as e:
-            stderr.write('Could not import module. Check module for exceptions.')
-            raise e
-        except ModuleNotFoundError as e:
-            stderr.write('Could not find module')
-            raise e
+        spec = importlib.util.find_spec(module)
+
+        if spec.origin == 'built-in':
+            importlib.import_module(module)
+        else:
+            try:
+                runpy.run_path(f'{module}.py')
+            except ImportError as e:
+                stderr.write('Could not import module. Check module for exceptions or parent module/folder.')
+                raise e
+            except ModuleNotFoundError as e:
+                stderr.write('Could not find module')
+                raise e
 
         lines.append(line)
 

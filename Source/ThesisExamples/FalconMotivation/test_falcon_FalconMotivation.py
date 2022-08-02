@@ -13,11 +13,11 @@ from Triangle_problem import *
 
 # This file was generated automatically by Falcon.
 # from: FalconMotivation.fcn
-# on 2022 Jul 27 Wed 13:43:24
+# on 2022 Jul 28 Thu 17:23:06
 
 values = permutations_of(values=[-1, 0, 1, 2, 3, 4, 5], repeat=3)
 
-def test_groupby_classify_eV():
+def test_groupby_classify_ttHa():
 
     results = defaultdict(list)
     n_cases = defaultdict(int)

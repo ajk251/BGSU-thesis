@@ -9,14 +9,24 @@ This is to test the namespacing
 `x = [1, 2, 3]`
 `y = [4, 5, 6]`
 
+```
+def add(x,y):
+    return x + y
+```
+
 Domain X Reals
 Domain Y Reals -1 1
 Domain Z Integers 0 100 -n 10
 
 // this exist outside any namespace/unittest
 
+Assert add:
+  | (1,2) = 3
+  | `print("hello world")`
+  ;
+
 Test fn3 X:
-  | :set setter  :get 3
+  | `print("hello world")`
   | modof? 10
   | is-a? float
   | same-as? `[10,10,10]`
@@ -27,7 +37,6 @@ Test fn3 X:
 Domain X Integers -10 10 -n 10
 
 Test fn4 X Y Z:
-  | :set some-value
   | modof? 10
   | is-a? float int Fraction
   | same-as? `[10,10,10]`

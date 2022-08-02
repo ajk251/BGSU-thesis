@@ -14,12 +14,12 @@ from ComplexNumber import Complex, ComplexError
 
 # This file was generated automatically by Falcon.
 # from: complex.fcn
-# on 2022 Jul 27 Wed 13:59:20
+# on 2022 Jul 28 Thu 17:23:08
 
-# [ComplexNumber, ComplexPredicates]
+# "this tests complex numbers..."
 CT = ComplexTestDomain()
 
-def test_satisfy_Complex_BbOW():
+def test_satisfy_Complex_lbx():
 
     for r, i in CT:
 
@@ -41,4 +41,4 @@ def test_satisfy_Complex_BbOW():
         if raises_error(result, ComplexError):
             count += 1
 
-        assert count in (4, 1), 'Count must either be 4, 1'
+        assert count in (4, 1), 'Count must be 1 of 4, 1'
