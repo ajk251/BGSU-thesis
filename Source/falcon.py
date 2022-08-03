@@ -157,8 +157,7 @@ if __name__ == '__main__':
         print('***** RUNNING PyTest *****')
 
         if args.coverage:
-            name = '.' if SUT is None else SUT
-            print(' --> ', name, SUT)
+            name = '.' if SUT is None else SUT              # it can be defined through :sut | :coverage
             test = pytest.main([output, '--maxfail=10', f'--cov={name}', '--cov-report=html'])
         else:
             test = pytest.main([output, '--maxfail=10'])

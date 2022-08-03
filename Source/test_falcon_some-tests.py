@@ -12,7 +12,7 @@ import pytest
 
 # This file was generated automatically by Falcon.
 # from: Tests/some-tests.fcn
-# on 2022 Aug 01 Mon 20:31:22
+# on 2022 Aug 03 Wed 17:28:12
 
 x = [1, 2, 3]
 
@@ -25,12 +25,12 @@ X = reals()
 Y = reals(-1, 1)
 Z = integers(0, 100, n=10)
 
-def test_add_assertions_bUC():
+def test_add_assertions_2TJ():
 
     assert add(1, 2) == 3
     print("hello world")
 
-def test_fn3_oth2():
+def test_fn3_PD():
     for xᵢ in X:
         print("hello world")
         assert is_modulus_of(fn3(xᵢ), 10), 'Value a % n != 0'
@@ -40,14 +40,14 @@ def test_fn3_oth2():
         assert is_error(fn3(xᵢ), NumericalError)
 
 X = integers(-10, 10, n=10)
-def test_fn4_v1Bm6():
+def test_fn4_2GIBz():
     for xᵢ, yᵢ, zᵢ in zip(X, Y, Z):
         assert is_modulus_of(fn4(xᵢ, yᵢ, zᵢ), 10), 'Value a % n != 0'
         assert is_a(fn4(xᵢ, yᵢ, zᵢ), float, int, Fraction), 'The value is not any of instances specified'
         assert same_instance(fn4(xᵢ, yᵢ, zᵢ), [10,10,10]), 'The value must be the same instance'
 
 
-def test_fn_assertions_UVE():
+def test_fn_assertions_NBik7():
 
     # This is a test of some random stuff
     assert fn(1, 2, 3) > 4

@@ -102,6 +102,8 @@ def make_global(entry) -> str:
     # adds a SUT for coverage.py
     if entry['directives'].get(':sut', False):
         SUT = to_list(entry['directives'][':sut'][0])
+    elif entry['directives'].get(':coverage', False):
+        SUT = to_list(entry['directives'][':coverage'][0])
 
     if desc:
         lines.append(indent * TAB + '# ' + desc)

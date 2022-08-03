@@ -5,6 +5,7 @@ This is to test the namespacing
 :verbose True
 :file "this/that/other.txt"
 :verbosity 4
+:coverage this_module.py
 
 `x = [1, 2, 3]`
 `y = [4, 5, 6]`

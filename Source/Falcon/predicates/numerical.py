@@ -66,7 +66,7 @@ def is_valid_float(n: float) -> bool:
     return not (math.isnan(n) or math.isnan(n))
 
 
-@predicate(alias=['is-nan-inf?'])
+@predicate(alias=['is-nan-inf?', 'nan-or-inf?'])
 def is_nan_or_inf(n: float) -> bool:
     """Returns whether a number is an actual float, not a NaN or Inf."""
     return not (math.isnan(n) or math.isnan(n))
