@@ -903,7 +903,7 @@ count = 0
             continue
             special_case = True
         else:
-            stmt = make_assert_stmt(stub, '', just_result=True, use_error_msg=use_error_msg)
+            stmt = make_assert_stmt(stub, fn_name, args=args, just_result=True, use_error_msg=use_error_msg)
 
         if stub['kind'].startswith('predicate') and not special_case:
 
@@ -946,7 +946,7 @@ count = 0
         minimum, maximum = None, None
 
     if minimum is not None:
-        line = (indent * TAB) + f'assert count >= {minimum}, f"The minimum number of predicates has not been met - met: {{count}}, min: {minimum}  [with {{result}}]"'
+        line = (indent * TAB) + f'assert count >= {minimum}, f"The minimum number of predicates has not been met - met: {{count}}, min: {minimum}"'
         lines.append(line)
 
     if maximum is not None:

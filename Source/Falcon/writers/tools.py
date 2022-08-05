@@ -128,7 +128,7 @@ def add_imports(entry) -> str:
         # has to load the module to get the predicates from predicates.PREDICATES
         spec = importlib.util.find_spec(module)
 
-        if spec.origin == 'built-in':
+        if spec is not None and spec.origin == 'built-in':
             importlib.import_module(module)
         else:
             try:
@@ -400,7 +400,7 @@ def get_directives(entry, test_name=None) -> dict[str, Union[None, str, list, bo
 
     if entry['directives'].get(':either', False):
         directives['either'] = to_list(entry['directives'][':either']['value'])
-    elif entry['directives'].get(':either', False):
+    else:  #entry['directives'].get(':either', False):
         directives['either'] = None
 
     return directives
@@ -569,9 +569,12 @@ def make_assert_stmt(stub, fn_name, args=None, just_result: bool = False, use_er
     elif stub['kind'] == 'assert-error':
         e = 'Exception' if stub["error"] is None else stub['error']
         line = f'with pytest.raises({e}):\n' + ((indent + 1) * TAB) + f3.format(predicate.name, fn_sig)
+    # elif predicate.is_error and just_result:
+    #     line = f'assert '
     elif predicate.is_error and values is None:
         line = f'assert {predicate.name}({fn_name}, ({args}))'                            # calls it as fn, args
     elif predicate.is_error and values:
+        print('here!')
         line = f'assert {predicate.name}({fn_name}, ({args}), {", ".join(values)})'     # calls it as fn, args, values
     elif predicate.is_symbolic:
         line = f3.format(predicate.name, fn_sig)                                         # uses symbol

@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# it's: chmod +x falcon.py
 
 import argparse
 import pathlib

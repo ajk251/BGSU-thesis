@@ -26,7 +26,7 @@ def finishes_in_lt_ms(fn, args, ms):
 
 @predicate(alias=['error-and-says?'], is_error=True)
 @on_fail_false
-def is_error_and_says(fn, args, error, error_type, message) -> bool:
+def is_error_and_says(fn, args, error_type, message) -> bool:
     """
     Tests that the error is of the specific type and the error message is the same or
     contained in the error message.
@@ -36,39 +36,45 @@ def is_error_and_says(fn, args, error, error_type, message) -> bool:
         result = fn(*args)
     except Exception as err:
         result = err
+        is_error = True
 
-    result = isinstance(error, error_type) or isinstance(error, error_type)
-    result &= error.args[0] == message or message in error.args[0]
+    if not is_error:
+        return False
 
-    return result
+    outcome = isinstance(result, error_type) and message in result.args[0]
+    # result &= result.args[0] == message or message in result.args[0]
 
-
-@predicate(alias=['error?', 'is-error?'], is_error=True)
-def catch_error(fn, args, exception) -> bool:
-
-    result = False
-
-    try:
-        fn(*args)
-    except Exception as error:
-        result = isinstance(error, exception)
-    finally:
-        return result
+    return outcome
 
 
-@predicate(alias=['error-message?', 'error-says?'], is_error=True)
-def catch_error_message(fn, args, exception, message):
+# TODO: have to rework these...
 
-    result = False
-
-    try:
-        fn(*args)
-    except Exception as error:
-        result = isinstance(error, exception)
-    finally:
-        result = message in error.args[0]
-
-    return result
+# @predicate(alias=['error?', 'is-error?'], is_error=True)
+# def catch_error(fn, args, exception) -> bool:
+#
+#     result = False
+#
+#     try:
+#         fn(*args)
+#     except Exception as error:
+#         result = isinstance(error, exception)
+#     finally:
+#         return result
+#
+#
+# @predicate(alias=['error-message?', 'error-says?'], is_error=True)
+# def catch_error_message(fn, args, exception, message):
+#
+#     result = False
+#
+#     try:
+#         fn(*args)
+#     except Exception as error:
+#         result = isinstance(error, exception)
+#     finally:
+#         result = message in error.args[0]
+#
+#     return result
 
 
 # -----------------------------------------------
@@ -79,9 +85,9 @@ def catch_error_message(fn, args, exception, message):
 
 @predicate(alias=['raises?'])
 @on_fail_false
-def is_error(error) -> bool:
+def is_error(error, error_type=None) -> bool:
     """Tests that the error is an Exception"""
-    return isinstance(error, Exception)
+    return isinstance(error, Exception) or isinstance(error, error_type)
 
 
 @predicate(alias=['asserts?'])
@@ -104,7 +110,7 @@ def is_error_and_contains(error, message) -> bool:
     Tests that the error is an Exception and the message is the error message or the message
     is contained in the error message.
     """
-    return isinstance(error, Exception) and (error.args[0] == message or message in error.args[0])
+    return isinstance(error, Exception) and message in error.args[0]
 
 
 # useful -----------------------------------------
