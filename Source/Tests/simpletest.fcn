@@ -1,0 +1,11 @@
+
+Domain Ints Integers -n 10
+
+```
+def identity(n): return n
+```
+
+Satisfy identity Ints:
+  | !(modof? 2)
+  | modof? 2
+  ;

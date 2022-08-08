@@ -17,7 +17,7 @@ def is_any(sequence, predicate_fn):
     return any(map(predicate_fn, sequence))
 
 
-@predicate(alias=['most?'], is_group=True)
+@predicate(alias=['most?', 'at-most?'], is_group=True)
 def is_at_most(sequence, predicate_fn, n: int = 1):
     """The predicate must be True for at most n, or 0 to n values"""
     # tests a sequence where the sequence must be 0 < fn ↦ sequence < n

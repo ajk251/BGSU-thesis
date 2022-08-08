@@ -22,6 +22,6 @@ Satisfy Complex values:
   | :labels [r i]
   | valid-complex?
   | complex-number?
-  | == `Complex(1.0, 1.0)`
-  | raises? ComplexError
+  | raises-and-says? 'Real'
+  | raises-and-says? 'Imaginary'
   ;

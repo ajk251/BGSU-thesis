@@ -87,7 +87,7 @@ def is_float(n) -> bool:
 
 
 @predicate(alias=['floating-int?', 'real-int?', 'real-or-int?'])
-def is_float_int(n) -> bool:
+def is_float_or_int(n) -> bool:
     return float.is_integer(n)
 
 

@@ -7,7 +7,6 @@ from typing import Union
 PREDICATES = dict()
 SUPRESS_PREDICATE_WARN = False       # Don't show if it has been found already
 
-
 # Value = namedtuple('Value', 'name,symbol,is_symbolic,is_error,is_group,only_values,doc_error,error_message')
 Predicate = namedtuple('Predicate', 'name,symbol,is_symbolic,is_error,is_group,only_values,doc_error,error_message')
 #     name: str              the name of the predicate
@@ -32,7 +31,6 @@ NullString = Union[None, str]
 #       is_group implies tests should be in the aggregate
 #       only_values implies ... something ...
 
-
 # TODO: make is_error => make_callable
 
 def predicate(_fn=None, *, alias=None, symbol: NullString = None, is_error: bool = False,
@@ -53,6 +51,7 @@ def predicate(_fn=None, *, alias=None, symbol: NullString = None, is_error: bool
                     warnings.warn(f"Name {name} was previously defined. Replacing existing.")
 
                 PREDICATES[name] = values
+
         elif alias:
 
             if SUPRESS_PREDICATE_WARN and alias in PREDICATES:
@@ -63,7 +62,7 @@ def predicate(_fn=None, *, alias=None, symbol: NullString = None, is_error: bool
         PREDICATES[func.__name__] = values
 
         return func
-    
+
     return function if _fn is None else function(_fn)
 
 # -----------------------------------------------

@@ -43,7 +43,8 @@ def add_pytest_config_file(path: str):
     # a solution based on this
     #   https://stackoverflow.com/questions/49028611/pytest-cannot-find-module
 
-    contents = '[tool.pytest.ini_options]\npythonpath = ["."]\n'
+    # contents = '[tool.pytest.ini_options]\npythonpath = ["."]\n'
+    contents = '[tool.pytest.ini_options]\ntestpaths = ["."]\n'
 
     with open(path, 'w') as file:
         file.write(contents)
@@ -547,7 +548,7 @@ def make_assert_stmt(stub, fn_name, args=None, just_result: bool = False, use_er
     else:
         predicate = Predicate(stub["predicate"], None, False, False, False, False, False, None)
         values = stub['value'] if stub.get('value', False) else stub['values']      # it will return True, not a (…)\
-        warnings.warn(f'Predicate "{stub["predicate"]}" not found. Treating as a "raw" predicate.')
+        warnings.warn(f'Predicate "{stub["predicate"]}" not found. Treating as a "undefined" predicate.')
 
     # somewhere in the tree is says True (eg, is-none?), needs refactored out
     if isinstance(values, bool):
@@ -574,7 +575,7 @@ def make_assert_stmt(stub, fn_name, args=None, just_result: bool = False, use_er
     elif predicate.is_error and values is None:
         line = f'assert {predicate.name}({fn_name}, ({args}))'                            # calls it as fn, args
     elif predicate.is_error and values:
-        print('here!')
+        print('here!', predicate.name)
         line = f'assert {predicate.name}({fn_name}, ({args}), {", ".join(values)})'     # calls it as fn, args, values
     elif predicate.is_symbolic:
         line = f3.format(predicate.name, fn_sig)                                         # uses symbol

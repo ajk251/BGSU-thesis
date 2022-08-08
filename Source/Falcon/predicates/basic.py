@@ -47,6 +47,19 @@ def is_error_and_says(fn, args, error_type, message) -> bool:
     return outcome
 
 
+@predicate(alias=['error?'], is_error=True)
+@on_fail_false
+def is_error(fn, args, error_type) -> bool:
+    """Tests that the error is an instance of the specified type"""
+
+    try:
+        fn(*args)
+    except Exception as error:
+        outcome = error
+
+    return isinstance(outcome, error_type)
+
+
 # TODO: have to rework these...
 
 # @predicate(alias=['error?', 'is-error?'], is_error=True)
@@ -85,7 +98,7 @@ def is_error_and_says(fn, args, error_type, message) -> bool:
 
 @predicate(alias=['raises?'])
 @on_fail_false
-def is_error(error, error_type=None) -> bool:
+def raises_error(error, error_type=None) -> bool:
     """Tests that the error is an Exception"""
     return isinstance(error, Exception) or isinstance(error, error_type)
 
@@ -94,13 +107,6 @@ def is_error(error, error_type=None) -> bool:
 @on_fail_false
 def raises_assertion_error(error) -> bool:
     return isinstance(error, AssertionError)
-
-
-@predicate(alias=['raises-error?'])
-@on_fail_false
-def raises_error(error, error_type) -> bool:
-    """Tests that the error is an instance of the specified type"""
-    return isinstance(error, error_type)
 
 
 @predicate(alias=['raises-and-says?', 'raises&says?'])

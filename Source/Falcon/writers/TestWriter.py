@@ -824,7 +824,7 @@ def basic_Satisfy2(entry):
     algo = directives['algo']
     params = directives['params']
     fn_name = directives['fn_name']
-    use_error_msg = directives['no-error-message']
+    use_error_msg = False  # directives['no-error-message'] # Must be False!
     either = directives['either']
 
     # these are for the log
@@ -920,7 +920,6 @@ count = 0
 
             if use_log:
                 lines.append(((indent+1) * TAB) + f"oracles['{stub['predicate']}'].append((({', '.join(labels)}), repr(result)))")
-
         elif stub['kind'] == 'code' or stub['kind'] == 'codeline':
             line = '\n' + (indent * TAB) + stub['value'] + '\n'
             lines.append(line)

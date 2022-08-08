@@ -15,11 +15,11 @@ from math import nan, inf
 
 # This file was generated automatically by Falcon.
 # from: complex-satisfy.fcn
-# on 2022 Aug 05 Fri 14:34:54
+# on 2022 Aug 05 Fri 21:02:43
 
 CT = ComplexTestDomain()
 
-def test_satisfy_Complex_NARI():
+def test_satisfy_Complex_f0h():
 
     for r, i in CT:
 
@@ -49,7 +49,7 @@ def test_satisfy_Complex_NARI():
 
 values = permutations_of(values=[nan, inf, 1, 1.0])
 
-def test_satisfy_Complex_xhhTa():
+def test_satisfy_Complex_cXar():
 
     for r, i in values:
 
@@ -64,9 +64,9 @@ def test_satisfy_Complex_xhhTa():
             count += 1
         if valid_complex(result):
             count += 1
-        if equals(result, Complex(1.0, 1.0)):
+        if is_error_and_contains(result, 'Real'):
             count += 1
-        if is_error(result, ComplexError):
+        if is_error_and_contains(result, 'Imaginary'):
             count += 1
 
         assert count >= 1, f"The minimum number of predicates has not been met - met: {count}, min: 1"

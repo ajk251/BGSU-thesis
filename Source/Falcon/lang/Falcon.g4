@@ -195,7 +195,7 @@ OP_OR:   '∨' | '||' | 'or';
 //OP_NOR: '⊽';
 //OP_XOR:  '⊻';
 
-OP_NOT:  '￢' | '!';
+OP_NOT:  '￢' | '!' | '¬' | 'not';
 //OP_CARDINALITY: '#';
 
 // kinds of names used ------

@@ -14,7 +14,7 @@ from ComplexPredicates import *
 
 # This file was generated automatically by Falcon.
 # from: complex.fcn
-# on 2022 Jul 27 Wed 11:45:57
+# on 2022 Aug 08 Mon 16:10:37
 
 A = Reals2()
 B = Reals2()
@@ -22,14 +22,14 @@ lower = integers(lower=0, upper=100)
 upper = integers(lower=-100, upper=100)
 critical = CSVDomain('./tests/special-case.txt')
 
-def test_Complex_assertions_sBH():
+def test_Complex_assertions_6k6():
 
     print('hello1')
     assert Complex(1.0, 1.0) == Complex(1.0, 1.0)
     assert finishes_in_lt_ms(Complex, (1.0, 1.0), 100)
     assert Complex(1, 1) == Complex(1.0, 1.0)
     assert Complex(10.0, 10.0) < Complex(20.0, 20.0)
-    assert catch_error(Complex, (nan, 1.0), AssertionError)
+    assert is_error(Complex, (nan, 1.0), AssertionError)
     assert between(Complex(1.0, 1.0), -1.0, 1.0)
     assert is_error_and_contains(Complex(inf, inf), Exception, "Value must be a float")
     assert is_complex(Complex(1.0, 0.0)) or is_float(Complex(1.0, 0.0))
@@ -80,7 +80,7 @@ def complex_binary():
         with pytest.raises(TypeError):
             assert property_closure_add(c1, c2)
 
-def test_object_CYPW():
+def test_object_Lt():
     # Test the mathematical properties
 
     for c1, c2 in zip(C1, C2):
@@ -95,7 +95,7 @@ def test_object_CYPW():
 
 CT = ComplexTestDomain()
 
-def test_satisfy_Complex_SO():
+def test_satisfy_Complex_fj5():
 
     for r, i in CT:
 
@@ -110,8 +110,6 @@ def test_satisfy_Complex_SO():
             count += 1
         if valid_complex(result):
             count += 1
-        if valid_number(result):
-            count += 1
         if property_additive_identity(result):
             count += 1
         if property_multiplicative_identity(result):
@@ -119,8 +117,4 @@ def test_satisfy_Complex_SO():
         if is_error_and_contains(result, ComplexError, "cannot be"):
             count += 1
 
-        print('hello1')
-
-
-        assert count >= 1, f"The minimum number of predicates has not been met - met: {count}, min: 1  [with {result}]"
-        assert count <= 5, f"Exceed number of predicates met - met: {count}, max: 5"
+        assert count in (4, 1), 'Count must be 1 of 4, 1'
