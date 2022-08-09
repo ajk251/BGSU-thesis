@@ -459,6 +459,8 @@ def make_boolean(entry, fn_sig='') -> str:
 
     for element in entry['values']:
 
+        print('element -> ', element)
+
         if element == '(':
             case.append('(')
             continue
@@ -468,9 +470,13 @@ def make_boolean(entry, fn_sig='') -> str:
 
         if element in ('!', '¬', 'not'): case.append('not ')
         elif element in booleans: case.append(' ' + booleans[element] + ' ')
-        elif element in PREDICATES: case.append(PREDICATES[element])
+        elif element in PREDICATES:
+            # ADD PREDICATE type here
+            case.append(PREDICATES[element])
         elif isinstance(element, tuple): case[-1] += element                # ++ to the previous tuple
         else: case.append(element)
+
+    print(case)
 
     f1 = '{} {} {}'            # fn < 10
     f2 = '{}({})'              # pd(fn(…))
@@ -478,10 +484,13 @@ def make_boolean(entry, fn_sig='') -> str:
 
     for element in case:
 
+        # print('element -> ', element)
+
         if isinstance(element, tuple):
 
             name = element[0]
 
+            # TEST to see if it is a predicate here -> no-args, arg, args
             # get the predicate
             if name in PREDICATES:
                 predicate = PREDICATES[name]

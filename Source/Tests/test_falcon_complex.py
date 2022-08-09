@@ -14,7 +14,7 @@ from ComplexPredicates import *
 
 # This file was generated automatically by Falcon.
 # from: complex.fcn
-# on 2022 Aug 08 Mon 16:10:37
+# on 2022 Aug 09 Tue 10:34:50
 
 A = Reals2()
 B = Reals2()
@@ -22,7 +22,7 @@ lower = integers(lower=0, upper=100)
 upper = integers(lower=-100, upper=100)
 critical = CSVDomain('./tests/special-case.txt')
 
-def test_Complex_assertions_6k6():
+def test_Complex_assertions_eA9():
 
     print('hello1')
     assert Complex(1.0, 1.0) == Complex(1.0, 1.0)
@@ -80,7 +80,7 @@ def complex_binary():
         with pytest.raises(TypeError):
             assert property_closure_add(c1, c2)
 
-def test_object_Lt():
+def test_object_2Mgv():
     # Test the mathematical properties
 
     for c1, c2 in zip(C1, C2):
@@ -95,7 +95,7 @@ def test_object_Lt():
 
 CT = ComplexTestDomain()
 
-def test_satisfy_Complex_fj5():
+def test_satisfy_Complex_zIE():
 
     for r, i in CT:
 

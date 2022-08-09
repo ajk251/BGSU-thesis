@@ -6,6 +6,8 @@ def identity(n): return n
 ```
 
 Satisfy identity Ints:
+  | :no-suffix  :min 1
   | !(modof? 2)
   | modof? 2
+  | between 0 1
   ;

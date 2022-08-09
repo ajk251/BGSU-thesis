@@ -104,14 +104,14 @@ def is_strictly_sorted(sequence) -> bool:
 
 @predicate(alias=['descending?'])
 def descending(sequence) -> bool:
-    """Tests for decending order, ie 100, 99, 98, …, where i > j"""
-    return all((i > j for i, j in zip(sequence, sequence[1:])))
+    """Tests for decending order, ie 100, 99, 98, …, where i >= j"""
+    return all((i >= j for i, j in zip(sequence, sequence[1:])))
 
 
 @predicate(alias=['ascending?'])
 def ascending(sequence) -> bool:
-    """Tests for ascending order, ie 1, 2, 3 …, where i < j"""
-    return all((i < j for i, j in zip(sequence, sequence[1:])))
+    """Tests for ascending order, ie 1, 2, 3 …, where i <= j"""
+    return all((i <= j for i, j in zip(sequence, sequence[1:])))
 
 
 @predicate(alias=['all-unique?'])

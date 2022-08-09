@@ -892,6 +892,9 @@ count = 0
         # stmt = make_assert_stmt(stub, 'result', None, True)
         special_case = False
 
+        print(stub)
+        # print(make_assert_stmt(stub, fn_name, args=args, just_result=True, use_error_msg=False))
+
         # these are the exceptions to the rule:
         if stub['kind'] == 'predicate-fail-side-effect':
             e = 'Exception' if stub["error"] is None else stub['error']
@@ -905,7 +908,7 @@ count = 0
         else:
             stmt = make_assert_stmt(stub, fn_name, args=args, just_result=True, use_error_msg=use_error_msg)
 
-        if stub['kind'].startswith('predicate') and not special_case:
+        if (stub['kind'] == 'logical' or stub['kind'].startswith('predicate')) and not special_case:
 
             # this is cheating and bad form
             #remove the left
