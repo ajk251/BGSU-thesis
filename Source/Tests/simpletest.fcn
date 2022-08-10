@@ -11,3 +11,9 @@ Satisfy identity Ints:
   | modof? 2
   | between 0 1
   ;
+
+
+Test identity Ints:
+ | !(none?)
+ | !(none? && nan?)
+ ;

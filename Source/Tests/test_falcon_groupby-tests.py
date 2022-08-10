@@ -12,5 +12,42 @@ import pytest
 
 # This file was generated automatically by Falcon.
 # from: groupby-tests.fcn
-# on 2022 Aug 04 Thu 15:21:14
+# on 2022 Aug 10 Wed 18:01:53
 
+X = integers()
+
+def test_groupby_addg_aWYXJ():
+
+    results = defaultdict(list)
+    n_cases = defaultdict(int)
+
+    for xᵢ in X:
+
+        try:
+            result = addg(xᵢ)
+        except Exception as e:
+            result = e
+
+        if between(xᵢ):
+            assert is_a(result, float), "The value is not any of instances specified"
+            results['a'].append(result)
+            n_cases['a'] += 1
+        elif is_int(xᵢ):
+            results['b'].append(result)
+            n_cases['b'] += 1
+        elif is_positive(xᵢ):
+            assert is_odd(result), "Tests if a given number is odd"
+            results['c'].append(result)
+            n_cases['c'] += 1
+        elif gt(xᵢ):
+            assert is_inf(result, 1)
+            results['d'].append(result)
+            n_cases['d'] += 1
+        else:
+            raise FalconError('Failed to meet at least one group')
+
+    assert is_any(results['b'], int)
+    for group, n in n_cases.items():
+        assert n >= 1, f"'{group}' not meet the min number of examples"
+
+    plot_results(results)

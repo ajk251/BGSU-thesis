@@ -105,7 +105,7 @@ def add_imports(entry) -> str:
              'from Falcon.utilities.TestLogWriter import write_to_log',
              'from Falcon.utilities import FalconError\n',
              'from collections import defaultdict\n',
-             'import pytest']
+             'import pytest\n']
 
     for module, args in entry:
 
@@ -459,8 +459,6 @@ def make_boolean(entry, fn_sig='') -> str:
 
     for element in entry['values']:
 
-        print('element -> ', element)
-
         if element == '(':
             case.append('(')
             continue
@@ -475,8 +473,6 @@ def make_boolean(entry, fn_sig='') -> str:
             case.append(PREDICATES[element])
         elif isinstance(element, tuple): case[-1] += element                # ++ to the previous tuple
         else: case.append(element)
-
-    print(case)
 
     f1 = '{} {} {}'            # fn < 10
     f2 = '{}({})'              # pd(fn(…))

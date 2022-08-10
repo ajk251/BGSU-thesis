@@ -295,7 +295,21 @@ def basic_Assert(entry) -> str:
             warnings.warn(f"Predicate {predicate.name} was not defined.")
 
         # this is kind of a special case/after-thought
-        if predicate.is_symbolic:
+        if stub['kind'] == 'predicate-side-effect':
+            line = (indent * TAB) + f"assert {predicate.name}({stub['name']})"
+            lines.append(line)
+            continue
+        elif stub['kind'] == 'predicate-side-effect+':
+
+            if predicate.is_symbolic:
+                line = (indent * TAB) + f"assert {stub['name']} {predicate.symbol} {''.join(stub['values'])}"
+            else:
+                line = (indent * TAB) + f"assert {predicate.name}({stub['name']}, {', '.join(stub['values'])})"
+
+            lines.append(line)
+
+            continue
+        elif predicate.is_symbolic:
             args = make_args(stub['argument'])
             line = f"{indent * TAB}assert {fn_name}{args} {predicate.symbol} "
             line += f"{', '.join(s for s in stub['value'][1:] if s is not None)}" if len(stub['value']) > 1 else ')'
@@ -332,6 +346,9 @@ def basic_Assert(entry) -> str:
                 line = (indent * TAB) + (indent * TAB) + f"assert {predicate.name}({fn_name}, ({args}))"
             lines.append(line)
             continue
+
+
+        # print(stub)
 
         args = make_args(stub['argument'])
         fn = fn_name + args
@@ -472,8 +489,10 @@ except Exception as e:
         names = []                                  # the partition predicate can have more than one condition
 
         for s in stub:
+
             # just the predicates, no values
-            predicate, _ = get_predicate(s, False)
+            # predicate, _ = get_predicate(s, False)
+            predicate, values = get_predicate(s, False)
             text = f"{predicate.name}({labels})"
             names.append(text)
 
@@ -494,7 +513,6 @@ except Exception as e:
         if gpredicate.is_group and gvalues is not None:
             gline = f"{(indent-2) * TAB}assert {gpredicate.name}(results[{group}], {', '.join(gvalues)})"
             gline += make_group_predicate_error(group, gpredicate.error_message, gpredicate.name, use_error_msg and gpredicate.doc_error)
-
             agg_groups.append(gline)
         elif gpredicate.is_group:
             gline = f"{(indent-2) * TAB}assert {gpredicate.name}(results[{group}])"
@@ -555,6 +573,165 @@ except Exception as e:
         lines.append(line)
     elif followup and save_cases:
         line = f'\n{indent * TAB}{followup}(cases)'
+        lines.append(line)
+
+    lines.append('')
+
+    return '\n'.join(lines)
+
+
+def basic_Satisfy2(entry):
+
+    # at least 1 or more predicates must be true
+    indent: int = 0
+    directives = get_directives(entry, 'satisfy')
+
+    message = directives['message']
+    pyfunc = directives['pyfunc']
+    dvars = entry['domain']                                         # the domain names
+    labels = directives['labels']
+    algo = directives['algo']
+    params = directives['params']
+    fn_name = directives['fn_name']
+    use_error_msg = False  # directives['no-error-message'] # Must be False!
+    either = directives['either']
+
+    # these are for the log
+    use_log = directives['use-log']
+    log_name = directives['log-name']
+
+    # these are the minimum and maximum number of predicates that should be meet.
+    if entry['directives'].get(':min', False):
+        minimum = entry['directives'][':min']['value']
+    elif entry['directives'].get(':no-minimum', False):
+        minimum = None
+    else:
+        minimum = 1
+
+    if entry['directives'].get(':max', False):
+        maximum = entry['directives'][':max']['value']
+    else:
+        maximum = None
+
+    # write tests ------
+    lines = ['', pyfunc, '']
+    indent += 1
+
+    if message:
+        line = indent * TAB + '# ' + message.strip('"') + nl
+        lines.append(line)
+
+    # lines.append((indent * TAB + 'errors = []\n'))
+    if use_log:
+        lines.append((indent * TAB + 'oracles = defaultdict(list)\n'))
+
+    # build the for loop, naked/with custom iterator/generic & no parameters
+    if len(dvars) == 1:
+        template = indent * TAB + "for {} in {}:".format(', '.join(labels), dvars[0])
+    elif len(params) > 0:
+        template = indent * TAB + 'for {} in {}({}, {}):'.format(', '.join(labels), algo, ', '.join(dvars), ', '.join(params))
+    else:
+        template = indent * TAB + "for {} in {}({}):".format(', '.join(labels), algo, ', '.join(dvars))
+
+    lines.append(template)
+
+    args = ', '.join(labels)
+    fn_sig = '{}({})'.format(fn_name, args)
+
+    header = f"""
+try:
+    result = {fn_sig}
+except Exception as error:
+    result = error
+
+count = 0
+"""
+
+    # has_error = True    -> this was on the code, removing it...
+
+    # line = textwrap.indent(header.format(fn_sig), TAB * 2)
+    line = textwrap.indent(header, TAB * 2)
+    lines.append(line)
+
+    indent += 1
+
+    for stub in entry['stubs']:
+
+        # the actual test assertion
+        # stmt = make_assert_stmt(stub, 'result', None, True)
+        special_case = False
+
+        # print(make_assert_stmt(stub, fn_name, args=args, just_result=True, use_error_msg=False))
+
+        # these are the exceptions to the rule:
+        if stub['kind'] == 'predicate-fail-side-effect':
+            e = 'Exception' if stub["error"] is None else stub['error']
+            predicate, values = get_predicate(stub, False)
+            stmt = f'{indent * TAB}with pytest.raises({e}):\n' + f'{(indent + 1) * TAB}if {predicate.name}(result):\n'
+            stmt += f'{(indent + 2) * TAB}count += 1'
+            special_case = True
+        elif stub['kind'] == 'predicate-fail-side-effect+':
+            continue
+            special_case = True
+        else:
+            stmt = make_assert_stmt(stub, fn_name, args=args, just_result=True, use_error_msg=use_error_msg)
+
+        if (stub['kind'] == 'logical' or stub['kind'].startswith('predicate')) and not special_case:
+
+            # this is cheating and bad form
+            #remove the left
+            test = stmt.lstrip('assert').lstrip()           # otherwise a weird bug with result < 4 --> sult < 4
+
+            # remove the right, if needed
+            if stub['error-message'] is not None:
+                test = test.rstrip(', ' + stub['error-message'])
+
+            lines.append((indent * TAB) + 'if ' + test + ':')
+            lines.append(((indent+1) * TAB) + 'count += 1')
+
+            if use_log:
+                lines.append(((indent+1) * TAB) + f"oracles['{stub['predicate']}'].append((({', '.join(labels)}), repr(result)))")
+        elif stub['kind'] == 'code' or stub['kind'] == 'codeline':
+            line = '\n' + (indent * TAB) + stub['value'] + '\n'
+            lines.append(line)
+        elif special_case:
+            lines.append(stmt)
+
+    # finish    part of the has_error stuff
+    # line = '\n' + (indent * TAB) + 'if has_error:\n' + ((indent+1) * TAB) + 'errors.append((({}), result))'.format(', '.join(labels))
+    # lines.append(line)
+    # lines.append('')
+
+    # add an 'if not captured…'
+    if use_log:
+        line = '\n' + (indent * TAB) + 'if count == 0:\n' + ((indent+1) * TAB) + 'oracles["random-test"].append((({}), repr(result)))'.format(', '.join(labels))
+        lines.append(line)
+
+    lines.append('')
+
+    if either:
+        error = f"'Count must be 1 of {', '.join(either)}'"
+        line = (indent * TAB) + f'assert count in ({", ".join(either)}), {error}'
+        lines.append(line)
+        minimum, maximum = None, None
+
+    if minimum is not None:
+        line = (indent * TAB) + f'assert count >= {minimum}, f"The minimum number of predicates has not been met - met: {{count}}, min: {minimum}"'
+        lines.append(line)
+
+    if maximum is not None:
+        line = (indent * TAB) + f'assert count <= {maximum}, f"Exceed number of predicates met - met: {{count}}, max: {maximum}"'
+        lines.append(line)
+
+    # this doesn't work...
+    # line = (indent * TAB) + f'assert len(errors) == 0, f"Unaccounted for errors - {{len(errors)}} errors occurred"'
+    # lines.append(line)
+
+    indent -= 1         # out of the for-loop
+
+    if use_log:
+        logname = "./FalconTestLog.txt" if not log_name else log_name
+        line = '\n' + (indent * TAB) + f'write_to_log("{logname}", {{"name": {fn_name}, "predicates": oracles}})'
         lines.append(line)
 
     lines.append('')
@@ -805,166 +982,6 @@ except Exception as e:
         lines.append(line)
 
     indent -= 1
-
-    lines.append('')
-
-    return '\n'.join(lines)
-
-
-def basic_Satisfy2(entry):
-
-    # at least 1 or more predicates must be true
-    indent: int = 0
-    directives = get_directives(entry, 'satisfy')
-
-    message = directives['message']
-    pyfunc = directives['pyfunc']
-    dvars = entry['domain']                                         # the domain names
-    labels = directives['labels']
-    algo = directives['algo']
-    params = directives['params']
-    fn_name = directives['fn_name']
-    use_error_msg = False  # directives['no-error-message'] # Must be False!
-    either = directives['either']
-
-    # these are for the log
-    use_log = directives['use-log']
-    log_name = directives['log-name']
-
-    # these are the minimum and maximum number of predicates that should be meet.
-    if entry['directives'].get(':min', False):
-        minimum = entry['directives'][':min']['value']
-    elif entry['directives'].get(':no-minimum', False):
-        minimum = None
-    else:
-        minimum = 1
-
-    if entry['directives'].get(':max', False):
-        maximum = entry['directives'][':max']['value']
-    else:
-        maximum = None
-
-    # write tests ------
-    lines = ['', pyfunc, '']
-    indent += 1
-
-    if message:
-        line = indent * TAB + '# ' + message.strip('"') + nl
-        lines.append(line)
-
-    # lines.append((indent * TAB + 'errors = []\n'))
-    if use_log:
-        lines.append((indent * TAB + 'oracles = defaultdict(list)\n'))
-
-    # build the for loop, naked/with custom iterator/generic & no parameters
-    if len(dvars) == 1:
-        template = indent * TAB + "for {} in {}:".format(', '.join(labels), dvars[0])
-    elif len(params) > 0:
-        template = indent * TAB + 'for {} in {}({}, {}):'.format(', '.join(labels), algo, ', '.join(dvars), ', '.join(params))
-    else:
-        template = indent * TAB + "for {} in {}({}):".format(', '.join(labels), algo, ', '.join(dvars))
-
-    lines.append(template)
-
-    args = ', '.join(labels)
-    fn_sig = '{}({})'.format(fn_name, args)
-
-    header = f"""
-try:
-    result = {fn_sig}
-except Exception as error:
-    result = error
-
-count = 0
-"""
-
-    # has_error = True    -> this was on the code, removing it...
-
-    # line = textwrap.indent(header.format(fn_sig), TAB * 2)
-    line = textwrap.indent(header, TAB * 2)
-    lines.append(line)
-
-    indent += 1
-
-    for stub in entry['stubs']:
-
-        # the actual test assertion
-        # stmt = make_assert_stmt(stub, 'result', None, True)
-        special_case = False
-
-        print(stub)
-        # print(make_assert_stmt(stub, fn_name, args=args, just_result=True, use_error_msg=False))
-
-        # these are the exceptions to the rule:
-        if stub['kind'] == 'predicate-fail-side-effect':
-            e = 'Exception' if stub["error"] is None else stub['error']
-            predicate, values = get_predicate(stub, False)
-            stmt = f'{indent * TAB}with pytest.raises({e}):\n' + f'{(indent + 1) * TAB}if {predicate.name}(result):\n'
-            stmt += f'{(indent + 2) * TAB}count += 1'
-            special_case = True
-        elif stub['kind'] == 'predicate-fail-side-effect+':
-            continue
-            special_case = True
-        else:
-            stmt = make_assert_stmt(stub, fn_name, args=args, just_result=True, use_error_msg=use_error_msg)
-
-        if (stub['kind'] == 'logical' or stub['kind'].startswith('predicate')) and not special_case:
-
-            # this is cheating and bad form
-            #remove the left
-            test = stmt.lstrip('assert').lstrip()           # otherwise a weird bug with result < 4 --> sult < 4
-
-            # remove the right, if needed
-            if stub['error-message'] is not None:
-                test = test.rstrip(', ' + stub['error-message'])
-
-            lines.append((indent * TAB) + 'if ' + test + ':')
-            lines.append(((indent+1) * TAB) + 'count += 1')
-
-            if use_log:
-                lines.append(((indent+1) * TAB) + f"oracles['{stub['predicate']}'].append((({', '.join(labels)}), repr(result)))")
-        elif stub['kind'] == 'code' or stub['kind'] == 'codeline':
-            line = '\n' + (indent * TAB) + stub['value'] + '\n'
-            lines.append(line)
-        elif special_case:
-            lines.append(stmt)
-
-    # finish    part of the has_error stuff
-    # line = '\n' + (indent * TAB) + 'if has_error:\n' + ((indent+1) * TAB) + 'errors.append((({}), result))'.format(', '.join(labels))
-    # lines.append(line)
-    # lines.append('')
-
-    # add an 'if not captured…'
-    if use_log:
-        line = '\n' + (indent * TAB) + 'if count == 0:\n' + ((indent+1) * TAB) + 'oracles["random-test"].append((({}), repr(result)))'.format(', '.join(labels))
-        lines.append(line)
-
-    lines.append('')
-
-    if either:
-        error = f"'Count must be 1 of {', '.join(either)}'"
-        line = (indent * TAB) + f'assert count in ({", ".join(either)}), {error}'
-        lines.append(line)
-        minimum, maximum = None, None
-
-    if minimum is not None:
-        line = (indent * TAB) + f'assert count >= {minimum}, f"The minimum number of predicates has not been met - met: {{count}}, min: {minimum}"'
-        lines.append(line)
-
-    if maximum is not None:
-        line = (indent * TAB) + f'assert count <= {maximum}, f"Exceed number of predicates met - met: {{count}}, max: {maximum}"'
-        lines.append(line)
-
-    # this doesn't work...
-    # line = (indent * TAB) + f'assert len(errors) == 0, f"Unaccounted for errors - {{len(errors)}} errors occurred"'
-    # lines.append(line)
-
-    indent -= 1         # out of the for-loop
-
-    if use_log:
-        logname = "./FalconTestLog.txt" if not log_name else log_name
-        line = '\n' + (indent * TAB) + f'write_to_log("{logname}", {{"name": {fn_name}, "predicates": oracles}})'
-        lines.append(line)
 
     lines.append('')
 

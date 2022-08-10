@@ -10,6 +10,11 @@ import antlr4
 from Falcon.gen.FalconVisitor import FalconVisitor
 from Falcon.gen.FalconParser import FalconParser
 
+# TODO:
+#   change all 'value' to 'values'
+#   make 'kind'='predicate' & 'type'=…
+
+
 class Falcon(FalconVisitor):
 
     def __init__(self):
@@ -376,7 +381,9 @@ class Falcon(FalconVisitor):
                       FalconParser.Stub_assert_pContext,
                       FalconParser.Stub_assert_logicalContext,
                       FalconParser.Stub_assert_errorContext,
-                      FalconParser.Stub_codelineContext)
+                      FalconParser.Stub_codelineContext,
+                      FalconParser.Stub_side_effectContext,
+                      FalconParser.Stub_side_effect_manyContext)
 
         for stub in ctx.children:
 
