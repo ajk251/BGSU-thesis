@@ -478,11 +478,7 @@ except Exception as e:
     labels = ', '.join(labels)
 
     cond = 'if'         # rather than have if if, if elif, ...
-
     indent += 1
-
-    # TODO: fix predicate
-    # each stub: [{partition-predicate, test-predicate, <data>}, or more {}]
 
     for group, stub in groups:
 
@@ -490,17 +486,18 @@ except Exception as e:
 
         for s in stub:
 
-            # just the predicates, no values
-            # predicate, _ = get_predicate(s, False)
+            # get the predicate and any values & build
             predicate, values = get_predicate(s, False)
-            text = f"{predicate.name}({labels})"
-            names.append(text)
 
-        if len(names) > 1:
-            line = f"{indent * TAB}{cond} {' or '.join(names)}:"
-        else:
-            line = f"{indent * TAB}{cond} {predicate.name}({labels}):"
+            if values is None:
+                name = f"{predicate.name}({labels})"
+            else:
+                # print(predicate.name, ' labels: ', labels)
+                name = f"{predicate.name}({labels}, {', '.join(values)})"
 
+            names.append(name)
+
+        line = f"{indent * TAB}{cond} {' or '.join(names)}:"
         lines.append(line)
 
         cond = 'elif'
@@ -508,6 +505,8 @@ except Exception as e:
         # the sub-parts --> test predicate
         gpredicate, gvalues = get_predicate(stub[0], True)
         indent += 1
+
+        print('gpredicate: ', gpredicate.name, gpredicate.is_group, gvalues)
 
         # the first two go at the end
         if gpredicate.is_group and gvalues is not None:
@@ -533,10 +532,8 @@ except Exception as e:
             line = f"{indent * TAB}assert {gpredicate.name}(result)"
             line += make_group_predicate_error(group, gpredicate.error_message, gpredicate.name, use_error_msg)
             lines.append(line)
-        # else:
-        # # elif gvalues is None and not gpredicate.is_group:
-        #     print(gvalues, gpredicate.name, gpredicate.is_group)
-        #     print('***SHOULD NOT BE HERE***')
+        else:
+            print(gpredicate.name)
 
         # save if necessary
         if save_cases:
@@ -559,7 +556,7 @@ except Exception as e:
     lines.extend(agg_groups)
 
     # must have a minimum number of test cases
-    line = f'{TAB}for group, n in n_cases.items():\n{(indent+0) * TAB}assert n >= {min_cases}, f"\'{{group}}\' not meet the min number of examples"'
+    line = f'\n{TAB}for group, n in n_cases.items():\n{(indent+0) * TAB}assert n >= {min_cases}, f"\'{{group}}\' not meet the min number of examples"'
     lines.append(line)
 
     indent -= 1

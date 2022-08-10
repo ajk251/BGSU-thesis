@@ -10,13 +10,14 @@ from collections import defaultdict
 
 import pytest
 
+
 # This file was generated automatically by Falcon.
 # from: groupby-tests.fcn
-# on 2022 Aug 10 Wed 18:01:53
+# on 2022 Aug 10 Wed 19:30:40
 
 X = integers()
 
-def test_groupby_addg_aWYXJ():
+def test_groupby_addg_Uffte():
 
     results = defaultdict(list)
     n_cases = defaultdict(int)
@@ -28,7 +29,7 @@ def test_groupby_addg_aWYXJ():
         except Exception as e:
             result = e
 
-        if between(xᵢ):
+        if between(xᵢ, 0, 1) or is_outside(xᵢ, -1, 1):
             assert is_a(result, float), "The value is not any of instances specified"
             results['a'].append(result)
             n_cases['a'] += 1
@@ -39,14 +40,15 @@ def test_groupby_addg_aWYXJ():
             assert is_odd(result), "Tests if a given number is odd"
             results['c'].append(result)
             n_cases['c'] += 1
-        elif gt(xᵢ):
-            assert is_inf(result, 1)
+        elif gt(xᵢ, 1):
+            assert is_inf(result), "Group 'd' predicate 'is_inf' has failed"
             results['d'].append(result)
             n_cases['d'] += 1
         else:
             raise FalconError('Failed to meet at least one group')
 
     assert is_any(results['b'], int)
+
     for group, n in n_cases.items():
         assert n >= 1, f"'{group}' not meet the min number of examples"
 

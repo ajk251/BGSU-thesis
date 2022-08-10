@@ -415,24 +415,26 @@ def get_predicate(stub, by_group=False): # -> Tuple[Predicate, List]:
     # is the predicate defined?
     if not by_group and PREDICATES.get(stub['predicate'], False): #stub.get('predicate', False):
         predicate = PREDICATES[stub['predicate']]
+    elif not by_group:
+        predicate = Predicate(stub['predicate'], None, False, False, False, False)
+        warnings.warn(f"Predicate '{predicate.name}' was not defined.")
     elif by_group and PREDICATES.get(stub['group-predicate'], False):
         predicate = PREDICATES[stub['group-predicate']]
     elif by_group:
         predicate = Predicate(stub['group-predicate'], None, False, False, False, False)
         warnings.warn(f"Predicate '{predicate.name}' was not defined.")
-    elif not by_group:
-        predicate = Predicate(stub['predicate'], None, False, False, False, False)
-        warnings.warn(f"Predicate '{predicate.name}' was not defined.")
 
     # get the values associated with it
-    if stub.get('group-values', False):
-        values = stub['group-values']
-    elif stub.get('groupby-many-with-group', False):
-        values = stub['groupby-many-with-group']
-    elif stub.get('value', False):
-        values = stub['value']
-    elif stub.get('values', False):
-        values = stub['values']
+    if by_group:
+        if stub.get('group-values', False):
+            values = stub['group-values']
+        elif stub.get('groupby-many-with-group', False):
+            values = stub['groupby-many-with-group']
+    else:
+        if stub.get('value', False):
+            values = stub['value']
+        elif stub.get('values', False):
+            values = stub['values']
 
     # values
     # if not by_group:

@@ -4,6 +4,7 @@ Domain X Integers
 Groupby addg X:
   | :follow-up plot_results
   | 'a' between? 0 1 : is-a? float
+  | 'a' outside? -1 1 : _
   | 'b' is-int? : any? int
   | 'c' positive? : is-odd?
   | 'd' gt? 1 : is-inf?
