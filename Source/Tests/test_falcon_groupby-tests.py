@@ -13,11 +13,11 @@ import pytest
 
 # This file was generated automatically by Falcon.
 # from: groupby-tests.fcn
-# on 2022 Aug 10 Wed 19:30:40
+# on 2022 Aug 25 Thu 15:40:01
 
 X = integers()
 
-def test_groupby_addg_Uffte():
+def test_groupby_addg_ZYVFJ():
 
     results = defaultdict(list)
     n_cases = defaultdict(int)
@@ -29,6 +29,7 @@ def test_groupby_addg_Uffte():
         except Exception as e:
             result = e
 
+        print('hello world')
         if between(xᵢ, 0, 1) or is_outside(xᵢ, -1, 1):
             assert is_a(result, float), "The value is not any of instances specified"
             results['a'].append(result)

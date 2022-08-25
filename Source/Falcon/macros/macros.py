@@ -2,15 +2,14 @@
 MACROS = {}
 
 
-def macro(_fn=None, *, alias=None):
+def macro(_fn=None, *, name=None):
 
     def func(fn):
 
-        if isinstance(alias, (tuple, list)):
-            for name in alias:
-                MACROS[name] = (fn, fn.__name__)
-        elif alias:
-            MACROS[alias] = (fn, fn.__name__)
+        if isinstance(name, (str)):
+            MACROS[name] = (fn, fn.__name__)
+
+        # TODO: add error or something
 
         return fn
 

@@ -1,0 +1,16 @@
+
+[all!]
+    homogenize all the names!
+        * properties
+        * fixtures
+
+[predicate]
+    the on_fail_false -> return Enum of (true, false, error)
+
+[domain]
+    add a 'arity' option that defines a default arity
+    add a labels option that defines default labels
+
+[falcon.py ast]
+    homogenize all the return dicts
+

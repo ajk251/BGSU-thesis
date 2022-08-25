@@ -99,7 +99,7 @@ def make_global(entry) -> str:
     else:
         desc = None
 
-    # adds a SUT for coverage.py
+    # adds a SUT for coverage.py (it is optionally called by falcon.py)
     if entry['directives'].get(':sut', False):
         SUT = to_list(entry['directives'][':sut'][0])
     elif entry['directives'].get(':coverage', False):
@@ -140,6 +140,9 @@ def make_global(entry) -> str:
             elif entry['tests'][value]['kind'] == 'macro':
                 line = basic_macros(entry['tests'][value])
                 lines.append(line)
+            elif entry['tests'][value]['kind'] == 'partition-test':
+                line = basic_partition(entry['tests'][value])
+                lines.append(line)
 
     return '\n'.join(lines)
 
@@ -148,13 +151,14 @@ def make_global(entry) -> str:
 def basic_macros(entry) -> str:
 
     name = entry['name']
+    lines = []
 
     if MACROS.get(name, False):
         lines = MACROS[name][0](entry)
     else:
         raise FalconError(f'{name} is not a Falcon function or macro')
 
-    return '\n'.join(lines)
+    return lines
 
 
 def basic_Test(entry) -> str:
@@ -309,6 +313,12 @@ def basic_Assert(entry) -> str:
             lines.append(line)
 
             continue
+        elif stub['kind'] == 'assert-logical':
+            # logical conditions
+            args = make_args(stub['argument']).strip('(').strip(')')
+            line = (indent * TAB) + make_assert_stmt(stub, fn_name, args)
+            lines.append(line)
+            continue
         elif predicate.is_symbolic:
             args = make_args(stub['argument'])
             line = f"{indent * TAB}assert {fn_name}{args} {predicate.symbol} "
@@ -318,12 +328,6 @@ def basic_Assert(entry) -> str:
             # line = f"{indent * TAB}assert {predicate.name}({fn_name}{args}"
             # line += f", {', '.join(s for s in stub['value'][1:] if s is not None)})" if len(stub['value']) > 1 else ')'
             # line += f", {stub['error-message']}" if 'error-message' in stub and stub['error-message'] is not None else ''
-            lines.append(line)
-            continue
-        elif stub['kind'] == 'assert-logical':
-            # logical conditions
-            args = make_args(stub['argument']).strip('(').strip(')')
-            line = (indent * TAB) + make_assert_stmt(stub, fn_name, args)
             lines.append(line)
             continue
         elif stub['kind'] == 'assert-error':
@@ -470,7 +474,16 @@ except Exception as e:
     # groupby on all groups
     groups = defaultdict(list)
 
+    code_n = 0                      # this is to keep track of code statements
+
     for stub in entry['stubs']:
+
+        if stub['kind'] == 'code':                      # a special, atypical case
+            name = '_____code_____' + str(code_n)
+            code_n += 1
+            groups[name].append(stub)
+            continue
+
         groups[stub['group']].append(stub)
 
     groups = tuple(groups.items())      # flatten
@@ -481,6 +494,11 @@ except Exception as e:
     indent += 1
 
     for group, stub in groups:
+
+        if group.startswith('_____code_____'):
+            line = (indent * TAB) + stub[0]['values']
+            lines.append(line)
+            continue
 
         names = []                                  # the partition predicate can have more than one condition
 
@@ -506,8 +524,6 @@ except Exception as e:
         gpredicate, gvalues = get_predicate(stub[0], True)
         indent += 1
 
-        print('gpredicate: ', gpredicate.name, gpredicate.is_group, gvalues)
-
         # the first two go at the end
         if gpredicate.is_group and gvalues is not None:
             gline = f"{(indent-2) * TAB}assert {gpredicate.name}(results[{group}], {', '.join(gvalues)})"
@@ -532,8 +548,6 @@ except Exception as e:
             line = f"{indent * TAB}assert {gpredicate.name}(result)"
             line += make_group_predicate_error(group, gpredicate.error_message, gpredicate.name, use_error_msg)
             lines.append(line)
-        else:
-            print(gpredicate.name)
 
         # save if necessary
         if save_cases:
@@ -694,11 +708,6 @@ count = 0
         elif special_case:
             lines.append(stmt)
 
-    # finish    part of the has_error stuff
-    # line = '\n' + (indent * TAB) + 'if has_error:\n' + ((indent+1) * TAB) + 'errors.append((({}), result))'.format(', '.join(labels))
-    # lines.append(line)
-    # lines.append('')
-
     # add an 'if not captured…'
     if use_log:
         line = '\n' + (indent * TAB) + 'if count == 0:\n' + ((indent+1) * TAB) + 'oracles["random-test"].append((({}), repr(result)))'.format(', '.join(labels))
@@ -734,6 +743,14 @@ count = 0
     lines.append('')
 
     return '\n'.join(lines)
+
+
+def basic_partition(entry):
+
+    print('at partition!')
+    print(entry)
+
+    return 'BOOM'
 
 
 def basic_Winnow(entry) -> str:

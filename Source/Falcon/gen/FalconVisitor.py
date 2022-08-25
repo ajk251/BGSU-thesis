@@ -124,6 +124,11 @@ class FalconVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by FalconParser#stub_partition.
+    def visitStub_partition(self, ctx:FalconParser.Stub_partitionContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by FalconParser#stub_logic.
     def visitStub_logic(self, ctx:FalconParser.Stub_logicContext):
         return self.visitChildren(ctx)

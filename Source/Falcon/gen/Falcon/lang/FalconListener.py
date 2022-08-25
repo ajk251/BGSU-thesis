@@ -332,6 +332,42 @@ class FalconListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by FalconParser#test_partition.
+    def enterTest_partition(self, ctx:FalconParser.Test_partitionContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#test_partition.
+    def exitTest_partition(self, ctx:FalconParser.Test_partitionContext):
+        pass
+
+
+    # Enter a parse tree produced by FalconParser#test_partition_stub.
+    def enterTest_partition_stub(self, ctx:FalconParser.Test_partition_stubContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#test_partition_stub.
+    def exitTest_partition_stub(self, ctx:FalconParser.Test_partition_stubContext):
+        pass
+
+
+    # Enter a parse tree produced by FalconParser#partition_code.
+    def enterPartition_code(self, ctx:FalconParser.Partition_codeContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#partition_code.
+    def exitPartition_code(self, ctx:FalconParser.Partition_codeContext):
+        pass
+
+
+    # Enter a parse tree produced by FalconParser#partition_directives.
+    def enterPartition_directives(self, ctx:FalconParser.Partition_directivesContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#partition_directives.
+    def exitPartition_directives(self, ctx:FalconParser.Partition_directivesContext):
+        pass
+
+
     # Enter a parse tree produced by FalconParser#make_domain.
     def enterMake_domain(self, ctx:FalconParser.Make_domainContext):
         pass

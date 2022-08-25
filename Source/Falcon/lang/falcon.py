@@ -14,7 +14,6 @@ from Falcon.gen.FalconParser import FalconParser
 #   change all 'value' to 'values'
 #   make 'kind'='predicate' & 'type'=…
 
-
 class Falcon(FalconVisitor):
 
     def __init__(self):
@@ -339,6 +338,7 @@ class Falcon(FalconVisitor):
         test['stubs'] = []
 
         okay_stubs = (FalconParser.Stub_pvContext,
+                      FalconParser.Stub_partitionContext,
                       FalconParser.Stub_pContext,
                       FalconParser.Stub_many_pvContext,
                       FalconParser.Stub_codeContext,
@@ -454,6 +454,30 @@ class Falcon(FalconVisitor):
 
         self.ns[self.current_ns]['tests'][test['id']] = test
         self.ns[self.current_ns]['ordering'].append(('test', test['id']))
+
+    # def visitTest_partition(self, ctx: FalconParser.Test_partitionContext):
+    #
+    #     test = {'kind': 'partition-test'}
+    #     test['function'] = self.visit(ctx.name())
+    #     test['domain'] = self.visit(ctx.domain_names())
+    #     test['id'] = self.get_id()
+    #     test['directives'] = {}
+    #     test['stubs'] = []
+    #
+    #     for child in ctx.children:
+    #
+    #         if isinstance(child, FalconParser.Test_partition_stubContext):
+    #             test['stubs'].append(self.visit(child))
+    #         elif isinstance(child, FalconParser.Partition_codeContext):
+    #             code = self.visit(child)
+    #             test['stubs'].append(code)
+    #         # elif isinstance(child, FalconParser.Partition_directivesContext):
+    #         #     ds = self.visit(child)
+    #         #     for d in ds:
+    #         #         test['directives'][d['directive']] = {'value': d['value'], 'params': d['params']}
+    #
+    #     self.ns[self.current_ns]['tests'][test['id']] = test
+    #     self.ns[self.current_ns]['ordering'].append(('test', test['id']))
 
     def visitTest_satisfy(self, ctx: FalconParser.Test_satisfyContext):
 
@@ -582,8 +606,8 @@ class Falcon(FalconVisitor):
 
     # def visitWinnow_code(self, ctx: FalconParser.Winnow_codeContext):
     def visitGroupby_code(self, ctx: FalconParser.Groupby_codeContext):
-        # TODO: This!
-        return self.visit(ctx.CODESMNT())
+        # return self.visit(ctx.CODESMNT())
+        return {'kind': 'code', 'values': ctx.CODESMNT().getText().strip('`')}
 
     # def visitWinnow_directives(self, ctx: FalconParser.Winnow_directivesContext):
     def visitGroupby_directives(self, ctx: FalconParser.Groupby_directivesContext):
@@ -678,6 +702,44 @@ class Falcon(FalconVisitor):
                 directives.append(d)
 
         return directives
+
+    # partition --------
+
+    # def visitTest_partition_stub(self, ctx: FalconParser.Test_partition_stubContext):
+    def visitStub_partition(self, ctx: FalconParser.Stub_partitionContext):
+
+        stub = {'kind': 'predicate-partition'}
+        stub['predicate'] = self.visit(ctx.predicate(0))
+        stub['test-predicate'] = self.visit(ctx.predicate(1))
+        stub['values'] = []
+        stub['test-values'] = []
+
+        i = 1
+
+        # get the first predicate values, if any
+        for child in ctx.children[i+1:]:
+            value = self.visit(child)
+            if value is None:
+                i += 1
+                break                               #  --> this is the ':' separator <--
+            stub['values'].append(value)
+            i += 1
+
+        # child = ctx.children[i+1]
+        # stub['test-values'].append(self.visit(child))
+
+        for child in ctx.children[i+2:]:
+            # print('group-values ￫ ', self.visit(child))
+            stub['test-values'].append(self.visit(child))
+
+        return stub
+
+    # def visitPartition_code(self, ctx: FalconParser.Partition_codeContext):
+    #
+    #     stub = {'kind': 'code'}
+    #     stub['value'] = ctx.CODESMNT().getText().strip('`')
+    #
+    #     return stub
 
     # test/assert ------
 

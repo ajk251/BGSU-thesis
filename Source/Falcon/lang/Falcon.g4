@@ -3,6 +3,11 @@
 //      for unicode:
 //      https://github.com/antlr/grammars-v4/blob/master/python/python3/Python3Lexer.g4
 
+// In the future:
+//      have: predicate: ID
+//                       ID arg
+//                       ID arg+
+
 grammar Falcon;
 
 block: namespace+
@@ -17,6 +22,7 @@ stmt: test
     | groupby_test
     | winnow_test
     | satisfy_test
+//    | partition_test
     | macro
     | domain
     | compiler
@@ -56,6 +62,7 @@ test_stub: BAR code                                                 #stub_codeli
          | ABAR value predicate ('~~' STRING)?                      #stub_side_effect
          | EBAR value? predicate ('~~' STRING)?                     #stub_fail_side_effect
          | EBAR value? predicate (value)+ ('~~' STRING)?            #stub_fail_side_effect_many
+         | BAR predicate value* ':' predicate value*                #stub_partition
          ;
 
 test_logical: OP_NOT? predicate value* (OP_LOGICAL OP_NOT? predicate value*)* #stub_logic
@@ -84,6 +91,14 @@ bin_stub: BAR value predicate                                       #groupby_stu
 winnow_stub: BAR value predicate value* ':' predicate value*        #winnow_stub_many_many
            | BAR compiler*                                          #winnow_stub_directives
            ;
+
+//partition_test: PARTITION name domain_names ':' partition_stub+ ';'     #test_partition
+//              ;
+//
+//partition_stub: BAR predicate value* ':' predicate value*               #test_partition_stub
+//              | BAR CODESMNT                                            #partition_code
+//              | BAR compiler*                                           #partition_directives
+//              ;
 
 // Domain stuff -------------------------------------------
 
@@ -130,7 +145,7 @@ name: ID                                                            // must be a
 
 predicate: name
          | CODESMNT
-         | OP_NOT
+//         | OP_NOT
          | OP_EQ
          | OP_NE
          | UMATH
@@ -166,8 +181,9 @@ dictate: name
 TEST:   'Test';
 ASSERT: 'Assert';
 WINNOW: 'Winnow'; // | 'Groupby';
-GROUPBY: 'Groupby';
+GROUPBY: 'Groupby' ;
 SATISFY: 'Satisfy';
+//PARTITION: 'Partition';
 
 LPAREN: '(';
 RPAREN: ')';

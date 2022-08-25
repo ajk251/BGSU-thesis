@@ -32,6 +32,8 @@ def is_error_and_says(fn, args, error_type, message) -> bool:
     contained in the error message.
     """
 
+    is_error = False
+
     try:
         result = fn(*args)
     except Exception as err:
@@ -41,10 +43,10 @@ def is_error_and_says(fn, args, error_type, message) -> bool:
     if not is_error:
         return False
 
-    outcome = isinstance(result, error_type) and message in result.args[0]
+    # outcome = isinstance(result, error_type) and message in result.args[0]
     # result &= result.args[0] == message or message in result.args[0]
 
-    return outcome
+    return isinstance(result, error_type) and message in result.args[0]
 
 
 @predicate(alias=['error?'], is_error=True)

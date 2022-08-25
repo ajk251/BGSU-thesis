@@ -34,14 +34,14 @@ def cartesian_product(*args):
     return product(*args)
 
 
-@algorithm(alias=['all-pairs', 'all_pairs'])
+@algorithm(alias=['all-pairs'])
 def all_pairs(*sequences):
     """Generate all pairs from the sequences."""
     # source: https://www.geeksforgeeks.org/python-all-pair-combinations-of-2-tuples/
     return chain(product(*sequences), product(*sequences))
 
 
-@algorithm(alias=['all-triplets', 'all_triplets'])
+@algorithm(alias=['all-triplets'])
 def all_triplets(*sequences):
     """Generates all triplets from the sequences"""
     # source: https://www.geeksforgeeks.org/python-all-pair-combinations-of-2-tuples/
@@ -97,19 +97,19 @@ def twise_combination(*sequences, tway: int = 3):
 
 # these take one list, then build the combinations --------
 
-@algorithm(alias=['all-pairs-of', 'all_pairs_of'])
+@algorithm(alias=['all-pairs-of', 'pairs-of'])
 def all_pairs_of(sequence, n: int = 3):
     """Build n-copies of a sequence and generate all pairs."""
     return all_pairs(*(sequence for _ in range(n)))
 
 
-@algorithm(alias=['all-triplets-of', 'all_triplets_of'])
+@algorithm(alias=['all-triplets-of', 'triplets-of'])
 def all_triplets_of(sequence, n: int = 3):
     """Builds n-copies of a sequence and generates all triplets"""
     return all_triplets(*(sequence for _ in range(n)))
 
 
-@algorithm(alias=['combs-of', 'all-combinations-of', 'all-orderings-of'])
+@algorithm(alias=['combs-of', 'combinations-of', 'all-orderings-of'])
 def combinations_of(sequence: Iterable, n: int = 3):
     """Builds the cartesian product of n copies of a sequence"""
     return product(*(sequence for _ in range(n)))

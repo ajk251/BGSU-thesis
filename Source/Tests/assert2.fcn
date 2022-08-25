@@ -3,15 +3,6 @@
 :import ComplexPredicates -all
 
 Assert Complex:
-  | (nan, 1.0) raises? AssertionError
-  | (inf,inf) error-and-says? Exception "Value must be a float"
-  |> `x = Complex(1.0, 1.0)`
-  |> x int?
-  |> x between? 1.0 10.0
-  |> x < 10
-  ;
-
-Assert Complex:
   | (1.0, 1.0) = `Complex(1.0, 1.0)`
   | (1, 1) = `Complex(1.0, 1.0)` ~~ "This should never fail"
   | (10.0, 10.0) < `Complex(20.0, 20.0)`
@@ -24,4 +15,13 @@ Assert Complex:
   |! (nan, inf) between? -1 1
   |! TypeError (nan, inf) between? -1 1
   | (2,2) = `Complex(2.0, 2.0)` ~~ "This should never fail"
+  ;
+
+Assert Complex:
+  | (nan, 1.0) raises? AssertionError
+  | (inf,inf) error-and-says? Exception "Value must be a float"
+  |> `x = Complex(1.0, 1.0)`
+  |> x int?
+  |> x between? 1.0 10.0
+  |> x > 10
   ;

@@ -215,6 +215,15 @@ class FalconListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by FalconParser#stub_partition.
+    def enterStub_partition(self, ctx:FalconParser.Stub_partitionContext):
+        pass
+
+    # Exit a parse tree produced by FalconParser#stub_partition.
+    def exitStub_partition(self, ctx:FalconParser.Stub_partitionContext):
+        pass
+
+
     # Enter a parse tree produced by FalconParser#stub_logic.
     def enterStub_logic(self, ctx:FalconParser.Stub_logicContext):
         pass

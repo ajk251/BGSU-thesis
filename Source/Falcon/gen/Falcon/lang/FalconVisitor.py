@@ -189,6 +189,26 @@ class FalconVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by FalconParser#test_partition.
+    def visitTest_partition(self, ctx:FalconParser.Test_partitionContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#test_partition_stub.
+    def visitTest_partition_stub(self, ctx:FalconParser.Test_partition_stubContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#partition_code.
+    def visitPartition_code(self, ctx:FalconParser.Partition_codeContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FalconParser#partition_directives.
+    def visitPartition_directives(self, ctx:FalconParser.Partition_directivesContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by FalconParser#make_domain.
     def visitMake_domain(self, ctx:FalconParser.Make_domainContext):
         return self.visitChildren(ctx)

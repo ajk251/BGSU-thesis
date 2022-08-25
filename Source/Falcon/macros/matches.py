@@ -2,11 +2,11 @@
 from Falcon.macros import macro
 
 
-@macro(alias=['Matches'])
+@macro(name='Matches')
 def matches(entry):
     return ['# not implemented yet']
 
 
-@macro(alias=['Cases'])
+@macro(name='Cases')
 def case_enumerate(entry):
     return ['# not implemented yet']

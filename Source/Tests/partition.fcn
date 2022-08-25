@@ -1,0 +1,32 @@
+
+Test sut X Y:
+ | !(is? float && nan?)
+ | ¬(is? float and nan?)
+ | (is? float ∧ nan?)
+ ;
+
+//Assert sut:
+// | (a b) is? int
+// ;
+
+Assert Complex:
+  | (nan, 1.0) not (raises? AssertionError)
+  | (inf, inf) not (error-and-says? Exception "Value must be a float")
+  |> `x = Complex(1.0, 1.0)`
+  |> x int?
+  |> x between? 1.0 10.0
+  |> x < 10
+  ;
+
+Partition sut Ints:
+  | :message 'hello world'
+  | `print()`
+  | even? : between? 0 1
+  | is? : odd?
+  ;
+
+Partition fn X:
+  | is? a b   : even? c d
+  | isnt? e f : odd? g h
+  | but?      : foo? i
+  ;
