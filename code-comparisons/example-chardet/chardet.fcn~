@@ -1,0 +1,22 @@
+
+:import chardet-falcon -all
+
+Domain text RandomEncodings
+
+Groupby _ text:
+  | :label case
+  | `detected = chardet.detect(case)`
+  | 'encoding&language' encoding-lang? : both-right?
+  | 'ballpark&language' ballpark-lang? : close?
+  | 'encoding'          encoding?      : encoding-right?
+  | 'ballpark'          close?         : encoding-close?
+  | 'neither'           neither?       : has-neither?
+  ;
+
+Satisfy _ text:
+  | both-right?
+  | both-close?
+  | encoding?
+  | ballpark?
+  | neither?
+  ;
