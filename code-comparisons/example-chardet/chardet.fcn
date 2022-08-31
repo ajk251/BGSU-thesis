@@ -1,11 +1,10 @@
 
-:import chardet-falcon -all
+:import chardet_falcon -all
 
 Domain Text RandomEncodings
 
-Satisfy _ Text:
-  | :label [case]
-  | `detected = chardet.detect(case)`
+Satisfy detect_from_example Text:
+  | :labels [case]
   | neither-detected?
   | both-right?
   | both-close?
@@ -14,4 +13,18 @@ Satisfy _ Text:
   | language?
   | both-wrong?
   | either-wrong?
+  | raises? TypeError
+  ;
+  
+
+Domain Files TestFiles
+
+Satisfy detect_from_filename Files:
+  | :labels [case]
+  | has-neither?
+  | expected-failure?
+  | has-both-right?
+  | has-encoding-right?	
+  | has-language-right?
+  | has-both-wrong?
   ;

@@ -1,22 +1,30 @@
 
-:import chardet-falcon -all
+:import chardet_falcon -all
 
-Domain text RandomEncodings
+Domain Text RandomEncodings
 
-Groupby _ text:
-  | :label case
-  | `detected = chardet.detect(case)`
-  | 'encoding&language' encoding-lang? : both-right?
-  | 'ballpark&language' ballpark-lang? : close?
-  | 'encoding'          encoding?      : encoding-right?
-  | 'ballpark'          close?         : encoding-close?
-  | 'neither'           neither?       : has-neither?
-  ;
-
-Satisfy _ text:
+Satisfy detect_from_example Text:
+  | :labels [case]
+  | neither-detected?
   | both-right?
   | both-close?
   | encoding?
   | ballpark?
-  | neither?
+  | language?
+  | both-wrong?
+  | either-wrong?
+  | raises? TypeError
+  ;
+  
+
+Domain Files TestFiles
+
+Satisfy detect_from_filename Files:
+  | :labels [case]
+  | has-neither?
+  | expected-failure?
+  | has-both-right?
+  | has-encoding?	
+  | has-language?
+  | has-both-wrong?
   ;
