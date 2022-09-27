@@ -23,6 +23,7 @@ Satisfy detect_from_filename Files:
   | :labels [case]
   | has-neither?
   | expected-failure?
+  | agrees?
   | has-both-right?
   | has-encoding-right?	
   | has-language-right?

@@ -195,7 +195,8 @@ def get_encodings():
             # iconv stuff
             try:
                 s = iconv.open(e, 'utf-16')
-                result = s.iconv(bytearray(sample.translated, encoding='utf-16'))
+                # result = s.iconv(bytearray(sample.translated, encoding='utf-16'))
+                result = bytearray(sample.translated, encoding='utf-16')
             except ValueError as error:
                 # this is iconv not recognizing the encoding (either 'in' or 'out')
                 # warnings.warn(f"Encoding {e} not supported. [Language {name}]")
@@ -213,7 +214,8 @@ def detect_from_example(case):
     """A wrapper around chardet.detect. Returns dict of the chardet response and test-case meta data"""
     
     result = chardet.detect(case.encoded)
-    return {**result, 'test-case': case}
+    result_all = chardet.detect_all(input)[0]
+    return {**result, 'test-case': case, 'agrees': result == result_all}
 
 
 def detect_from_filename(domain):
@@ -224,21 +226,18 @@ def detect_from_filename(domain):
 
         input = f.read()
         result = chardet.detect(input)
+        result_all = chardet.detect_all(input)[0]
 
         outcome = {**result, 'file': file, 'expected-encoding': encoding,
-                  'expected-lang': language, 'filename': filename}
+                  'expected-lang': language, 'filename': filename, 'agrees': result == result_all}
 
     return outcome
 
 # predicates ------------------------------------
-# test that the encoded matches expected
 
-
-# e l
-# e 
-# l
-# no e
-# no e ∨ l
+@predicate(alias=['agrees?'])
+def both_detects_agree(outcome) -> bool:
+    return outcome['agree']
 
 @predicate(alias=['has-both-right?'])
 def encoding_and_language(outcome) -> bool:
@@ -289,10 +288,7 @@ def both_wrong(outcome):
            outcome['language'].lower() != outcome['expected-lang']
 
 
-
 # for the random encodings ----------------------
-
-
 # helper functions ---------------
 
 def _ballpark(outcome) -> bool:
@@ -376,59 +372,3 @@ def is_both_wrong(outcome) -> bool:
 @predicate(alias=['either-wrong?'])
 def is_either_wrong(outcome):
     return not _encoding(outcome) or not _language(outcome)
-
-
-# temp tests ====================================
-
-# for example in get_test_docs():
-
-#     print(example)
-
-#     outcome = detect_from_filename(*example)
-
-#     if encoding_and_language(outcome):
-#         print('e & l', end=' ')
-#     elif encoding_detection(outcome):
-#         print('e', end=' ')
-#     elif detected_language(outcome):
-#         print('l', end=' ')
-#     elif both_missing(outcome):
-#         print('! both')
-#     elif expected_failure(outcome):
-#         print('EXPECTED')
-#     elif both_wrong(outcome):
-#         print('wrong!')
-#     else:
-#         print('_', end=' ')
-
-#     print(outcome['encoding'], outcome['language'], outcome['expected-encoding'], outcome['expected-lang'])
-
-# for case in get_encodings():
-    # print(case.translated)
-
-# for case in get_encodings():
-
-#     result = detect(case)
-#     print(result['encoding'], result['language'])
-    
-#     if is_encoding_and_language_correct(result): 
-#         print('e & l: ' )
-#     elif in_ballpark_and_language_correct(result):
-#         print('b & l: ' )
-#     elif is_encoding_correct(result):
-#         print('e:  ', )
-#     elif is_ballpark(result):
-#         print('b: ', )
-#     elif is_just_language(result):
-#         print('just lang')
-#     elif is_both_wrong(result):
-#         print('both wrong!')
-#     elif is_either_wrong(result):
-#         # print('either')
-#         print('EITHER ', case.name, case.encoding, result['encoding'], result['language'])
-#     elif is_neither(result):
-#         print('n: ', )
-#     else:
-#         raise ZeroDivisionError('You cant do that!')
-#         print('whoops! ', case.name, case.encoding, result['encoding'], result['language'])
-    
