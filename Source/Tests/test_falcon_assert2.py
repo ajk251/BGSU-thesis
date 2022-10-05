@@ -15,10 +15,10 @@ from ComplexPredicates import *
 
 # This file was generated automatically by Falcon.
 # from: assert2.fcn
-# on 2022 Aug 25 Thu 13:43:54
+# on 2022 Aug 29 Mon 14:30:50
 
 
-def test_Complex_assertions_cNm():
+def test_Complex_assertions_0G4yY():
 
     assert Complex(1.0, 1.0) == Complex(1.0, 1.0)
     assert Complex(1, 1) == Complex(1.0, 1.0)
@@ -38,7 +38,7 @@ def test_Complex_assertions_cNm():
     assert Complex(2, 2) == Complex(2.0, 2.0)
 
 
-def test_Complex_assertions_rNi():
+def test_Complex_assertions_Oy0WJ():
 
     assert raises_error(Complex(nan, 1.0), AssertionError)
     assert is_error_and_says(Complex, (inf, inf), Exception, "Value must be a float")

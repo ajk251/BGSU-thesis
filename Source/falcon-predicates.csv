@@ -1,0 +1,259 @@
+predicate_name,name,symbol,is_symbolic,is_error,is_group,doc_error,error_message
+always-true,always_true,,False,False,False,False,False,Returns True
+true!,always_true,,False,False,False,False,False,Returns True
+always_true,always_true,,False,False,False,False,False,Returns False
+always-false,always_true,,False,False,False,False,False,Returns False
+false!,always_true,,False,False,False,False,False,Returns False
+finishes-ms?,finishes_in_lt_ms,,False,True,False,False,False,Measures the amount of time it takes to execute <= ms
+finishes_in_lt_ms,finishes_in_lt_ms,,False,True,False,False,False,Measures the amount of time it takes to execute <= ms
+error-and-says?,is_error_and_says,,False,True,False,False,False,"
+    Tests that the error is of the specific type and the error message is the same or
+    contained in the error message.
+    "
+is_error_and_says,is_error_and_says,,False,True,False,False,False,"
+    Tests that the error is of the specific type and the error message is the same or
+    contained in the error message.
+    "
+error?,is_error,,False,True,False,False,False,Tests that the error is an instance of the specified type
+is_error,is_error,,False,True,False,False,False,Tests that the error is an instance of the specified type
+raises?,raises_error,,False,False,False,False,False,Tests that the error is an Exception
+raises_error,raises_error,,False,False,False,False,False,Tests that the error is an Exception
+asserts?,raises_assertion_error,,False,False,False,False,False,
+raises_assertion_error,raises_assertion_error,,False,False,False,False,False,
+raises-and-says?,is_error_and_contains,,False,False,False,False,False,"
+    Tests that the error is an Exception and the message is the error message or the message
+    is contained in the error message.
+    "
+raises&says?,is_error_and_contains,,False,False,False,False,False,"
+    Tests that the error is an Exception and the message is the error message or the message
+    is contained in the error message.
+    "
+is_error_and_contains,is_error_and_contains,,False,False,False,False,False,"
+    Tests that the error is an Exception and the message is the error message or the message
+    is contained in the error message.
+    "
+instance?,is_instance,,False,False,False,True,True,The value is not the instance specified
+is?,is_instance,,False,False,False,True,True,The value is not the instance specified
+≡,is_instance,,False,False,False,True,True,The value is not the instance specified
+is_instance,is_instance,,False,False,False,True,True,The value is not the instance specified
+is-a?,is_a,,False,False,False,True,True,The value is not any of instances specified
+is_a,is_a,,False,False,False,True,True,The value is not any of instances specified
+isnt?,is_not,,False,False,False,False,False,Tests that the value is not of instance kind
+is_not,is_not,,False,False,False,False,False,Tests that the value is not of instance kind
+is-not?,is_not_instance_of,,False,False,False,False,False,
+is-not-instance?,is_not_instance_of,,False,False,False,False,False,
+≢,is_not_instance_of,,False,False,False,False,False,
+is_not_instance_of,is_not_instance_of,,False,False,False,False,False,
+same-as?,same_instance,,False,False,False,True,True,The value must be the same instance
+same_instance,same_instance,,False,False,False,True,True,The value must be the same instance
+in,is_in,in,True,False,False,True,True,The value must in the sequence
+in?,is_in,in,True,False,False,True,True,The value must in the sequence
+∋,is_in,in,True,False,False,True,True,The value must in the sequence
+∍,is_in,in,True,False,False,True,True,The value must in the sequence
+is_in,is_in,in,True,False,False,True,True,The value must in the sequence
+!in,not_in,not in,True,False,False,True,True,The value must not be in the sequence
+¬in,not_in,not in,True,False,False,True,True,The value must not be in the sequence
+∌,not_in,not in,True,False,False,True,True,The value must not be in the sequence
+not_in,not_in,not in,True,False,False,True,True,The value must not be in the sequence
+=,eq,==,True,False,False,False,False,"Weak equality, ie a = b"
+eq?,eq,==,True,False,False,False,False,"Weak equality, ie a = b"
+eq,eq,==,True,False,False,False,False,"Weak equality, ie a = b"
+==,equals,,False,False,False,False,False,"Strong equality, ie a == b, where type(a) == type(b) and a == b"
+equals?,equals,,False,False,False,False,False,"Strong equality, ie a == b, where type(a) == type(b) and a == b"
+equals,equals,,False,False,False,False,False,"Strong equality, ie a == b, where type(a) == type(b) and a == b"
+===,strong_equals,,False,False,False,False,False,"The strongest notion of equality, not the same object, where type(a) == type(b) and a == b"
+strong-equals?,strong_equals,,False,False,False,False,False,"The strongest notion of equality, not the same object, where type(a) == type(b) and a == b"
+strong_equals,strong_equals,,False,False,False,False,False,"The strongest notion of equality, not the same object, where type(a) == type(b) and a == b"
+!=,ne,!=,True,False,False,False,False,
+≠,ne,!=,True,False,False,False,False,
+ne?,ne,!=,True,False,False,False,False,
+ne,ne,!=,True,False,False,False,False,
+<,lt,<,True,False,False,False,False,
+lt?,lt,<,True,False,False,False,False,
+lt,lt,<,True,False,False,False,False,
+>,gt,>,True,False,False,False,False,
+gt?,gt,>,True,False,False,False,False,
+gt,gt,>,True,False,False,False,False,
+<=,le,<=,True,False,False,False,False,
+≤,le,<=,True,False,False,False,False,
+le?,le,<=,True,False,False,False,False,
+le,le,<=,True,False,False,False,False,
+>=,ge,>=,True,False,False,False,False,
+≥,ge,>=,True,False,False,False,False,
+ge?,ge,>=,True,False,False,False,False,
+ge,ge,>=,True,False,False,False,False,
+not-lt?,not_lt,,False,False,False,False,False,Value a ≮ b
+≮,not_lt,,False,False,False,False,False,Value a ≮ b
+not_lt,not_lt,,False,False,False,False,False,Value a ≮ b
+not-gt?,not_gt,,False,False,False,False,False,Value a ≯ b
+≯,not_gt,,False,False,False,False,False,Value a ≯ b
+not_gt,not_gt,,False,False,False,False,False,Value a ≯ b
+not-le?,not_le,,False,False,False,False,False,Value a ≰ b
+≰,not_le,,False,False,False,False,False,Value a ≰ b
+not_le,not_le,,False,False,False,False,False,Value a ≰ b
+not-ge?,not_ge,,False,False,False,False,False,Value a ≱ b
+≱,not_ge,,False,False,False,False,False,Value a ≱ b
+not_ge,not_ge,,False,False,False,False,False,Value a ≱ b
+#<,cardinality_lt,,False,False,False,False,False,
+card-lt?,cardinality_lt,,False,False,False,False,False,
+cardinality_lt,cardinality_lt,,False,False,False,False,False,
+#>,cardinality_gt,,False,False,False,False,False,
+card-gt?,cardinality_gt,,False,False,False,False,False,
+cardinality_gt,cardinality_gt,,False,False,False,False,False,
+#<=,cardinality_le,,False,False,False,False,False,
+#≤,cardinality_le,,False,False,False,False,False,
+card-le?,cardinality_le,,False,False,False,False,False,
+cardinality_le,cardinality_le,,False,False,False,False,False,
+#>=,cardinality_ge,,False,False,False,False,False,
+#≥,cardinality_ge,,False,False,False,False,False,
+card-ge?,cardinality_ge,,False,False,False,False,False,
+cardinality_ge,cardinality_ge,,False,False,False,False,False,
+#=,cardinality_ge,,False,False,False,False,False,
+#is,cardinality_ge,,False,False,False,False,False,
+#eq?,cardinality_ge,,False,False,False,False,False,
+card-eq?,cardinality_ge,,False,False,False,False,False,
+#+-,cardinality_plus_minus_n,,False,False,False,False,False,
+#±,cardinality_plus_minus_n,,False,False,False,False,False,
+card-pm?,cardinality_plus_minus_n,,False,False,False,False,False,
+cardinality_plus_minus_n,cardinality_plus_minus_n,,False,False,False,False,False,
+#!=0,cardinality_ne0,,False,False,False,False,False,
+#≠0,cardinality_ne0,,False,False,False,False,False,
+card-not-0?,cardinality_ne0,,False,False,False,False,False,
+cardinality_ne0,cardinality_ne0,,False,False,False,False,False,
+#between?,cardinality_between,,False,False,False,False,False,"Tests that the length of a sequence is greater-than-or-equal-to lb and less-than-or-equal-to ub, [lb, ub]"
+card-between?,cardinality_between,,False,False,False,False,False,"Tests that the length of a sequence is greater-than-or-equal-to lb and less-than-or-equal-to ub, [lb, ub]"
+cardinality_between,cardinality_between,,False,False,False,False,False,"Tests that the length of a sequence is greater-than-or-equal-to lb and less-than-or-equal-to ub, [lb, ub]"
+#within,cardinality_within,,False,False,False,False,False,"Tests that the length of a sequence is greater-than-or-equal-to lb and less-than ub, [lb, ub)"
+card-within?,cardinality_within,,False,False,False,False,False,"Tests that the length of a sequence is greater-than-or-equal-to lb and less-than ub, [lb, ub)"
+cardinality_within,cardinality_within,,False,False,False,False,False,"Tests that the length of a sequence is greater-than-or-equal-to lb and less-than ub, [lb, ub)"
+modof?,is_modulus_of,,False,False,False,True,True,Value a % n != 0
+%=,is_modulus_of,,False,False,False,True,True,Value a % n != 0
+mod-of?,is_modulus_of,,False,False,False,True,True,Value a % n != 0
+is_modulus_of,is_modulus_of,,False,False,False,True,True,Value a % n != 0
+is-even,is_even,,False,False,False,False,False,Tests if a given number is even
+even?,is_even,,False,False,False,False,False,Tests if a given number is even
+is_even,is_even,,False,False,False,False,False,Tests if a given number is even
+is-odd?,is_odd,,False,False,False,False,False,Tests if a given number is odd
+odd?,is_odd,,False,False,False,False,False,Tests if a given number is odd
+is_odd,is_odd,,False,False,False,False,False,Tests if a given number is odd
+positive?,is_positive,,False,False,False,False,False,Tests whether the values is a number greater than 0
+is_positive,is_positive,,False,False,False,False,False,Tests whether the values is a number greater than 0
+negative?,is_negative,,False,False,False,False,False,Tests whether the value is a number and less than 0
+is_negative,is_negative,,False,False,False,False,False,Tests whether the value is a number and less than 0
+nan?,is_nan,,False,False,False,False,False,"Tests whether a value is Not-A-Number or nan (Nan, NaN)"
+is-nan?,is_nan,,False,False,False,False,False,"Tests whether a value is Not-A-Number or nan (Nan, NaN)"
+is_nan,is_nan,,False,False,False,False,False,"Tests whether a value is Not-A-Number or nan (Nan, NaN)"
+inf?,is_inf,,False,False,False,False,False,
+is-inf?,is_inf,,False,False,False,False,False,
+∞?,is_inf,,False,False,False,False,False,
+is_inf,is_inf,,False,False,False,False,False,
+close?,is_close,,False,False,False,False,False,Tests whether a float is close in real and absolute terms
+is_close,is_close,,False,False,False,False,False,Tests whether a float is close in real and absolute terms
+safe-number?,is_valid_float,,False,False,False,False,False,"Returns whether a number is an actual float, not a NaN or Inf."
+not-nan-or-inf?,is_valid_float,,False,False,False,False,False,"Returns whether a number is an actual float, not a NaN or Inf."
+valid-float?,is_valid_float,,False,False,False,False,False,"Returns whether a number is an actual float, not a NaN or Inf."
+is_valid_float,is_valid_float,,False,False,False,False,False,"Returns whether a number is an actual float, not a NaN or Inf."
+is-nan-inf?,is_nan_or_inf,,False,False,False,False,False,"Returns whether a number is an actual float, not a NaN or Inf."
+nan-or-inf?,is_nan_or_inf,,False,False,False,False,False,"Returns whether a number is an actual float, not a NaN or Inf."
+is_nan_or_inf,is_nan_or_inf,,False,False,False,False,False,"Returns whether a number is an actual float, not a NaN or Inf."
+between?,between,,False,False,False,False,False,
+between,between,,False,False,False,False,False,
+in-interval?,in_interval,,False,False,False,False,False,
+in_interval,in_interval,,False,False,False,False,False,
+within?,is_within,,False,False,False,False,False,
+is_within,is_within,,False,False,False,False,False,
+outside?,is_outside,,False,False,False,False,False,
+is_outside,is_outside,,False,False,False,False,False,
+plus-minus?,plus_minus,,False,False,False,False,False,
+±,plus_minus,,False,False,False,False,False,
+plus_minus,plus_minus,,False,False,False,False,False,
+is-None?,is_none,,False,False,False,True,True,Value must be None
+is-none?,is_none,,False,False,False,True,True,Value must be None
+None?,is_none,,False,False,False,True,True,Value must be None
+none?,is_none,,False,False,False,True,True,Value must be None
+is_none,is_none,,False,False,False,True,True,Value must be None
+not-none?,is_not_none,,False,False,False,True,True,Value must not be None
+not-None?,is_not_none,,False,False,False,True,True,Value must not be None
+is_not_none,is_not_none,,False,False,False,True,True,Value must not be None
+same?,is_same,,False,False,False,False,False,Tests whether two objects are the same based on memory location
+is_same,is_same,,False,False,False,False,False,Tests whether two objects are the same based on memory location
+unique?,is_unique,,False,False,False,False,False,Tests whether two objects are unique based on memory location
+is_unique,is_unique,,False,False,False,False,False,Tests whether two objects are unique based on memory location
+sequence?,is_sequence,,False,False,False,False,False,
+is_sequence,is_sequence,,False,False,False,False,False,
+is-tuple?,is_tuple,,False,False,False,False,False,
+is_tuple,is_tuple,,False,False,False,False,False,
+is-list?,is_list,,False,False,False,False,False,
+is_list,is_list,,False,False,False,False,False,
+is-dict?,is_dict,,False,False,False,False,False,
+is_dict,is_dict,,False,False,False,False,False,
+is-str?,is_string,,False,False,False,False,False,
+is-string?,is_string,,False,False,False,False,False,
+is_string,is_string,,False,False,False,False,False,
+int?,is_int,,False,False,False,False,False,Tests if a given value is an integer
+integer?,is_int,,False,False,False,False,False,Tests if a given value is an integer
+is-int?,is_int,,False,False,False,False,False,Tests if a given value is an integer
+ℤ?,is_int,,False,False,False,False,False,Tests if a given value is an integer
+is_int,is_int,,False,False,False,False,False,Tests if a given value is an integer
+is-real?,is_float,,False,False,False,False,False,
+is-float?,is_float,,False,False,False,False,False,
+float?,is_float,,False,False,False,False,False,
+real?,is_float,,False,False,False,False,False,
+ℝ,is_float,,False,False,False,False,False,
+is_float,is_float,,False,False,False,False,False,
+floating-int?,is_float_or_int,,False,False,False,False,False,
+real-int?,is_float_or_int,,False,False,False,False,False,
+real-or-int?,is_float_or_int,,False,False,False,False,False,
+is_float_or_int,is_float_or_int,,False,False,False,False,False,
+number?,is_number,,False,False,False,False,False,Test whether a number is a sub-class of Number
+is_number,is_number,,False,False,False,False,False,Test whether a number is a sub-class of Number
+is-fraction?,is_fraction,,False,False,False,False,False,
+is/?,is_fraction,,False,False,False,False,False,
+fraction?,is_fraction,,False,False,False,False,False,
+is_fraction,is_fraction,,False,False,False,False,False,
+is-complex?,is_complex,,False,False,False,False,False,
+complex?,is_complex,,False,False,False,False,False,
+is_complex,is_complex,,False,False,False,False,False,
+is-decimal?,is_decimal,,False,False,False,False,False,
+decimal?,is_decimal,,False,False,False,False,False,
+is_decimal,is_decimal,,False,False,False,False,False,
+function?,is_function,,False,False,False,False,False,
+is_function,is_function,,False,False,False,False,False,
+func?,is_pyfunc,,False,False,False,False,False,
+is_pyfunc,is_pyfunc,,False,False,False,False,False,
+λ?,is_lambda,,False,False,False,False,False,
+lambda?,is_lambda,,False,False,False,False,False,
+is_lambda,is_lambda,,False,False,False,False,False,
+callable?,is_callable,,False,False,False,False,False,
+is_callable,is_callable,,False,False,False,False,False,
+all?,is_all,,False,False,True,False,False,Predicate must be True for all values
+is_all,is_all,,False,False,True,False,False,Predicate must be True for all values
+any?,is_any,,False,False,True,False,False,The predicate must be True for 1 or more values
+is_any,is_any,,False,False,True,False,False,The predicate must be True for 1 or more values
+most?,is_at_most,,False,False,True,False,False,"The predicate must be True for at most n, or 0 to n values"
+at-most?,is_at_most,,False,False,True,False,False,"The predicate must be True for at most n, or 0 to n values"
+is_at_most,is_at_most,,False,False,True,False,False,"The predicate must be True for at most n, or 0 to n values"
+at-least?,is_at_least_n,,False,False,True,False,False,The predicate must be True for at least n values or more
+is_at_least_n,is_at_least_n,,False,False,True,False,False,The predicate must be True for at least n values or more
+is-exactly?,is_exactly,,False,False,True,False,False,The predicate must be True for at exactly n values
+is_exactly,is_exactly,,False,False,True,False,False,The predicate must be True for at exactly n values
+lone?,lone,,False,False,True,False,False,The predicate must be True for 0 or 1 predicate
+lone,lone,,False,False,True,False,False,The predicate must be True for 0 or 1 predicate
+is-empty?,empty,,False,False,True,False,False,The sequence must be empty
+empty?,empty,,False,False,True,False,False,The sequence must be empty
+empty,empty,,False,False,True,False,False,The sequence must be empty
+not-empty?,not_empty,,False,False,True,False,False,The sequence must contain more than one element
+not_empty,not_empty,,False,False,True,False,False,The sequence must contain more than one element
+sorted?,is_sorted,,False,False,False,False,False,Tests i≤j for all values in sequence
+sorted≤?,is_sorted,,False,False,False,False,False,Tests i≤j for all values in sequence
+sorted<=?,is_sorted,,False,False,False,False,False,Tests i≤j for all values in sequence
+is_sorted,is_sorted,,False,False,False,False,False,Tests i≤j for all values in sequence
+sorted<?,is_strictly_sorted,,False,False,False,False,False,Tests i<j for all values in sequence
+sorted-strict?,is_strictly_sorted,,False,False,False,False,False,Tests i<j for all values in sequence
+is_strictly_sorted,is_strictly_sorted,,False,False,False,False,False,Tests i<j for all values in sequence
+descending?,descending,,False,False,False,False,False,"Tests for decending order, ie 100, 99, 98, …, where i >= j"
+descending,descending,,False,False,False,False,False,"Tests for decending order, ie 100, 99, 98, …, where i >= j"
+ascending?,ascending,,False,False,False,False,False,"Tests for ascending order, ie 1, 2, 3 …, where i <= j"
+ascending,ascending,,False,False,False,False,False,"Tests for ascending order, ie 1, 2, 3 …, where i <= j"
+all-unique?,all_unique,,False,False,False,False,False,Tests that a sequence only contains unique values
+all_unique,all_unique,,False,False,False,False,False,Tests that a sequence only contains unique values

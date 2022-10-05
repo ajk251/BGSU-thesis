@@ -182,6 +182,8 @@ def get_encodings():
     for lang in LANGUAGES.values():
         languages[lang.name.lower()] = lang.charsets
 
+    keys = 'origin,dest,name,google_code,generated,translated,encoded,encoding'.split(',')
+
     # build all encodings
     for sample in samples:
 
@@ -202,20 +204,24 @@ def get_encodings():
                 # warnings.warn(f"Encoding {e} not supported. [Language {name}]")
                 continue
 
-            case = Case(sample.origin, sample.dest, sample.name, sample.google_code,
-                        sample.generated, sample.translated, result, e)
+            # case = Case(sample.origin, sample.dest, sample.name, sample.google_code,
+            #             sample.generated, sample.translated, result, e)
+            case = {name: value for name, value in zip(keys, (sample.origin, sample.dest, sample.name, sample.google_code,
+                                                              sample.generated, sample.translated, result, e))}
             
             yield case
 
 
 # wrapper function ---------------
 
+# TODO: chardet.detect_all
+
 def detect_from_example(case):
     """A wrapper around chardet.detect. Returns dict of the chardet response and test-case meta data"""
     
-    result = chardet.detect(case.encoded)
-    result_all = chardet.detect_all(input)[0]
-    return {**result, 'test-case': case, 'agrees': result == result_all}
+    result = chardet.detect(case['encoded'])
+    result_all = True #chardet.detect_all(case['encoded'])[0]
+    return {**case, 'chardet': result, 'agrees': result == result_all}
 
 
 def detect_from_filename(domain):
@@ -299,8 +305,8 @@ def _ballpark(outcome) -> bool:
 
     if result is None: return False
 
-    s = outcome['test-case'].encoding.lower()                   # source
-    d = result.lower()                          # destination
+    s = outcome['chardet']['encoding'].lower()                  # source
+    d = result.lower()                                          # destination
 
     if s == d:
         close = False                                           # it's a match, not close
@@ -318,20 +324,19 @@ def _ballpark(outcome) -> bool:
 def _encoding(outcome) -> bool:
     """Tests that the expected encoding matches the actual encoding."""
 
-    if outcome['test-case'].encoding is None: return False
+    if outcome['chardet']['encoding'] is None: return False
     elif outcome['encoding'] is None: return False
 
-    return outcome['test-case'].encoding.lower() == outcome['encoding'].lower()
+    return outcome['encoding'].lower() == outcome['encoding'].lower()
 
 def _language(outcome) -> bool:
     """Tests that the expected language matches the actual language."""
 
-    if outcome['language'] is None: return False
+    if outcome['chardet']['language'] is None: return False
 
     # this line is mostly for chinese-traditional ⇔ chinese
-
-    return outcome['test-case'].name.lower() == outcome['language'].lower() or \
-           outcome['language'].lower() in outcome['test-case'].name.lower()        
+    return outcome['name'].lower() == outcome['chardet']['language'].lower() or \
+           outcome['chardet']['language'].lower() in outcome['name'].lower()        
 
 # predicates ---------------------
 
@@ -372,3 +377,22 @@ def is_both_wrong(outcome) -> bool:
 @predicate(alias=['either-wrong?'])
 def is_either_wrong(outcome):
     return not _encoding(outcome) or not _language(outcome)
+
+
+for case in get_encodings():
+
+    outcome = detect_from_example(case)
+    
+    a = is_neither(outcome)
+    b = is_encoding_and_language_correct(outcome)
+    c = in_ballpark_and_language_correct(outcome)
+    d = is_encoding_correct(outcome)
+    e = is_ballpark(outcome)
+    f = is_just_language(outcome)
+    g = is_both_wrong(outcome)
+    h = is_either_wrong(outcome)
+
+    print(a, b, c, d, e, f, g, h)
+
+# for case in get_test_docs():
+#     print(case)

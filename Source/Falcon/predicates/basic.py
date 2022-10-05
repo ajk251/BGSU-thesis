@@ -10,6 +10,19 @@ from Falcon.predicates.predicates import predicate, on_fail_false
 
 # -----------------------------------------------
 
+# identity/constant functions
+@predicate(alias=['always-true', 'true!'])
+def always_true(*args) -> bool:
+    """Returns True"""
+    return True
+
+@predicate(alias=['always-false', 'false!'])
+def always_true(*args) -> bool:
+    """Returns False"""
+    return False
+
+# -----------------------------------------------
+
 @predicate(alias=['finishes-ms?'], is_error=True)
 def finishes_in_lt_ms(fn, args, ms):
     """Measures the amount of time it takes to execute <= ms"""

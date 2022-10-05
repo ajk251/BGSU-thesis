@@ -14,11 +14,11 @@ from chardet_falcon import *
 
 # This file was generated automatically by Falcon.
 # from: chardet.fcn
-# on 2022 Sep 22 Thu 13:17:53
+# on 2022 Oct 05 Wed 15:42:08
 
 Text = get_encodings()
 
-def test_satisfy_detect_from_example_zmXuN():
+def test_satisfy_detect_from_example_6g():
 
     for case in Text:
 
@@ -52,7 +52,7 @@ def test_satisfy_detect_from_example_zmXuN():
 
 Files = get_test_docs()
 
-def test_satisfy_detect_from_filename_iIfYV():
+def test_satisfy_detect_from_filename_tE8K():
 
     for case in Files:
 

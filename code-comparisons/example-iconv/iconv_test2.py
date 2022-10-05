@@ -9,6 +9,10 @@ import subprocess
 
 import iconv
 
+from Falcon.domains import domain
+from Falcon.predicates import predicate
+
+
 FILE = '/media/aaron/Shared2/School/BGSU-thesis/code-comparisons/example-iconv/iconv-encodings.txt'
 # FOLDER = '~/Desktop/encodings/'
 FOLDER = '/home/aaron/Desktop/encodings/'
@@ -47,6 +51,7 @@ def file_encodings():
 
 # domains -------------------------------------------------
 
+@domain(alias=['EncodingCases'])
 def generate_cases(n=10):
 
     encodings_ = get_encodings()
@@ -109,6 +114,7 @@ def generate_cases(n=10):
         yield case
 
 
+@domain(alias=['PyEncodingCases'])
 def generate_pycases(n=10):
 
     encodings_ = get_encodings()
@@ -182,28 +188,33 @@ def iconv_sut_py(case):
 # does it load?
 # does it handle most characters?
 
-
+@predicate(alias=['loads-iconv?'])
 def does_load(case) -> bool:
-    return case['error'] is not None
+    return case['exception'] is None
 
 
-def converts(case) -> bool:
+@predicate(alias=['has-valid-points?'])
+def valid_points(case) -> bool:
     # are there any valid codepoints?
-    return case['128'] > 0 or case['256'] > 0
+    return len(case['128']) > 0 or len(case['256']) > 0
 
 
+@predicate(alias=['has-most-128?'])
 def most_128(case, threshold=0.51) -> bool:
     return case['%-128'] >= threshold
 
 
+@predicate(alias=['has-most-256?'])
 def most_256(case, threshold=0.51) -> bool:
     return case['%-256'] >= threshold
 
 
+@predicate(alias=['most-all?'])
 def most(case, threshold=0.51) -> bool:
     return case['%-all'] >= threshold
 
 
+@predicate(alias=['matches-iconv?'])
 def like_iconv(case) -> bool:
 
     # test that the py-iconv ≡ reverse iconv
@@ -231,8 +242,10 @@ def like_iconv(case) -> bool:
 
     return sizes and diff
 
+
 # these use python encodings ----------
 
+@predicate(alias=['py-loads-iconv?'])
 def loads_in_iconv(case) -> bool:
     # does it even load in iconv?
 
@@ -244,6 +257,7 @@ def loads_in_iconv(case) -> bool:
     return True
 
 
+@predicate(alias=['valid-iconv?'])
 def converts_in_iconv(case) -> bool:
     # does it produce a valid array of bytes?
 
@@ -256,6 +270,7 @@ def converts_in_iconv(case) -> bool:
     return True
 
 
+@predicate(alias=['codepoints-match?'])
 def matchs_python_codec(case) -> bool:
     # do the bytes match byte for byte in python-iconv
 
@@ -276,6 +291,7 @@ def matchs_python_codec(case) -> bool:
     return True
 
 
+@predicate(alias=['matches-py-iconv?'])
 def matches_iconv(case) -> bool:
     # does the cmdln iconv ≡ iconv
 
@@ -325,41 +341,64 @@ def matches_iconv(case) -> bool:
 
 # ---------------------------------------------------------
 
-# for case in generate_cases(100):
+for case in generate_cases(100):
 
-#     # print(case)
-#     case = identity_iconv(case)
+    # print(case)
+    case = identity_iconv(case)
 
-#     if like_iconv(case):
-#         print('like iconv ', case['source'], case['dest'])
-#     else:
-#         print('not iconv  ', case['source'], case['dest'])
+    print(case['source'], ' ￫ ', case['dest'])
+
+    if does_load(case):
+        print('\tloads')
+    else:
+        print('\tno load')
+
+    if like_iconv(case):
+        print('\tlike iconv ')
+    else:
+        print('\tnot iconv  ')
+
+    # other tests
+    if valid_points(case):
+        print('\tvalid')
+    else:
+        print('\tno points')
+
+    if most_128(case):
+        print('\tmost 128')
+    else:
+        print('\t< 128')
+
+    if most_256(case):
+        print('\tmost 256')
+    else:
+        print('\t< 256')
 
 print('-' * 35)
 
-for case in generate_pycases(100):
+# for case in generate_pycases(100):
 
-    print(case['source'], ' ￫ ', case['dest'], len(case['points']))
+#     print(case['source'], ' ￫ ', case['dest'], len(case['points']))
 
-    if loads_in_iconv(case):
-        print('\tloads 🗸')
-    else:
-        print('\tload ✗')
-
-
-    if converts_in_iconv(case):
-        print('\tconverts 🗸')
-    else:
-        print('\tconvert ✗')
+#     if loads_in_iconv(case):
+#         print('\tloads 🗸')
+#     else:
+#         print('\tload ✗')
 
 
-    if matchs_python_codec(case):
-        print('\tmatches 🗸')
-    else:
-        print('\tmatches ✗')
+#     if converts_in_iconv(case):
+#         print('\tconverts 🗸')
+#     else:
+#         print('\tconvert ✗')
 
 
-    if matches_iconv(case):
-        print('\ticonv 🗸')
-    else:
-        print('\ticonv ✗')
+#     if matchs_python_codec(case):
+#         print('\tmatches 🗸')
+#     else:
+#         print('\tmatches ✗')
+
+
+#     if matches_iconv(case):
+#         print('\ticonv 🗸')
+#     else:
+#         print('\ticonv ✗')
