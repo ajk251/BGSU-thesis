@@ -131,7 +131,7 @@ if __name__ == '__main__':
     if args.unit:
         write_basic_unittest(falcon_tree, file, output)
 
-    print('***** Done *****')
+    print('*****   Done   *****')
 
     # -------------------------------------------
 
@@ -165,24 +165,3 @@ if __name__ == '__main__':
             test = pytest.main([output, '--maxfail=10'])
 
     print('***** Finished *****')
-
-
-# ****** REMOVE *********
-
-# from Falcon.predicates import PREDICATES
-# print(len(PREDICATES))
-#
-# from collections import defaultdict
-#
-# name_aliases = defaultdict(list)
-#
-# for name, predicate in PREDICATES.items():
-#     # print(name, predicate.name)
-#     name_aliases[predicate.name].append(name)
-#
-# for name, alias in name_aliases.items():
-#     name = name.replace('_', '\_').replace('-', '\-').replace('?', '\?')
-#     aliases = ["\\falcon{ " + str(alias_.replace('_', '\_')) + '}' for alias_ in alias]
-#     print( '\\falcon{' + name + '}' + ', '.join(aliases) + '\\\\')
-#     # print(f'\\falcon{{name}} & {",".join(aliases)} \\\\')
-

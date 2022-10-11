@@ -220,7 +220,7 @@ def detect_from_example(case):
     """A wrapper around chardet.detect. Returns dict of the chardet response and test-case meta data"""
     
     result = chardet.detect(case['encoded'])
-    result_all = True #chardet.detect_all(case['encoded'])[0]
+    result_all = chardet.detect_all(case['encoded'])[0]
     return {**case, 'chardet': result, 'agrees': result == result_all}
 
 
@@ -243,7 +243,7 @@ def detect_from_filename(domain):
 
 @predicate(alias=['agrees?'])
 def both_detects_agree(outcome) -> bool:
-    return outcome['agree']
+    return outcome.get('agree', False)
 
 @predicate(alias=['has-both-right?'])
 def encoding_and_language(outcome) -> bool:
@@ -379,20 +379,20 @@ def is_either_wrong(outcome):
     return not _encoding(outcome) or not _language(outcome)
 
 
-for case in get_encodings():
+# for case in get_encodings():
 
-    outcome = detect_from_example(case)
+#     outcome = detect_from_example(case)
     
-    a = is_neither(outcome)
-    b = is_encoding_and_language_correct(outcome)
-    c = in_ballpark_and_language_correct(outcome)
-    d = is_encoding_correct(outcome)
-    e = is_ballpark(outcome)
-    f = is_just_language(outcome)
-    g = is_both_wrong(outcome)
-    h = is_either_wrong(outcome)
+#     a = is_neither(outcome)
+#     b = is_encoding_and_language_correct(outcome)
+#     c = in_ballpark_and_language_correct(outcome)
+#     d = is_encoding_correct(outcome)
+#     e = is_ballpark(outcome)
+#     f = is_just_language(outcome)
+#     g = is_both_wrong(outcome)
+#     h = is_either_wrong(outcome)
 
-    print(a, b, c, d, e, f, g, h)
+#     print(a, b, c, d, e, f, g, h)
 
-# for case in get_test_docs():
-#     print(case)
+# # for case in get_test_docs():
+# #     print(case)

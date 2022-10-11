@@ -239,7 +239,7 @@ def get_directives(entry, test_name=None) -> dict[str, Union[None, str, list, bo
                             ':no-suffix', ':suffix', ':labels', ':method', ':log', ':log-name',
                             ':iter-object', ':object-update', ':min', ':max', ':save-results',
                             ':save-cases', ':no-error-message', ':min-cases', ':no-minimum',
-                            ':either'))
+                            ':either', ':no-min'))
 
     # see if any are not recognized
     if not frozenset(entry['directives'].keys()).issubset(recognized):
@@ -392,7 +392,7 @@ def get_directives(entry, test_name=None) -> dict[str, Union[None, str, list, bo
 
     if entry['directives'].get(':min-cases', False):
         directives['min-cases'] =  int(entry['directives'][':min-cases']['value'])
-    elif entry['directives'].get(':no-minimum', False):
+    elif entry['directives'].get(':no-minimum', False) or entry['directives'].get(':no-min', False):
         directives['min-cases'] = 0
     else:
         directives['min-cases'] = 1

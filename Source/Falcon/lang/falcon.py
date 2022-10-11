@@ -177,7 +177,7 @@ class Falcon(FalconVisitor):
 
         if ctx.value_list() is not None:
             value = self.visit(ctx.value_list())
-            value = '[{}]'.format(', '.join(value))
+            value = '[{}]'.format(', '.join(value)) if isinstance(value, (list, tuple)) else f"[{value}]"
         else:
             value = ctx.getText()
 

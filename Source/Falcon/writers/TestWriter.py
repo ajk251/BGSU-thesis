@@ -616,6 +616,8 @@ def basic_Satisfy2(entry):
         minimum = entry['directives'][':min']['value']
     elif entry['directives'].get(':no-minimum', False):
         minimum = None
+    elif entry['directives'].get(':no-min', False):
+        minimum = None
     else:
         minimum = 1
 
