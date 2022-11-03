@@ -9,6 +9,16 @@ import math
 
 # numerical -------------------------------------
 
+@predicate(alias=['int?', 'is-int?'])
+def is_integer(n) -> bool:
+    return isinstance(n, int)
+
+@predicate(alias=['float?', 'int?'])
+def is_float(n) -> bool:
+    return isinstance(n, float)
+
+# -----------------------------------------------
+
 @predicate(alias=['modof?', '%=', 'mod-of?'], doc_error=True)
 def is_modulus_of(a, n) -> bool:
     '''Value a % n != 0'''

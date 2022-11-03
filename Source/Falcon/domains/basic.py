@@ -1,5 +1,5 @@
 import sys
-from itertools import combinations, count, product
+from itertools import combinations, count, permutations, product
 from random import choice, randrange, randint, random, uniform
 from typing import Any, Generator, Iterator, Tuple, Union, NewType
 from sys import float_info, maxsize
@@ -154,9 +154,18 @@ def floatgrid(bounds: Linspace):
     yield from product(*(linspace(i, j, n) for i, j, n in bounds))
 
 
-@domain(alias=['PermutationsOf', 'PermsOf'])
-def permutations_of(values, repeat: int = 2) -> Iterator[Tuple[Any, ...]]:
+@domain(alias=['ProductOf'])
+def product_of(values, repeat: int = 2) -> Iterator[Tuple[Any, ...]]:
     return (s for s in product(values, repeat=repeat))
+
+
+@domain(alias=['PermOf', 'PermutationsOf'])
+def permutations_of(values, repeat: int = 2) -> Iterator[Tuple[Any, ...]]:
+    return permutations(values, r=repeat)
+
+# def combination_of(lower=-100, upper=100, step=1.0, repeat: int = 3) -> Iterator[Tuple[Any, ...]]:
+    # linspace(0, 1) ⨯ repeat
+    # return None
 
 
 @domain(alias=['TwiseCombinations', 'TwiseCombs'])

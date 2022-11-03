@@ -1,0 +1,10 @@
+
+
+Domain Ints1 IntRange -lower 1 -upper 100 -step 1
+Domain Ints2 IntRange -lower 1 -upper 100 -step 1
+
+Test _ Ints1 Ints2:
+  | :labels i :method twise -n 2
+  | is? tuple
+  ;
+

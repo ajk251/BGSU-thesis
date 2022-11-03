@@ -13,7 +13,7 @@ import pytest
 
 # This file was generated automatically by Falcon.
 # from: initial-tests.fcn
-# on 2022 Aug 23 Tue 16:48:53
+# on 2022 Nov 03 Thu 13:55:43
 
 art1 = ART(max_candidates=100)
 art2 = ART(max_candidates=200)
@@ -25,11 +25,11 @@ def add(x, y): return x + y
 def test_add():
     # please work
 
-    for art1ᵢ, art2ᵢ in ART(art1, art2, min_distance=3, max_distance=10):
-        assert is_int(add(art1ᵢ, art2ᵢ))
-        assert between(add(art1ᵢ, art2ᵢ), -1500, 1500)
+    for x, y in ART(art1, art2, min_distance=3, max_distance=10):
+        assert is_int(add(x, y))
+        assert between(add(x, y), -1500, 1500)
 
-def test_add_j4w8():
+def test_add_C9gXk():
     for xᵢ, zᵢ in zip(X, Z):
         assert is_int(add(xᵢ, zᵢ))
         assert between(add(xᵢ, zᵢ), -100, 100)

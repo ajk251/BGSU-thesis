@@ -15,7 +15,7 @@ class TriangleError(Exception):
 
 def classify(a: int, b: int, c: int) -> Triangle:
 
-    is_triangle = lambda a_,b_,c_: (a < b+c) and (b < a+c) and (c < a+b)
+    is_triangle = lambda a_,b_,c_: (a_ <= b_ + c_) and (b_ <= a_ + c_) and (c <= a_ + b_)
     integers    = lambda a_,b_,c_: isinstance(a_, int) and isinstance(b_, int) and isinstance(c_, int)
     is_valid    = lambda a_,b_,c_: (a_ > 0) and (b_ > 0) and (c_ > 0)
 

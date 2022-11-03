@@ -1,6 +1,6 @@
 
-:import test_functions -from [add, add2, sub]
-:import test_functions -all
+//:import test_functions -from [add, add2, sub]
+//:import test_functions -all
 
 Domain X Integers -10 10 -n 100
 Domain Y Integers -10 10 -n 100

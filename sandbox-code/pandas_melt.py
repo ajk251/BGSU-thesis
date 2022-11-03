@@ -35,6 +35,8 @@ months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 
 def melt_sut(values):
     return values[0], values[1]
 
+
+@domain(alias=['DFGenerator'])
 def df_generator(n: int = 10, max_cols: int = 100, max_rows: int = 10_000):
     # yields key, melted-df
 
@@ -124,23 +126,20 @@ def df_generator(n: int = 10, max_cols: int = 100, max_rows: int = 10_000):
 
         i += 1
 
+
 #predicates -------------------------------------
 
+@predicate(alias=['valid?'])
 def valid_dataframe(key, df) -> bool:
     """Tests that it is a DataFrame and is of the expected shape"""
     return isinstance(df, pd.DataFrame)
-
-
-# def agrees(key, df):
-#     # have to figure out the kind of melt it is first
-#     pass
 
 
 # def right_columns(key, df):
 #     # are the columns named correctly
 #     return True
 
-
+@predicate(alias=['sums-correctly?'])
 def sums_correctly(key, df) -> bool:
     # the sums of the columns add up correctly
     # note: some columns are dropped, so they have different sums
@@ -150,22 +149,27 @@ def sums_correctly(key, df) -> bool:
            df_sum == key['partial-total-2']
 
 
+@predicate(alias=['melts-no-args?'])
 def is_melted_no_args(key, df) -> bool:
     return df.shape == (key['width'] * key['height'], 2)
 
 
+@predicate(alias=['melts-id&args?'])
 def is_melted_id_args(key, df) -> bool:
     return df.shape == (key['height'] * key['unique'], 3)
 
 
+@predicate(alias=['melts-var&args?'])
 def is_melted_value_vars(key, df) -> bool: 
     # (df.shape[0] * len(key['var-name']), 2))
     return df.shape == (key['height'] * key['len-vars'], 2)
 
 
+@predicate(alias=['melts-id&value?'])
 def is_melted_id_value(key, df) -> bool:
     # (len(key['var-name']) * df.shape[0], 3))
     return df.shape == (key['len-vars'] * key['height'], 3)
+
 
 # melt() == pd.melt()
 
@@ -178,6 +182,7 @@ def is_melted_id_value(key, df) -> bool:
 for key, df in df_generator(5):
 
     print(df.columns, key['value-names'], key['var-name'])
+    # print('\t', df.columns == key['columns'])
 
     if valid_dataframe(key, df):
         print('valid!')

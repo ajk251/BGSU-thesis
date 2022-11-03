@@ -148,7 +148,7 @@ def generate_pycases(n=10):
             # build all valid bytes
             for n in range(256):
                 try:
-                    str(bytearray([n]), encoding=source, errors='strict')
+                    str(bytearray([n]), encoding=source, errors='strict')   # any of these could cause an exception
                     c = codecs.lookup(source)
                     c.decode(bytearray([n]), errors='strict')
                     points.append(n)
@@ -199,12 +199,12 @@ def valid_points(case) -> bool:
     return len(case['128']) > 0 or len(case['256']) > 0
 
 
-@predicate(alias=['has-most-128?'])
+@predicate(alias=['most-128?', 'has-most-128?'])
 def most_128(case, threshold=0.51) -> bool:
     return case['%-128'] >= threshold
 
 
-@predicate(alias=['has-most-256?'])
+@predicate(alias=['most-256?', 'has-most-256?'])
 def most_256(case, threshold=0.51) -> bool:
     return case['%-256'] >= threshold
 
@@ -219,6 +219,7 @@ def like_iconv(case) -> bool:
 
     # test that the py-iconv ≡ reverse iconv
 
+    # this is iconv command line command
     cmd = f"iconv -f {case['dest']} -t {case['source']} -o {FOLDER}temp.bin {case['filename']}"
 
     # print(' --> ', cmd)
@@ -337,68 +338,3 @@ def matches_iconv(case) -> bool:
             diff = af == bf
 
     return sizes and diff
-
-
-# ---------------------------------------------------------
-
-for case in generate_cases(100):
-
-    # print(case)
-    case = identity_iconv(case)
-
-    print(case['source'], ' ￫ ', case['dest'])
-
-    if does_load(case):
-        print('\tloads')
-    else:
-        print('\tno load')
-
-    if like_iconv(case):
-        print('\tlike iconv ')
-    else:
-        print('\tnot iconv  ')
-
-    # other tests
-    if valid_points(case):
-        print('\tvalid')
-    else:
-        print('\tno points')
-
-    if most_128(case):
-        print('\tmost 128')
-    else:
-        print('\t< 128')
-
-    if most_256(case):
-        print('\tmost 256')
-    else:
-        print('\t< 256')
-
-print('-' * 35)
-
-# for case in generate_pycases(100):
-
-#     print(case['source'], ' ￫ ', case['dest'], len(case['points']))
-
-#     if loads_in_iconv(case):
-#         print('\tloads 🗸')
-#     else:
-#         print('\tload ✗')
-
-
-#     if converts_in_iconv(case):
-#         print('\tconverts 🗸')
-#     else:
-#         print('\tconvert ✗')
-
-
-#     if matchs_python_codec(case):
-#         print('\tmatches 🗸')
-#     else:
-#         print('\tmatches ✗')
-
-
-#     if matches_iconv(case):
-#         print('\ticonv 🗸')
-#     else:
-#         print('\ticonv ✗')

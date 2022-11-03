@@ -109,7 +109,7 @@ def all_triplets_of(sequence, n: int = 3):
     return all_triplets(*(sequence for _ in range(n)))
 
 
-@algorithm(alias=['combs-of', 'combinations-of', 'all-orderings-of'])
+@algorithm(alias=['product-of', 'combinations-of', 'all-orderings-of'])
 def combinations_of(sequence: Iterable, n: int = 3):
     """Builds the cartesian product of n copies of a sequence"""
     return product(*(sequence for _ in range(n)))

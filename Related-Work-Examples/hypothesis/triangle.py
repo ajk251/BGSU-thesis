@@ -11,7 +11,7 @@ class TriangleError(Exception): pass
 
 def classify(a: int, b: int, c: int) -> Triangle:
 
-    is_triangle = lambda a_,b_,c_: (a < b+c) and (b < a+c) and (c < a+b)
+    is_triangle = lambda a_,b_,c_: (a <= b+c) and (b <= a+c) and (c <= a+b)
     integers    = lambda a_,b_,c_: isinstance(a_, int) and isinstance(b_, int) and isinstance(c_, int)
     is_valid    = lambda a_,b_,c_: (a_ > 0) and (b_ > 0) and (c_ > 0)      
 
@@ -67,7 +67,7 @@ def positive_integers(a: int, b: int, c: int) -> bool:
 
 def satisfy_triangle_theorem(a: int, b: int, c: int) -> bool:
     """The Triangle Theorem, ie. sᵢ < s₂+s₃, for all sides"""
-    return (a < b+c) and (b < a+c) and (c < a+b)
+    return (a <= b+c) and (b <= a+c) and (c <= a+b)
 
 
 def is_equilateral(a: int, b: int, c: int) -> bool:

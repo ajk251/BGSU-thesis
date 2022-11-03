@@ -35,6 +35,7 @@ booleans = {'∧': 'and', '&&': 'and', 'and': 'and',
             '∨': 'or', '||': 'or', 'or': 'or',
             '!': 'not', '¬': 'not', 'not': 'not'}
 
+SUT = []                      # this gets used with coverage
 
 def add_pytest_config_file(path: str):
 
@@ -48,6 +49,7 @@ def add_pytest_config_file(path: str):
 
     with open(path, 'w') as file:
         file.write(contents)
+
 
 # helper funcs ----------------------------------
 

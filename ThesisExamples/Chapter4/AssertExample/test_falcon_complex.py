@@ -9,25 +9,11 @@ from Falcon.utilities import FalconError
 from collections import defaultdict
 
 import pytest
+
 from ComplexNumber import Complex, ComplexError
 from math import nan, inf
 
 # This file was generated automatically by Falcon.
 # from: complex.fcn
-# on 2022 Aug 08 Mon 15:43:41
+# on 2022 Oct 24 Mon 16:54:29
 
-
-def test_Complex_assertions_Xq():
-
-    assert Complex(1.0, 1.0) == Complex(1.0, 1.0)
-    assert equals(Complex(1, 1), Complex(1.0, 1.0))
-    with pytest.raises(ComplexError):
-        assert is_a(Complex(inf, inf))
-    with pytest.raises(ComplexError):
-        assert is_a(Complex(nan, nan))
-    with pytest.raises(ComplexError):
-        assert is_a(Complex(1.0, nan))
-    with pytest.raises(ComplexError):
-        assert is_a(Complex(1.0, inf))
-    with pytest.raises(ComplexError):
-        assert is_a(Complex(inf, 1.0))

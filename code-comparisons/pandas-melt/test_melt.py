@@ -44,6 +44,7 @@ def value_name():
 
 
 class TestMelt:
+    
     def test_top_level_method(self, df):
         result = melt(df)
         assert result.columns.tolist() == ["variable", "value"]

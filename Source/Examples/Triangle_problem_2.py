@@ -27,4 +27,4 @@ def classify(a: int, b: int, c: int) -> str:
     elif a == b or b == c or a == c:
         return 'isosceles'
 
-    raise TriangleError(f'Could not classify input a ￫ {a}, b ￫ {b}, c ￫ {c}')
+    raise TriangleError(f'Could not classify input a -> {a}, b -> {b}, c -> {c}')

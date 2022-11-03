@@ -25,7 +25,7 @@ tabsize: int = 4
 TAB: str = ' ' * tabsize
 nl: str = '\n'
 
-SUT = None              # this gets used with coverage
+SUT = None             # this gets used with coverage
 
 # ⊻ ⊼ ⊽ ￫ these require special treatment…
 booleans = {'∧': 'and', '&&': 'and', 'and': 'and',

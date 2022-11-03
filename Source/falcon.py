@@ -15,7 +15,7 @@ from Falcon.gen.FalconParser import FalconParser
 # from Falcon.gen.FalconParser import FalconParser
 # from Falcon.lang.falcon import Falcon
 from Falcon.lang.falcon import Falcon
-from Falcon.writers.UnitTestWriter import write_basic_unittest
+from Falcon.writers.UnitTestWriter import write_basic_unittest, SUT
 from Falcon.writers.TestWriter import write_basic_test, SUT
 from Falcon.writers.tools import add_pytest_config_file
 
@@ -45,6 +45,9 @@ parser.add_argument('--pytest', default=False, action='store_true',
                     required=False, help='Invoke PyTest and run on the output file')
 
 parser.add_argument('--coverage', default=True, action='store_true',
+                    required=False, help='When using PyTest, measure coverage')
+
+parser.add_argument('--cov', default=True, action='store_true',
                     required=False, help='When using PyTest, measure coverage')
 
 if __name__ == '__main__':
@@ -94,21 +97,21 @@ if __name__ == '__main__':
     if not os.path.exists(file):
         raise FileExistsError(f"File '{file}' was not found")
 
-        # the output file
+    # the output file
     if args.output == [] or args.output is None:
         path = os.path.basename(file)
         name, ext = os.path.splitext(path)                      # uses the falcon file name
-        output = os.getcwd() + f'/test_falcon_{name}.py'
+        # output = os.getcwd() + f'/test_falcon_{name}.py'
+        output = (os.getcwd(), f'/test_falcon_{name}')
     else:
-        output = os.getcwd() + '/' + args.output[0]
-
+        # output = os.getcwd() + '/' + args.output[0]
+        output = (os.getcwd(), '/' + args.output[0])
     # add pytest.toml
     # if not os.path.exists(os.getcwd() + '/' + 'pyproject.toml'):
     #     add_pytest_config_file(os.getcwd() + '/' + 'pyproject.toml')
     #     print('added pyproject.toml')
 
     print('Using file:      ', file)
-    print('Generating file: ', output)
 
     input_stream = FileStream(file, encoding='utf-8')
     lexer = FalconLexer(input_stream)
@@ -126,10 +129,14 @@ if __name__ == '__main__':
 
     # one or both
     if args.test:
-        write_basic_test(falcon_tree, file, output)
+        out = ''.join(output) + '.py'
+        write_basic_test(falcon_tree, file, out)
+        print('Generating file: ', out)
 
     if args.unit:
-        write_basic_unittest(falcon_tree, file, output)
+        out = ''.join(output) + '_unit.py'
+        write_basic_unittest(falcon_tree, file, out)
+        print('Generating file: ', out)
 
     print('*****   Done   *****')
 
@@ -158,8 +165,16 @@ if __name__ == '__main__':
 
         print('***** RUNNING PyTest *****')
 
-        if args.coverage:
-            name = '.' if SUT is None else SUT              # it can be defined through :sut | :coverage
+        if args.coverage or args.cov:
+            # name = '.' if SUT is None else SUT              # it can be defined through :sut | :coverage
+
+            if SUT is None:
+                name = '.'
+            else:
+                name = ', '.join(SUT)
+
+            print('name: ', name)
+
             test = pytest.main([output, '--maxfail=10', f'--cov={name}', '--cov-report=html'])
         else:
             test = pytest.main([output, '--maxfail=10'])
