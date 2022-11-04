@@ -13,14 +13,14 @@ import pytest
 
 # This file was generated automatically by Falcon.
 # from: satisfy-tests.fcn
-# on 2022 Nov 03 Thu 14:28:03
+# on 2022 Nov 04 Fri 14:23:43
 
 X = integers(-10, 10, n=100)
 Y = integers(-10, 10, n=100)
 x = 1 # this is a test
 
 
-def test_satisfy_add_XM2():
+def test_satisfy_add_Rnv():
 
     for xᵢ, yᵢ in zip(X, Y):
 

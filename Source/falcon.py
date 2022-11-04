@@ -30,7 +30,7 @@ parser.add_argument('file', nargs=1, default=None, action='store', help='The nam
 parser.add_argument('output', nargs='*', default=None, action='store', help='The name of file for the generated code')
 
 # the output type
-parser.add_argument('--test', '-t', default=True, action='store_true',
+parser.add_argument('--test', '-t', default=False, action='store_true',
                     required=False, help='Generate a PyTest file')
 parser.add_argument('--unit', '-u', default=False, action='store_true',
                     required=False, help='Generate a unit test file')
@@ -44,10 +44,10 @@ parser.add_argument('--debug', '-d', default=False, action='store_true',
 parser.add_argument('--pytest', default=False, action='store_true',
                     required=False, help='Invoke PyTest and run on the output file')
 
-parser.add_argument('--coverage', default=True, action='store_true',
+parser.add_argument('--coverage', default=False, action='store_true',
                     required=False, help='When using PyTest, measure coverage')
 
-parser.add_argument('--cov', default=True, action='store_true',
+parser.add_argument('--cov', default=None, #action='store_true',
                     required=False, help='When using PyTest, measure coverage')
 
 if __name__ == '__main__':
@@ -127,16 +127,22 @@ if __name__ == '__main__':
     # gets the dict/json-like tree from antlr
     falcon_tree = falcon.intermediate_tests()
 
+    # files_written = []                              # for pytest
+
     # one or both
-    if args.test:
+    if args.test is False and args.unit is False:
+        # have to do one...
         out = ''.join(output) + '.py'
         write_basic_test(falcon_tree, file, out)
-        print('Generating file: ', out)
-
-    if args.unit:
+        print('Generating test file: ', out)
+    elif args.test:
+        out = ''.join(output) + '.py'
+        write_basic_test(falcon_tree, file, out)
+        print('Generating test file: ', out)
+    elif args.unit:
         out = ''.join(output) + '_unit.py'
         write_basic_unittest(falcon_tree, file, out)
-        print('Generating file: ', out)
+        print('Generating unit test file: ', out)
 
     print('*****   Done   *****')
 
@@ -165,18 +171,20 @@ if __name__ == '__main__':
 
         print('***** RUNNING PyTest *****')
 
-        if args.coverage or args.cov:
-            # name = '.' if SUT is None else SUT              # it can be defined through :sut | :coverage
+        if args.coverage:
+            name = '.' if SUT is None else ', '.join(SUT)
 
-            if SUT is None:
-                name = '.'
-            else:
-                name = ', '.join(SUT)
+            if name.endswith('.py'):
+                name = name.strip('.py')
+                print('*** Removing .py from name')
 
-            print('name: ', name)
-
-            test = pytest.main([output, '--maxfail=10', f'--cov={name}', '--cov-report=html'])
+            test = pytest.main([out, '--maxfail=10', f'--cov={name}', '--cov-report=html'])
+        elif args.cov:
+            if name.endswith('.py'):
+                name = name.strip('.py')
+                print('*** Removing .py from name')
+            test = pytest.main([out, '--maxfail=10', f'--cov={args.cov}', '--cov-report=html'])
         else:
-            test = pytest.main([output, '--maxfail=10'])
+            test = pytest.main([out, '--maxfail=10'])
 
     print('***** Finished *****')
