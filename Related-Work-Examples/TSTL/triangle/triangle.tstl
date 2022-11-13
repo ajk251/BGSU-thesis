@@ -1,0 +1,8 @@
+
+@import triangle
+
+pool: <int> 3
+
+{TriangleError} classify(<int>, <int>, <int>)
+
+classify(<int>, <int>, <int>)

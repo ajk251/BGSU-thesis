@@ -1,0 +1,42 @@
+
+🗹 ☒ ☐
+* - global, a - assert, t - test, s - satisfy, g - groubpy
+
+[Directives]
+:import 			controls the import stmt -all, -from		*
+:desc				add a description to the module				*
+:sut				define the SUT for coverage.py				*
+:coverage			define the SUT for coverage.py				*
+
+:no-error-message	ignores any defined error message			astg	
+:message			add a doc string to the test				astg
+:test-name			name of the py function						atsg
+:name				name of the py function						atsg
+
+:no-suffix			no suffix									tsg
+:suffix				change the suffix							tsg
+:labels				define the name & quantity of the domain	tsg
+:method				define the test domain algorthm				tsg
+:log				use a log									tsg
+:log-name			define a filename for the log				tsg
+
+:min				min test cases to be satisfied				s
+:max				max test cases that can be satisfied		s
+:either				either ab
+
+:min-cases			defines the min number of cases				g
+:no-minimum			there is no min, set to 0					g
+:follow-up			call a follow-up function					g
+:save-cases			save the test cases							g
+:save-results		save the results							g
+
+[unused / don't know]
+:only			
+:iter-object
+:object-update
+
+
+[TODO]
+:update				call a domain update function				tsg
+:follow-up			call a follow up function					tsg
+

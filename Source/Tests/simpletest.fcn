@@ -1,0 +1,19 @@
+
+Domain Ints Integers -n 10
+
+```
+def identity(n): return n
+```
+
+Satisfy identity Ints:
+  | :no-suffix  :min 1
+  | !(modof? 2)
+  | modof? 2
+  | between 0 1
+  ;
+
+
+Test identity Ints:
+ | !(none?)
+ | !(none? && nan?)
+ ;

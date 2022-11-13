@@ -1,22 +1,24 @@
 
-:import Tests.ComplexNumber -from Complex
-:import Tests.ComplexPredicates -all
+//:import ComplexNumber
+:import ComplexNumber -from [Complex, ComplexError] //-dot
+:import ComplexPredicates -all //-dot
 
 Domain A Reals2
 Domain B Reals2
-
 
 Domain lower Integers -lower 0 -upper 100
 Domain upper Integers -lower -100 -upper 100
 Domain critical CSVDomain './tests/special-case.txt'
 
 Assert Complex:
+  | `print('hello1')`
   | (1.0, 1.0) = `Complex(1.0, 1.0)`
+  | (1.0, 1.0) finishes-ms? 100
   | (1, 1) = `Complex(1.0, 1.0)` ~~ "This should never fail"
   | (10.0, 10.0) < `Complex(20.0, 20.0)`
   | (nan, 1.0) error? AssertionError
   | (1.0, 1.0) between? `-1.0` `1.0`
-  | (inf,inf) error-says? Exception "Value must be a float"
+  | (inf,inf) raises&says? Exception "Value must be a float"
   | (1.0, 0.0) is-complex? || is-float?
   |! TypeError (inf, inf) is-a? Complex
   |! (nan, nan) is-a? Complex
@@ -26,7 +28,8 @@ Assert Complex:
 
 Test Complex A:
   | :message "Test the unary properties blah blah blah"
-  | :labels [a b]
+  | :labels [a b] :name 'complex_unary'
+  | `print('hello world')`
   | !(is-None?)
   |! valid-complex?
   |! ZeroDivisionError valid-complex?
@@ -37,13 +40,15 @@ Test Complex A:
   | additive-id?
   | multiplicative-id?
   | additive-id?
+  | complex-self?
+  | complex-test-error? 1 2
   ;
 
 Domain C1 ComplexDomain
 Domain C2 ComplexDomain
 
 Test _ C1 C2:
-  | :message "Test the properties of Complex numbers" :no-suffix
+  | :message "Test the properties of Complex numbers" :no-suffix :test-name 'complex_binary'
   | closure+?
   | closure*?
   | commutative+?
@@ -58,7 +63,7 @@ Test _ C1 C2:
   | complex+?
   | complex-?
   | complex*?
-  //|! NotImplementedError complex÷?
+  |! NotImplementedError complex÷?
   | complex+=?
   | complex-=?
   | complex*=?
@@ -67,12 +72,10 @@ Test _ C1 C2:
 Domain CT ComplexTest
 
 Satisfy Complex CT:
-  | :labels [r, i]
+  | :labels [r, i] :either [4 1]
   | valid-complex?
   | complex-number?
-  | valid-complex?
   | additive-id?
   | multiplicative-id?
-  |! ComplexError valid-complex?
-  |! ComplexError complex-number?
+  | raises&says? ComplexError "cannot be"
   ;

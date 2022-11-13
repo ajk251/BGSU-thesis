@@ -1,0 +1,111 @@
+
+// * signifies type, ie an args-type
+
+{* … *}
+
+* defaults := {* -uses ART
+			   -report csv
+			   :art initial [(25, 15, 15) (50, 65, 10) …]
+			   :art distance=manhattan *}
+			 
+Test fn domain -with defaults:
+	| ...
+
+~~~or~~~
+
+Test fn domain {* -uses ART -report sql :art initial … :art distance manhattan *}:
+	| ...
+	| ...
+	
+~~~or~~~
+
+Test fn domain:
+	| …
+	| …
+	|: :use ART -art distance=manhattan :report sql
+	
+―――――――――――――――――――――――――――――――――
+
+types:
+
+let x::int := 8
+let y∷float := 4.
+
+―――――――――――――――――――――――――――――――――
+
+arguments:
+
+-arg	dsl level argument
+:arg	function level argument
+	
+―――――――――――――――――――――――――――――――――
+
+
+|			test case
+|> |let		save result
+|@			run fn, test fn
+|# |when	must satisfy preconditon/postconditino
+|! |unless
+
+
+―――――――――――――――――――――――――――――――――
+
+how to call extra functions, like prioritize tests?
+
+
+Test fn domain:
+	| ...
+	| ...
+	|@ prioritize {* … *}
+
+
+
+―――――――――――――――――――――――――――――――――
+
+{{test-name: _,
+  test-args: {},
+  test-fn-args: {},
+  tests: [{kind: _, *args}]
+  
+ ―――――――――――――――――――――――――――――――――
+ 
+Winnow/Partition
+
+Partition <bin-fn> <test-fn> <domain>:
+	| bin-a
+		• <predicate>			→ use • or *
+		• <predicate>
+	| bin-b
+		* <predicate>
+		* <predicate>
+	| bin-c <predicate>			
+
+		
+Satisfy <test-fn> <domain>:
+	| bin-a 
+		• <predicate>
+	| bin-b <predicate>
+
+Note:
+	Partition <bin-fn> <test-fn> <domain>:
+	Partition <test-fn> <domain>:
+	→ multiline or single
+  
+  ―――――――――――――――――――――――――――――――――
+  
+log analysis?
+	• Read <file>
+		| <predicate>
+		| <predicate>
+
+
+
+test attributes:
+	• weight - small, medium, large, huge → how much it has to test
+	• tag - quick note, for searchability
+	• description - a longer decription of the test
+	• fns/object - a list of all the funcs/objects it tests
+	• history - number of times it has run
+	• n-fails - number of times it has failed
+	• aim - smoke, regression, ect
+   

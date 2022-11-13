@@ -1,0 +1,50 @@
+
+
+Winnow fn X Y Z ￫ bin:
+  | 'near'        km-valid?			: # > 5
+  | 'close'       km-valid?			: # > 5
+  | 'far'         km-valid?			: # > 5
+  | 'no-solution' km-asserts-ns? 	: # <= 2
+  \ to-log
+  ;
+  
+ 
+result = fn(x, y, z)
+group = bin(result)
+
+ if group == 'near':
+ 	km_valid(result)
+ 	groups['near'].append( (result, (x,y,z) )
+ elif group == 'close':
+ 	km_valid(result)
+ 	groups['close'].append( (result, (x,y,z) )
+ elif group == 'far':
+ 	km_valid(result)
+ 	groups['far'].append( (result, (x,y,z) )
+ elif group == 'no-solution':
+ 	km_asserts_no_solution(result)
+ 	groups['no-solution'].append( (result, (x,y,z) )
+ 
+ 
+for group in groups.keys():
+	if group == 'near':
+ 		assert len(groups['near']) > 5
+ 	elif group == 'close':
+ 		assert len(groups['close']) > 5
+ 	elif group == 'far':
+ 		assert len(groups['far']) > 5
+ 	elif group == 'no-solution':
+ 		assert len(groups['no-solution']) <= 2
+ 	
+[Hint]
+#< 5
+--> cardnality_lt n
+
+cardnality_lt(groups['-----'], 5)
+
+
+
+
+
+ 
+ 

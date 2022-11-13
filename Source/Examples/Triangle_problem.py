@@ -3,8 +3,8 @@
 from enum import Enum
 from typing import Tuple
 
-from domains.domains import domain
-from predicates.predicates import predicate, onfail_false
+from Falcon.domains import domain
+from Falcon.predicates.predicates import predicate, on_fail_false
 
 Triangle = Enum('Triangle', 'equilateral, isosceles, scalene, not_triangle')
 
@@ -41,23 +41,14 @@ def classify(a: int, b: int, c: int) -> Triangle:
 
 
 @predicate(alias=['!ints+?', '!positive-integers?', 'not-positive-ints?', 'positive-ints?'])
-@onfail_false
+@on_fail_false
 def not_positive_integers(a: int, b: int, c: int) -> bool:
     """Tests that all values are positive integers"""
     return any(map(lambda n: (not isinstance(n, int)) or (not n > 0), (a, b, c)))
 
-    # if (not isinstance(a, int)) or (not a >= 1):
-    #     return False
-    # elif (not isinstance(b, int)) or (not b >= 1):
-    #     return False
-    # elif (not isinstance(c, int)) or (not c >= 1):
-    #     return False
-    #
-    # return True
-
 
 @predicate(alias=['no-triangle-theorem?', 'not-satisfy-triangle-theorem?'])
-@onfail_false
+@on_fail_false
 def not_satisfy_triangle_theorem(a: int, b: int, c: int) -> bool:
     """The Triangle Theorem, ie. sᵢ < s₂+s₃, for all sides"""
     return not ((a < b+c) and (b < a+c) and (c < a+b))
@@ -66,7 +57,7 @@ def not_satisfy_triangle_theorem(a: int, b: int, c: int) -> bool:
 # these ---------------------------------------------------
 
 @predicate(alias=['not-triangle?'])
-@onfail_false
+@on_fail_false
 def not_triangle(a: int, b: int, c: int) -> bool:
     """Tests that three inputs do not form a valid triangle"""
     result =  any(map(lambda n: (not isinstance(n, int)) or (not n > 0), (a, b, c)))
@@ -76,19 +67,19 @@ def not_triangle(a: int, b: int, c: int) -> bool:
 
 
 @predicate(alias=['all-equal?'])
-@onfail_false
+@on_fail_false
 def all_equal(a: int, b: int, c: int) -> bool:
     return a == b and b == c
 
 
 @predicate(alias=['two-equal?'])
-@onfail_false
+@on_fail_false
 def two_equal(a: int, b: int, c: int) -> bool:
     return a == b or b == c or a == c
 
 
 @predicate(alias=['all-diff?', 'all-different?'])
-@onfail_false
+@on_fail_false
 def all_different(a: int, b: int, c: int) -> bool:
     return a != b and b != c and a != c
 
@@ -97,25 +88,25 @@ def all_different(a: int, b: int, c: int) -> bool:
 # by is the right type for that partition? ------
 
 @predicate(alias=['is-not-triangle?'])
-@onfail_false
+@on_fail_false
 def is_not_triangle(value):
     return value == Triangle.not_triangle
 
 
 @predicate(alias=['is-equilateral?'])
-@onfail_false
+@on_fail_false
 def is_equilateral(value):
     return value == Triangle.equilateral
 
 
 @predicate(alias=['is-scalene?'])
-@onfail_false
+@on_fail_false
 def is_scalene(value):
     return value == Triangle.scalene
 
 
 @predicate(alias=['is-isosceles?'])
-@onfail_false
+@on_fail_false
 def is_isosceles(value):
     return value == Triangle.isosceles
 
@@ -126,5 +117,3 @@ def is_isosceles(value):
 def critical_values() -> Tuple[int, ...]:
     return (-1, 0, 1, 2, 3, 4, 5)
 
-
-print(not_triangle(-1, -1, -1))

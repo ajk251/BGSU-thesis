@@ -1,0 +1,12 @@
+:import ComplexNumber -from [Complex ComplexError]
+:import math -from [nan, inf]
+
+Assert Complex:
+  | (1.0, 1.0) = `Complex(1.0, 1.0)` ~~ "This should never fail"
+  | (1, 1) == `Complex(1.0, 1.0)`
+  |! ComplexError (inf, inf) is-a? Complex
+  |! ComplexError (nan, nan) is-a? Complex
+  |! ComplexError (1.0, nan) is-a? Complex
+  |! ComplexError (1.0, inf) is-a? Complex
+  |! ComplexError (inf, 1.0) is-a? Complex
+  ;

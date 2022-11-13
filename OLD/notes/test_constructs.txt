@@ -1,0 +1,75 @@
+
+[Test]
+
+• function predicate values solutions
+Test <fn> <pdct> (<…>, <…>, …, <…>) (<…>, <…>, …, <…>)
+Test <fn> <pdct> (<…>, <…>, …, <…>) <domain>
+
+	→ no colon, one predicate 
+	→ eg Test fn == (<1,2>, <3,4>, <1,1>) (<3>, <7>, <2>)
+
+
+• function 
+Test <fn>:
+	| …
+
+	→ must have args provided!
+
+
+• function values
+Test <fn> (<…>, <…>, …, <…>):
+	| …
+
+	→ uses an arg-list instead of domain
+	
+
+• function domain
+Test <fn> <domain>:
+	| …
+	
+	→
+
+----------------------------------
+	
+Winnow <fn> <domain> <fn>?:
+	| …
+
+
+GroupTest <fn> <domain> <fn>?:
+	| …
+	
+	
+	→ same thing
+	→ <fn> is a binning function, if provided provides the class
+	
+----------------------------------
+
+
+Satisfy <fn> <domain> <fn>?:
+	| …
+
+	→ <fn> is a binning function, if provided provides the class
+
+
+
+[Test stubs] ---------------------------------------------------------
+
+| <pdct> <value>
+| <args> <pdct> <value>				→ for the first kind of Test
+| <bin> <pdct> <value>				→ for Winnow & Satisfy
+
+
+|> <name> <code>
+
+|: <directive>+
+
+[Experimental] -----------------------------------------------------------
+
+|* <bin> 
+	• <pdct> <value>
+	* <pdct> <value>
+	
+	→ allows for more than one predicate/more readable
+	→ • or *
+
+

@@ -1,0 +1,11 @@
+hotel,distance,pool,pets,smoking,king,stars
+1, 25, yes, no, no, yes, 4
+2, 35, no, yes, no, yes, 2
+3, 15, no, yes, yes, no, 3
+4, 10, yes, no, no, no, 5
+5, 17, yes, yes, no, no, 4
+6, 24, yes, no, no, yes, 5
+7, 45, no, yes, yes, no, 3
+8, 23, no, yes, yes, no, 2
+9, 8, yes, no, no, yes, 4
+10, 10, yes, no, no no, 5

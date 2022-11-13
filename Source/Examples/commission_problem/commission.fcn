@@ -1,0 +1,30 @@
+
+:import commission -all
+
+Domain sales Sales
+Domain linear_sales SalesProgression
+
+```
+# too_low = lambda l,s,b: l <= 0 and s <= 0 and b <= 0
+# too_high = lambda l,s,b: l > 100 and s > 100 and b > 100
+```
+
+Groupby commission linear_sales:
+  | :labels [locks stocks barrels]
+  | :follow-up plot_commission  :save-results  :save-cases
+  | 'invalid' valid-sales?  : error?
+  | 'low'     low-sales?    : low-commission?
+  | 'medium'  medium-sales? : medium-commission?
+  | 'high'    high-sales?   : high-commission?
+  ;
+
+
+Groupby commission sales:
+  | :labels [locks stocks barrels]
+  | :follow-up plot_commission  :save-results  :save-cases
+  | 'invalid' too-low?      : error?
+  | 'invalid' too-high?     : _
+  | 'low'     low-sales?    : low-commission+examples? 5
+  | 'medium'  medium-sales? : medium-commission?
+  | 'high'    high-sales?   : high-commission?
+  ;

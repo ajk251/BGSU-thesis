@@ -1,5 +1,4 @@
 from predicates import *
-from domains import *
 
 from test_functions import add
 

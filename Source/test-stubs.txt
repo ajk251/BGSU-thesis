@@ -1,0 +1,43 @@
+
+[note]
+⇒ <predicate> implies arguments
+
+
+[basic predicates]
+	<predicate> 
+	<predicate> arg
+	<predicate> args
+	<predicate> and <predicate> or ¬<predicate>
+	
+――――――――――――――――――――――――――――――――――
+
+Assert
+    | (1,1) <predicate>
+    | (1,1) <predicate> ~~ <error message>
+    |! (nan, nan) <predicate>
+    |! <error> <args> <predicate>
+    | <code>
+    
+Test
+    | <code>
+    | <directive>
+    | predicate
+    |! <predicate>
+    |! <error> <predicate
+    |> code
+    |> <variable> predicate
+    
+Satisfy
+    | <directive>
+    | <code>
+    | <predicate>
+    |! <predicate>
+    |! <error> <predicate>
+    |> <code>
+    |> <variable> <predicate>
+ 
+ Groupby
+ 	| <directive>
+ 	| <predicate>
+ 	| <predicate> : <predicate-group>
+ 	

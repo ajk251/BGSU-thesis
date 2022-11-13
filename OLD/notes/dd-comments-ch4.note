@@ -1,0 +1,33 @@
+
+[line 208]
+
+\decker{
+    This needs extended to have a column with a generic example (think of like api documentation listing all the possible options) and another column explaining that example. These can replace the description. 
+            -> some/most? of these only apply to one/two test fixtures should I identify that too?
+    
+    follow-up is basically a teardown, which might be better name. 
+            -> It generates a func declaration with the groupby results. I use it in the groupby example to show a plot of the results.
+    
+    Also, is there a setup (something goes before each iteration)?  It would also be nice if this injected a variable you could access the return of that call and followup could accept that value.  This is just an idea that could be a todo.
+            -> I could, but that is really what I intended the code statements are for.
+}
+
+[line 238]
+
+\decker{predicates are a pretty common term in se.  I would specify it for that wrote.  If you need to site something, you can cite: http://www.cs.kent.edu/~jmaletic/papers/ICSM06.pdf
+
+Although, this paper has a better table
+http://www.cs.kent.edu/~jmaletic/papers/ICSM10-Dragan.pdf
+
+They are the main mechanism for specifying the properties for test fixtures.  In the case, of \falcon{Groupby} both the Partitioning and assertion are specified by predicates.
+
+You should go back to the example and change the wording for to use partitioning instead of predicates.  So, it is consistent.  
+
+I will have to reread, but in at least the example you are mixing explaining predicates with properties. Just explain predicates here.  In another section start explaining properties and gives example of them used with predicates.  For example, you have not explained what |! or |>.  Why do they have a unique symbol?  Even if ! is obvious, you should not assume the reader gets it.  
+
+  -> it is hard to separate the two. |! modifies the outcome of the predicate and |> uses the name in the predicate.
+
+Predicate always has a value.  This should be part of the grammar for predicate.  It is the arguments to the predicate "function". 
+
+}
+

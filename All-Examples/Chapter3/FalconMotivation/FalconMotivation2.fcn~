@@ -1,0 +1,43 @@
+:import Triangle_problem -all
+
+Domain values ProductOf -values [-1, 0, 1, 2, 3, 4, 5]
+                        -repeat 3
+
+```
+@predicate(alias=['not-triangle?'])
+@on_fail_false
+def not_triangle(a: int, b: int, c: int) -> bool:
+    """Tests that three inputs do not form a valid triangle"""
+
+    result =  isinstance(a, int) and isinstance(b, int) and isinstance(c, int)
+    result &= (a > 0) and (b > 0) and (c > 0)
+    result &= (a + b > c) and (b + c > a) and (c + a > b)
+
+    return not result
+
+
+@predicate(alias=['all-equal?'])
+@on_fail_false
+def all_equal(a: int, b: int, c: int) -> bool:
+    return a == b == c
+
+
+@predicate(alias=['two-equal?'])
+@on_fail_false
+def two_equal(a: int, b: int, c: int) -> bool:
+    return a == b or b == c or a == c
+
+
+@predicate(alias=['all-diff?', 'all-different?'])
+@on_fail_false
+def all_different(a: int, b: int, c: int) -> bool:
+    return a != b and b != c and a != c
+```
+
+Groupby classify values:
+ | :labels [side1 side2 side3]
+ | 'Not-a-Triangle' not-triangle?  : is? Triangle.not_triangle
+ | 'Equilateral'    all-equal?     : is? Triangle.equilateral
+ | 'Scalene'        all-different? : is? Triangle.scalene
+ | 'Isosceles'      two-equal?     : is? Triangle.isosceles
+ ;

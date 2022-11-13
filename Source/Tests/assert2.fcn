@@ -1,11 +1,6 @@
 
-:import Tests.ComplexNumber -from Complex
-:import Tests.ComplexPredicates -all
-
-Assert Complex:
-  | (nan, 1.0) raises? AssertionError
-  | (inf,inf) raises-message? Exception "Value must be a float"
-  ;
+:import ComplexNumber -from Complex
+:import ComplexPredicates -all
 
 Assert Complex:
   | (1.0, 1.0) = `Complex(1.0, 1.0)`
@@ -13,16 +8,20 @@ Assert Complex:
   | (10.0, 10.0) < `Complex(20.0, 20.0)`
   | (nan, 1.0) raises? AssertionError
   | (1.0, 1.0) between? `-1.0` `1.0`
-  | (inf,inf) raises-message? Exception "Value must be a float"
+  | (inf,inf) error-and-says? Exception "Value must be a float"
   | (1.0, 0.0) is-complex? || is-float?
   |! TypeError (inf, inf) is-a? Complex
   |! (nan, nan) is-a? Complex
   |! (nan, inf) between? -1 1
   |! TypeError (nan, inf) between? -1 1
+  | (2,2) = `Complex(2.0, 2.0)` ~~ "This should never fail"
   ;
 
-Domain vals ART
-
-Test Complex vals:
- | is-int?
- ;
+Assert Complex:
+  | (nan, 1.0) raises? AssertionError
+  | (inf,inf) error-and-says? Exception "Value must be a float"
+  |> `x = Complex(1.0, 1.0)`
+  |> x int?
+  |> x between? 1.0 10.0
+  |> x > 10
+  ;

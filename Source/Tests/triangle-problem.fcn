@@ -1,5 +1,5 @@
 
-:import Examples.Triangle_problem -all
+:import Triangle_problem -all
 
 Domain values PermutationsOf -values [-1, 0, 1, 2, 3, 4, 5] -repeat 3
 Domain values2 TriangleValues
@@ -23,7 +23,7 @@ Groupby classify values:
 
 
 Groupby classify values2:
- | :method all-triplets-of -n 3
+ | :method all-triplets-of -n 3  :follow-up triangle_plot+
  | :no-suffix :labels [s1 s2 s3]
  | 'Not-a-Triangle' not-positive-ints?  : not-triangle?
  | 'Not-a-Triangle' no-triangle-theorem?

@@ -1,0 +1,27 @@
+
+:import ComplexNumber -from [Complex, ComplexError]
+:import ComplexPredicates -all
+:import math -from [nan inf]
+
+Domain CT ComplexTest
+
+Satisfy Complex CT:
+  | :labels [r, i] :either [1 5]
+  | raises-and-says? 'Real'
+  | raises-and-says? 'Imaginary'
+  | valid-complex?
+  | complex-number?
+  | valid-complex?
+  | additive-id?
+  | multiplicative-id?
+  ;
+
+Domain values PermutationsOf -values [nan, inf, 1, 1.0]
+
+Satisfy Complex values:
+  | :labels [r i]
+  | valid-complex?
+  | complex-number?
+  | == `Complex(1.0, 1.0)`
+  | raises? ComplexError
+  ;

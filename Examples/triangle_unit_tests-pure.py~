@@ -1,0 +1,51 @@
+
+import unittest
+
+from triangle import classify, Triangle
+
+class TriangleTests(unittest.TestCase):
+
+    def test_scalene(self):
+        assert classify(3,4,5) == Triangle.scalene          # conforms to 1
+
+    def test_equilateral(self):
+        assert classify(4, 4, 4) == Triangle.equilateral    # conforms to 2
+
+    def test_isosceles(self):
+        assert classify(4, 4, 7) == Triangle.isosceles      # conforms to 3
+
+    def test_isosceles_perm_2(self):
+        assert classify(4, 7, 4) == Triangle.isosceles      # conforms to 4, permutations
+
+    def test_isoceles_perm_3(self):
+        assert classify(7, 4, 4) == Triangle.isosceles      # conforms to 4, permutations
+
+    def test_side_with_zeros(self):
+        assert classify(0, 1, 2) == Triangle.not_triangle   # conforms to 5
+
+    def test_side_with_negative_value(self):
+        assert classify(-1, 3, 4) == Triangle.not_triangle   # conforms to 6
+
+    def test_two_sides_equal(self):
+        assert classify(1, 2, 3) == Triangle.not_triangle    # conforms to 7
+
+    def test_two_sides_equal_perm_2(self):
+        assert classify(2, 1, 3) == Triangle.not_triangle   # conforms to 8, permutations
+
+    def test_two_sides_equal_perm_3(self):
+        assert classify(3, 1, 2) == Triangle.not_triangle   # conforms to 8, permutations
+
+    def test_values_sum_two_sides_less_than_third(self):
+        assert classify(1, 2, 4) == Triangle.not_triangle   # conforms to 9
+
+    def test_values_sum_two_sides_less_than_third_perm_2(self):
+        assert classify(1, 4, 2) == Triangle.not_triangle   # conforms to 10, permutations
+
+    def test_values_sum_two_sides_less_than_third_perm_3(self):
+        assert classify(4, 1, 2) == Triangle.not_triangle   # conforms to 10, permutations
+
+    def test_all_sides_zero(self):
+        assert classify(0, 0, 0) == Triangle.not_triangle   # conforms to 11
+    
+if __name__ == '__main__':
+    unittest.main()

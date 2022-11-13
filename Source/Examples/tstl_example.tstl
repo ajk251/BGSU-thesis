@@ -1,0 +1,18 @@
+
+@import math
+
+# A line beginning with an @ is just python code.
+
+pool: <int> 5
+
+
+<int> := 0
+<int> += 4
+<int> -= 3
+<int> *= 3
+{OverflowError} <int> := int(math.pow(2,<int>))
+
+property: <int> != 510
+
+# property: expresses an invariant of what we are testing.  If the
+# boolean expression evaluates to False, the test has failed.

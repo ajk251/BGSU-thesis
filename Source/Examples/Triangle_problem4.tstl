@@ -4,4 +4,14 @@
 pool: <int> 3
 <int> := <[-1..100]>
 
-property: Triangle_problem4.test_classify(<int>, <int>, <int>)
+<triangle> := Classify(<int>, <int>, <int>)
+<kind> := <triangle>.classify()
+
+
+if kind   == not-a-triangle: ...
+elif kind == equilateral: ...
+elif kind == scalene: ...
+elif kind == isosceles: ...
+
+
+# property: Triangle_problem4.test_classify(<kind>, <int>, <int>, <int>)

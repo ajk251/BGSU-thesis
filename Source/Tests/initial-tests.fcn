@@ -1,18 +1,22 @@
 
 //:import Tests.test_functions -from add
 
-Domain art1 Art -max_candidates 100
-Domain art2 Art -max_candidates 200
+Domain art1 ART -max_candidates 100
+Domain art2 ART -max_candidates 200
 
 Domain X Integers -1000 1000 -nrandom 10
 Domain Y Integers -500  500  -nrandom 10
 Domain Z Integers
 
+```
+def add(x, y): return x + y
+```
+
 Test add art1, art2:
-  | :message "please work"
+  | :message "please work" :labels [x, y]
+  | :method art -min_distance 3 -max_distance 10
   | :test-name test_add
   | :object-update
-  //| :method art
   | int?
   | between -1500 1500
   ;

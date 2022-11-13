@@ -1,0 +1,17 @@
+
+@import Triangle_problem4
+
+pool: <int> 3
+<int> := <[-1..100]>
+
+<triangle> := Classify(<int>, <int>, <int>)
+<kind> := <triangle>.classify()
+
+
+if kind   == not-a-triangle: ...
+elif kind == equilateral: ...
+elif kind == scalene: ...
+elif kind == isosceles: ...
+
+
+# property: Triangle_problem4.test_classify(<int>, <int>, <int>)

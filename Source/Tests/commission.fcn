@@ -1,0 +1,10 @@
+
+:import Examples.commission
+
+Groupby commission values:
+  | 'no-sales' no-sales? : no-commission?
+  | '<1k'      one-k?    : gets-10?
+  | '<1.8k'    fifteen?  : gets-15?
+  | '>1.8k'    twenty?   : gets-20?
+  ;
+
