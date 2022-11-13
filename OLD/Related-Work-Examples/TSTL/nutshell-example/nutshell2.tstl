@@ -1,0 +1,16 @@
+
+@import math
+
+pool: <int> 5
+
+<int> := <[0..100]>
+
+<int> := 0
+<int> += 4
+<int> -= 3
+<int> *= 3
+# {OverflowError} <int> := int(math.pow(2,<int>))
+
+property: <int> != 510
+#property: <int> > 0 if <int> is not None else 1
+

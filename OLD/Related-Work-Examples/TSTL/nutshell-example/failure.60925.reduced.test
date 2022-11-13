@@ -1,0 +1,4 @@
+self.p_int[0] = 57 
+self.p_int[0] *= 3 
+self.p_int[0] *= 3 
+self.p_int[0] -= 3 

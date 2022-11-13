@@ -1,0 +1,17 @@
+
+:import chardet_falcon -all
+
+Domain Text RandomEncodings
+
+Satisfy sut Text:
+  | :label [case]
+  | `detected = chardet.detect(case)`
+  | neither-detected?
+  | both-right?
+  | both-close?
+  | encoding?
+  | ballpark?
+  | language?
+  | both-wrong?
+  | either-wrong?
+  ;
