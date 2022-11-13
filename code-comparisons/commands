@@ -1,7 +1,0 @@
-
-python3.9 -m venv venv --prompt="falcon-env"
-source venv/bin/activate
-pip install -r requirements.txt
-/media/aaron/Shared2/School/BGSU-thesis/code-comparisons/env/venv/venv/bin/python3.9 -m pip install --upgrade pip
-
-falcon ../example-chardet/chardet.fcn
