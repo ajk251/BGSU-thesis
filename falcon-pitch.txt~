@@ -1,7 +1,0 @@
-
-Software testing is vital to quality software, yet many projects often fail to test their software adequately or rigorously. While the reasons vary, the consequences are faulty and failure-prone software that increases technical debt and frustration from programmer to end-user. There is no lack of software tooling available. Most tools are to some degree: language specific, poorly supported, focus on one aspect of testing that makes it difficult to incorporate broadly, too black-box, or too expensive.
-
-This project will build a domain-specific language, called falcon, that aims to address all these challenges. Falcon will have less boiler-plate code, abstract common testing idioms, provide a concise and clear syntax, and be language agnostic. Falcon will help developers build tests that are comprehensive and easily understood, that can be written quickly and easily.
-
-Falcon will not solve every testing challenge, but it will help many of the challenges and stuggles developers face when writing tests. With falcon, developers can write tests that do not suffer from many of the 'test smells' that are common, while providing more coverage and clarity. 
-
