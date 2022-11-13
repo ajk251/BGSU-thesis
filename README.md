@@ -28,4 +28,4 @@ By default it must accept a Falcon <*>.fcn file.
 * `-u --unit` [optional] creates a unit-test file
 * `-d --debug` [optional] prints the generated tree
 * `--pytest` [optional] runs PyTest after generation
-* `--cov` <filename.py> [optional] measures coverage of the given file using coverage.py
+* `--cov <filename.py>` [optional] measures coverage of the given file using coverage.py
