@@ -142,7 +142,7 @@ def cartesian(values) -> Iterator[Tuple[Any, ...]]:
     return product(*values)
 
 
-@domain(alias=['grid'])
+@domain(alias=['Grid'])
 def grid(bounds: IntBound) -> Generator[Tuple[Any, ...], None, None]:
     """Takes a Tuple[int, int] and returns the cartesian product of all the bounds"""
     yield from product(*(range(i, j) for i, j in bounds))

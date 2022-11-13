@@ -37,7 +37,7 @@ def finishes_in_lt_ms(fn, args, ms):
 # These are useful in Test ----------------------
 # use error for these
 
-@predicate(alias=['error-and-says?'], is_error=True)
+@predicate(alias=['error-and-says?', 'error-says?'], is_error=True)
 @on_fail_false
 def is_error_and_says(fn, args, error_type, message) -> bool:
     """

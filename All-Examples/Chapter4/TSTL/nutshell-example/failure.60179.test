@@ -1,0 +1,13 @@
+self.p_int[0] = 0 
+self.p_int[0] += 4 
+self.p_int[0] += 4 
+self.p_int[0] += 4 
+self.p_int[0] += 4 
+self.p_int[0] *= 3 
+self.p_int[0] -= 3 
+self.p_int[0] += 4 
+self.p_int[0] += 4 
+self.p_int[0] += 4 
+self.p_int[0] *= 3 
+self.p_int[0] *= 3 
+self.p_int[0] -= 3 

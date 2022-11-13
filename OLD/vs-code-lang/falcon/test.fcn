@@ -1,0 +1,7 @@
+```
+def fn(x,y): return x + y
+```
+
+Test fn X Y:
+  | is? int
+  ;

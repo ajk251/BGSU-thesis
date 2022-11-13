@@ -1,0 +1,8 @@
+self.p_int[0] = 0 
+self.p_int[1] = int(math.pow(2,self.p_int[0])) 
+self.p_int[1] += 4 
+self.p_int[1] += 4 
+self.p_int[2] = int(math.pow(2,self.p_int[1])) 
+self.p_int[2] += 4 
+self.p_int[2] -= 3 
+self.p_int[2] -= 3 

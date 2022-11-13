@@ -1,0 +1,66 @@
+
+
+Test _:
+	| <func> <args> <predicate> <test-solution>
+	
+	• a test of assertions for multiple functions
+
+
+Test <function>:
+	| <args> <predicate> <test-solution>
+	
+	• testing by enumerated assertions
+
+
+Test <function> <predicate> <test-solutions>
+
+	• testing by asserting correct cases
+	
+―――――――――――――――――――――――――――――――――――――――
+
+Winnow <function> <domain>:
+	| <label> <fn-result> <predicate>				// 1st → 'A' Enum.name is_lt(4)
+	| <label> <fn-result> <predicate> <value>		// 2nd → 'B' Enum.name == 4
+	
+	• the result of the <function> is the <fn-result> which is
+	    an element of label's []
+	• a groupby over the function results. Every result
+	  must fall into exactly one category.
+	• the predicate must be true for all values in the category
+	• useful for when the function returns a finite set of values
+	
+Satisfies <function> <domain>:
+	| <label> <fn-result> <predicate>
+	| <label> <fn-result> <predicate> <value>
+	
+	• a groupby over the function results. Every result falls
+	  into 1 or more categories.
+	• the predicate must be true for all values in the category
+	• useful for random testing
+
+BinTest <function> <domain> <key-function>:				// returns enum, for instance	
+BinTest <function> <domain> <predicate-case>:			// purley Boolean
+	| <group> <predicate>
+	| True  <predicate>
+	| False <predicate>
+	
+	• uses the first predicate to sort values, like True/False
+	• would work for the next_date function
+		- BinTest next_date (year ⨯ months ⨯ days) is_valid_date		// no child tests
+		~~or~~
+		- BinTest next_date (year ⨯ months ⨯ days) is_valid_date		// not exaustive
+			| True is_successor
+			
+
+	
+―――――――――――――――――――――――――――――――――――――――
+
+[Notes]
+• have to do something with saving results, like calling a sequence of functions
+
+like: 
+ |> var1 <func> <args> <predicate> <test-case>
+ 
+ → cause the result of the func(*args) to be saved in var1
+ 	• but then how to use in in the next test...
+ 	• maybe force the naming of args

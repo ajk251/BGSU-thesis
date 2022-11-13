@@ -1,0 +1,57 @@
+
+
+Satisfy s1_sort_hotel HotelsDB:
+  | :labels search answer
+  | 'pool'         has-pool?
+  | 'smoking'      allows-smoking?
+  | 'pet-friendly' pets?
+  | 'king-bed'     has-kingbed?
+  | ⋯
+  \ matches?
+  
+  
+Satisfy add1 X Y:
+  | is-int?
+  | asserts?
+  
+  
+ 
+￫ {'hotel': 'Hilton', 'distance': 50, ⋯
+   'pool': 'yes', 'smoking': 'no', 'pets': 'no', 'king-bed': 'no'}
+
+if has_pool(search):
+	groups['pool'].append(search)
+	
+if allows_smoking(search):
+	groups['smoking'].append(search)
+	
+if pet_friendly(search):
+	groups['pet-friendly'].append(search)
+	
+if has_kingbed(search):
+	groups['king-bed'].append(search)
+	
+――――――――――――――――――――――――
+
+
+Test triangle x y z:
+  | equilateral
+  | isosceles
+  | scalene
+  | right
+  | not-a-triangle
+  ;
+  
+Groupby triangle X Y Z:
+  | equilateral 	all-equal?
+  | isosceles		two-equal? 
+  | scalene			all-diff? //∧ not-zero
+  | not-a-triangle	raises? NotATriangleError
+  ;
+
+
+if   group == equilateral: all_equal(x, y, z)
+elif group == isosceles: two_equal(x, y, z)
+elif group == scalene: all_different(x, y, z)
+elif group == not_a_triangle: raises(NotATriangleError)
+

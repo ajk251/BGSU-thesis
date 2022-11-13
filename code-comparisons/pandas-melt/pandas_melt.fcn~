@@ -1,0 +1,13 @@
+:import falcon_melt -all
+
+Domain dfs DFGenerator
+
+Satisfy melt_sut dfs:
+  | :labels ['key', 'df']
+  | valid?            // a DataFrame instance
+  | sums-correctly?   // columns sum to known value
+  | melts-no-args?    // melts with no args
+  | melts-id&args?    // melts with id & args
+  | melts-var&args?   // melts with var & args
+  | melts-id&value?   // melts with id & value
+  ;
