@@ -15,11 +15,11 @@ class TriangleError(Exception):
 
 def classify(a: int, b: int, c: int) -> Triangle:
 
-    assert isinstance(a_, int) and isinstance(b_, int) and isinstance(c_, int), "All values must be integers"
+    assert isinstance(a, int) and isinstance(b, int) and isinstance(c, int), "All values must be integers"
 
-    if not ((a_ + b_ > c_) and (b_ + c_ > a_) and (c_ + a_ > b_)):
+    if not ((a + b > c) and (b + c > a) and (c + a > b)):
         return Triangle.not_triangle
-    elif not ((a_ > 0) and (b_ > 0) and (c_ > 0)):
+    elif not ((a > 0) and (b > 0) and (c > 0)):
         return Triangle.not_triangle
     elif a == b and b == c:
         return Triangle.equilateral

@@ -36,8 +36,8 @@ def all_different(a: int, b: int, c: int) -> bool:
 
 Groupby classify values:
  | :labels [side1 side2 side3]
- | 'Not-a-Triangle' not-triangle?  : eq? Triangle.not_triangle
- | 'Equilateral'    all-equal?     : eq? Triangle.equilateral
- | 'Scalene'        all-different? : eq? Triangle.scalene
- | 'Isosceles'      two-equal?     : eq? Triangle.isosceles
+ | 'Not-a-Triangle' not-triangle?  : is? Triangle.not_triangle
+ | 'Equilateral'    all-equal?     : is? Triangle.equilateral
+ | 'Scalene'        all-different? : is? Triangle.scalene
+ | 'Isosceles'      two-equal?     : is? Triangle.isosceles
  ;

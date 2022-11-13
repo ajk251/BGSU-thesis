@@ -135,6 +135,14 @@ if __name__ == '__main__':
         out = ''.join(output) + '.py'
         write_basic_test(falcon_tree, file, out)
         print('Generating test file: ', out)
+    elif args.test and args.unit:
+        # do both
+        out = ''.join(output) + '.py'
+        write_basic_test(falcon_tree, file, out)
+        print('Generating test file:      ', out)
+        out = ''.join(output) + '_unit.py'
+        write_basic_unittest(falcon_tree, file, out)
+        print('Generating unit test file: ', out)
     elif args.test:
         out = ''.join(output) + '.py'
         write_basic_test(falcon_tree, file, out)

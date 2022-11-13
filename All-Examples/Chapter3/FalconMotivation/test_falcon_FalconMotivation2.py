@@ -14,28 +14,32 @@ from Triangle_problem import *
 
 # This file was generated automatically by Falcon.
 # from: FalconMotivation2.fcn
-# on 2022 Nov 08 Tue 11:52:17
+# on 2022 Nov 13 Sun 14:09:02
 
 values = product_of(values=[-1, 0, 1, 2, 3, 4, 5], repeat=3)
 @predicate(alias=['not-triangle?'])
 @on_fail_false
 def not_triangle(a: int, b: int, c: int) -> bool:
     """Tests that three inputs do not form a valid triangle"""
-    result =  not any(map(lambda n: (isinstance(n, int)) or \ 
-                                    (n > 0), (a, b, c)))
-    result |= not ((a < b+c) and (b < a+c) and (c < a+b))
 
-    return result
+    result =  isinstance(a, int) and isinstance(b, int) and isinstance(c, int)
+    result &= (a > 0) and (b > 0) and (c > 0)
+    result &= (a + b > c) and (b + c > a) and (c + a > b)
+
+    return not result
+
 
 @predicate(alias=['all-equal?'])
 @on_fail_false
 def all_equal(a: int, b: int, c: int) -> bool:
-    return a == b and b == c
+    return a == b == c
+
 
 @predicate(alias=['two-equal?'])
 @on_fail_false
 def two_equal(a: int, b: int, c: int) -> bool:
     return a == b or b == c or a == c
+
 
 @predicate(alias=['all-diff?', 'all-different?'])
 @on_fail_false
@@ -43,7 +47,7 @@ def all_different(a: int, b: int, c: int) -> bool:
     return a != b and b != c and a != c
 
 
-def test_groupby_classify_Y3v():
+def test_groupby_classify_v5G():
 
     results = defaultdict(list)
     n_cases = defaultdict(int)
@@ -56,19 +60,19 @@ def test_groupby_classify_Y3v():
             result = e
 
         if not_triangle(side1, side2, side3):
-            assert is_instance(result, Triangle.not_triangle), "The value is not the instance specified"
+            assert eq(result, Triangle.not_triangle)
             results['Not-a-Triangle'].append(result)
             n_cases['Not-a-Triangle'] += 1
         elif all_equal(side1, side2, side3):
-            assert is_instance(result, Triangle.equilateral), "The value is not the instance specified"
+            assert eq(result, Triangle.equilateral)
             results['Equilateral'].append(result)
             n_cases['Equilateral'] += 1
         elif all_different(side1, side2, side3):
-            assert is_instance(result, Triangle.scalene), "The value is not the instance specified"
+            assert eq(result, Triangle.scalene)
             results['Scalene'].append(result)
             n_cases['Scalene'] += 1
         elif two_equal(side1, side2, side3):
-            assert is_instance(result, Triangle.isosceles), "The value is not the instance specified"
+            assert eq(result, Triangle.isosceles)
             results['Isosceles'].append(result)
             n_cases['Isosceles'] += 1
         else:

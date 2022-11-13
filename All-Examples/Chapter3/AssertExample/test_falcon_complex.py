@@ -15,10 +15,10 @@ from math import nan, inf
 
 # This file was generated automatically by Falcon.
 # from: complex.fcn
-# on 2022 Nov 08 Tue 11:52:16
+# on 2022 Nov 13 Sun 14:14:09
 
 
-def test_Complex_assertions_5lIL2():
+def test_Complex_assertions_LB5yY():
 
     assert Complex(1.0, 1.0) == Complex(1.0, 1.0)
     assert equals(Complex(1, 1), Complex(1.0, 1.0))
