@@ -107,6 +107,7 @@ def add_imports(entry) -> str:
              'from Falcon.utilities.TestLogWriter import write_to_log',
              'from Falcon.utilities import FalconError\n',
              'from collections import defaultdict\n',
+             'import unittest',
              'import pytest\n']
 
     for module, args in entry:

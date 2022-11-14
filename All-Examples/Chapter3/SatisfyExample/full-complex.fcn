@@ -79,5 +79,4 @@ Satisfy Complex CT:
   | additive-id?
   | multiplicative-id?
   | raises&says? ComplexError "cannot be"
-  | `print('hello1')`
   ;

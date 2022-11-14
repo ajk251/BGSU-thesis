@@ -1,0 +1,14 @@
+
+:import ComplexNumber -from [Complex, ComplexError]
+:import ComplexPredicates -all
+
+Domain CT ComplexTest
+
+Satisfy Complex CT:
+  | :labels [real, im] :either [4 1]
+  | valid-complex?
+  | complex-number?
+  | additive-id?
+  | multiplicative-id?
+  | raises? ComplexError
+  ;

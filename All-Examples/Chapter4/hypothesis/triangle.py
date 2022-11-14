@@ -24,13 +24,16 @@ def classify(a: int, b: int, c: int) -> Triangle:
         return Triangle.scalene
     elif a == b or b == c or a == c:
         return Triangle.isosceles
+        
+    raise TriangleError(f'Bad input a: {a}, b: {b}, c: {c}')
 
-    raise TriangleError(f'Could not classify input a ￫ {a}, b ￫ {b}, c ￫ {c}')
+    #raise TriangleError(f'Could not classify input a: {a}, b: {b}, c: {c}')
 
 # ---------------------------------------------------------
 
 def positive_integers(a: int, b: int, c: int) -> bool:
     """Tests that all values are positive integers"""
+    
     if not (isinstance(a, int) and a > 0):
         return False
 

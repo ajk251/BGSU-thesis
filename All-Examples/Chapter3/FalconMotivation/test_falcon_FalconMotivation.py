@@ -8,17 +8,18 @@ from Falcon.utilities import FalconError
 
 from collections import defaultdict
 
+import unittest
 import pytest
 
 from Triangle_problem import *
 
 # This file was generated automatically by Falcon.
 # from: FalconMotivation.fcn
-# on 2022 Nov 13 Sun 14:09:02
+# on 2022 Nov 13 Sun 18:10:55
 
 values = product_of(values=[-1, 0, 1, 2, 3, 4, 5], repeat=3)
 
-def test_groupby_classify_DUKr4():
+def test_groupby_classify_Sl():
 
     results = defaultdict(list)
     n_cases = defaultdict(int)

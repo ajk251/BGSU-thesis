@@ -1,5 +1,4 @@
 
-
 from enum import Enum
 from typing import Tuple
 
@@ -60,4 +59,3 @@ def two_equal(a: int, b: int, c: int) -> bool:
 @on_fail_false
 def all_different(a: int, b: int, c: int) -> bool:
     return a != b and b != c and a != c
-
