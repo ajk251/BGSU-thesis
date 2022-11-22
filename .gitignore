@@ -1,3 +1,7 @@
 ignore
-ignore/*.pdf
-
+*.pdf
+/sandbox-code
+/OLD
+requirements.txt~
+README.md.backup
+*/__pycache__

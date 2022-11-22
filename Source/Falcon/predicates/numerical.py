@@ -107,5 +107,5 @@ def is_outside(n, lower, upper):
 
 
 @predicate(alias=['plus-minus?', '±'])
-def plus_minus(n, value) -> bool:
-    return (n - value) <= n <= (n + value)
+def plus_minus(value, n, m) -> bool:
+    return (n - m) <= value <= (n + m)

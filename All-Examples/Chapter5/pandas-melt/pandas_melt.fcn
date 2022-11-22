@@ -1,8 +1,8 @@
 :import falcon_melt -all
 
-Domain dfs DFGenerator
+Domain DFS DFGenerator
 
-Satisfy melt_sut dfs:
+Satisfy melt_sut DFS:
   | valid?            // a DataFrame instance
   | sums-correctly?   // columns sum to known value
   | melts-no-args?    // melts with no args

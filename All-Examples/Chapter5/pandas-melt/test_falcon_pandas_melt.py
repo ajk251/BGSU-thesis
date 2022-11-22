@@ -8,19 +8,20 @@ from Falcon.utilities import FalconError
 
 from collections import defaultdict
 
+import unittest
 import pytest
 
 from falcon_melt import *
 
 # This file was generated automatically by Falcon.
 # from: pandas_melt.fcn
-# on 2022 Oct 19 Wed 19:38:38
+# on 2022 Nov 18 Fri 11:55:19
 
-dfs = df_generator()
+DFS = df_generator()
 
-def test_satisfy_melt_sut_UoR():
+def test_satisfy_melt_sut_os():
 
-    for dfsᵢ in dfs:
+    for dfsᵢ in DFS:
 
         try:
             result = melt_sut(dfsᵢ)
