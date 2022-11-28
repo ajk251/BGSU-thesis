@@ -3,7 +3,6 @@
 Domain dfs DFGenerator
 
 Satisfy melt_sut dfs:
-  | :labels ['key', 'df']
   | valid?            // a DataFrame instance
   | sums-correctly?   // columns sum to known value
   | melts-no-args?    // melts with no args

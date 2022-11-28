@@ -1,1 +1,0 @@
-"Test fn X Y: \n  | is-int? \n > 3 \n;" "simple test of Test"   {'function': 'fn', 'domains': ['X', 'Y']}   {'kind': 'predicate-value', 'predicate': 'is-int?'} {'kind': 'predicate-value', 'predicate': '>', 'values': '3'}

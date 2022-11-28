@@ -1,6 +1,0 @@
-{
-    "name": "falcon-tmlanguage",
-    "version": "0.0.1",
-    "private": true,
-    "description": "Textmate grammar file for Falcon meant for VS Code"
-}
